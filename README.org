@@ -1,0 +1,99 @@
+
+* Protolk
+
+Prototype-based Scheme objects with message passing
+
+- Version :: 0.0
+- Date :: (unreleased)
+- Author :: John Croisant <john@croisant.net>
+- Project :: [[http://github.com/jacius/protolk/]]
+- License :: [[http://opensource.org/licenses/BSD-2-Clause][BSD 2-Clause]]
+
+
+* About Protolk
+
+Protolk provides flexible and lightweight object oriented programming
+in Scheme, combining [[http://en.wikipedia.org/wiki/Prototype-based_programming][prototypal inheritance]] (a la Self and JavaScript)
+with [[http://en.wikipedia.org/wiki/Actor_model][actors]] and [[http://en.wikipedia.org/wiki/Message_passing][message passing]] (a la Smalltalk and Ruby).
+
+Protolk is not a new language or dialect. It offers a Scheme record
+type and collection of procedures that can be seamlessly integrated
+with other Scheme code.
+
+Protolk is designed with four core principles in mind:
+
+- *Simplicity:* Protolk's object model is very simple: an object holds
+  its own properties and methods, it performs actions in response to
+  messages, and it can recursively inherit properties and methods from
+  another object. That's all there is to it. However...
+
+- *Extensibility:* ... it's easy to build complex and interesting
+  behavior on top of that simple object model. You can extend,
+  customize, or replace almost any behavior as you see fit.
+
+- *Flexibility:* Objects can be modified in any way at any time. You
+  don't have to declare what properties or methods an object will
+  have, or redefine an entire class just to add a property or method
+  to a single object.
+
+- *Encapsulation:* Objects maintain a separation between their private
+  state and their public interfaces. Properties can only be (directly)
+  read and written by an object itself. Methods are public by nature,
+  but there are ways to implement private methods.
+
+
+* Caveats
+
+As of August 2012, Protolk is still just an experiment. I make no
+guarantees about its performance, efficiency, stability, security,
+correctness, usefulness, or cleverness. Think twice (or thrice) before
+using Protolk in production code.
+
+Be aware that Protolk provides only *synchronous* (blocking) message
+passing, implemented as procedure calls. No special consideration has
+been given to issues of concurrency, threading, or asynchronicity.
+So, Protolk is probably not especially useful for distributed or
+parallel computing.
+
+Protolk is currently targeted at [[http://call-cc.org/][Chicken Scheme]]. If you are interested
+in helping to port Protolk to your favorite Scheme or Lisp, create a
+new issue on the [[https://github.com/jacius/protolk/issues][Protolk issue tracker]] or email me.
+
+
+* License
+
+Protolk is made available under the following terms (the [[http://opensource.org/licenses/BSD-2-Clause][BSD 2-Clause
+License]]):
+
+#+BEGIN_QUOTE
+protolk: prototype-based Scheme objects with message passing
+
+Copyright © 2012  John Croisant.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+- Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#+END_QUOTE
+
+
+#+STARTUP: showall
