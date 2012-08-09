@@ -13,8 +13,9 @@ Prototype-based Scheme objects with message passing
 * About Protolk
 
 Protolk provides flexible and lightweight object oriented programming
-in Scheme, combining [[http://en.wikipedia.org/wiki/Prototype-based_programming][prototypal inheritance]] (a la Self and JavaScript)
-with [[http://en.wikipedia.org/wiki/Actor_model][actors]] and [[http://en.wikipedia.org/wiki/Message_passing][message passing]] (a la Smalltalk and Ruby).
+in Scheme, combining [[http://en.wikipedia.org/wiki/Encapsulation_(object-oriented_programming)][escapsulation]] and [[http://en.wikipedia.org/wiki/Message_passing][message passing]] a la Smalltalk
+and Ruby, with (by default) [[http://en.wikipedia.org/wiki/Prototype-based_programming][prototypal inheritance]] a la Self and
+JavaScript.
 
 Protolk is not a new language or dialect. It offers a Scheme record
 type and collection of procedures that can be seamlessly integrated
@@ -23,13 +24,13 @@ with other Scheme code.
 Protolk is designed with four core principles in mind:
 
 - *Simplicity:* Protolk's object model is very simple: an object holds
-  its own properties and methods, it performs actions in response to
-  messages, and it can recursively inherit properties and methods from
-  another object. That's all there is to it. However...
+  its own properties and methods, and it performs actions in response
+  to messages. That's all there is to it. However...
 
 - *Extensibility:* ... it's easy to build complex and interesting
-  behavior on top of that simple object model. You can extend,
-  customize, or replace almost any behavior as you see fit.
+  behavior on top of that simple object model. Other than the object
+  model itself, you can extend, customize, or replace /anything/ about
+  Protolk, including the inheritance system!
 
 - *Flexibility:* Objects can be modified in any way at any time. You
   don't have to declare what properties or methods an object will
@@ -37,8 +38,8 @@ Protolk is designed with four core principles in mind:
   to a single object.
 
 - *Encapsulation:* Objects maintain a separation between their private
-  state and their public interfaces. Properties can only be (directly)
-  read and written by an object itself. Methods are public by nature,
+  state and their public interfaces. Properties are only (directly)
+  read and written by the object itself. Methods are public by nature,
   but there are ways to implement private methods.
 
 

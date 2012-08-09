@@ -6,11 +6,10 @@ It will be updated as development progresses and the plan evolves.
 
 - [ ] =pob= record type
 - [ ] =%make-pob= procedure
-- [ ] =%pob-base= / =%pob-set-base!= procedures
 - [ ] =%pob-props= / =%pob-set-props!= procedures
 - [ ] =%pob-methods= / =%pob-set-methods!= procedures
 
-Primitive procedures (use first-order funcs or macros reduce code
+Primitive procedures (use first-order funcs or macros to reduce code
 repetition):
 
 Props:
@@ -27,87 +26,54 @@ Methods:
 - [ ] =%remove-method!= procedure
 - [ ] =%set-method!= procedure
 
-* Milestone 2: Core API
+* Milestone 2: Core API and stdpob
 
 - [ ] =make-pob= procedure (with keyword args)
-- [ ] =%validate-pob= procedure primitive
-  (Checks that base is a pob or #f, ancestry is not circular, and all
-  methods hold procedures. Returns the pob if valid, otherwise #f.)
-
 - [ ] =send= procedure
 - [ ] =prop-reader= / =prop-writer= procedure factories
 
-- [ ] =base= procedure
-- [ ] =set-base!= procedure
-  (Checks that ancestry would not be circular. Maybe this should not
-  be exposed?)
+=stdpob= predefined pob:
+- [ ] =[stdpob derive #!key props methods]=
+- [ ] =[stdpob responds-to? message #!optional args]=
+- [ ] =[stdpob ancestors]=
+- [ ] =[stdpob has-ancestor?]=
+- [ ] =[stdpob _resolve-prop name]=
+- [ ] =[stdpob _resolve-method name #!optional args]=
+- [ ] =[stdpob _method-missing name #!optional args]=
 
-Same as the primitives (maybe these should not be exposed?):
-- [ ] =prop= procedure
-- [ ] =set-prop!= procedure
-- [ ] =remove-prop!= procedure
-- [ ] =method= procedure
-- [ ] =set-method!= procedure
-- [ ] =remove-method!= procedure
+Make stdpob methods available as procedures, e.g. =stdpob-derive=,
+=stdpob-_resolve-prop=.
 
-=corepob= predefined pob:
-- [ ] =[corepob derive #!key props methods]=
-- [ ] =[corepob responds-to? message #!optional args]=
-- [ ] =[corepob _resolve-prop name]=
-- [ ] =[corepob _resolve-method name #!optional args]=
-
-Make corepob methods available as procedures, e.g. =corepob-derive=,
-=corepob-_resolve-prop=.
-
-* Milestone 3: Defining Methods / stdpob
+* Milestone 3: Methods and Encapsulation
 
 - [ ] =in-method= macro
 - [ ] =define-method= macro
 - [ ] =super= procedure
 
-=stdpob= predefined pob:
-- [ ] =[stdpob derive #!key props methods]=
-  (Same as corepob, but sends =initialize= to the new pob.)
-- [ ] =[stdpob initialize]=
-- [ ] =[stdpob _resolve-method name #!optional args]=
-  (Same as corepob, but sends =_method-missing= to itself if failed.)
-- [ ] =[stdpob _method-missing name #!optional args]=
-- [ ] =[stdpob equal? other-pob]=
-- [ ] =[stdpob copy]=
-- [ ] =[stdpob ancestors]=
-- [ ] =[stdpob has-ancestor?]=
-- [ ] =[stdpob ->alist]=
-
-Make stdpob methods available as procedures,
-e.g. =stdpob-_method-missing=, =stdpob->alist=.
-
-
-* Milestone 4: Encapsulation
-
 - [ ] =%self= parameter primitive
 - [ ] =self= procedure (read-only interface to =%self=)
 - [ ] =own-prop= procedure and setter
+
 - [ ] =assert-self= procedure
   (raise exception unless given pob is current-self)
 - [ ] =define-private-method= macro
 
-* Milestone 5: Syntax Sugar
+* Milestone 4: Syntax Sugar
 
 - [ ] =own-prop= syntax: =@foo=
 - [ ] =send= syntax: =[pob msg args...]=
 - [ ] =enable-protolk-syntax= procedure
 - [ ] =with-protolk-syntax= macro
 
-* Milestone 7: Aliases and Multiple Inheritance
+* Milestone 5: Aliases and Multiple Inheritance
 
 - [ ] Method aliases in stdpob. If the value of a method is a symbol
   (instead of a procedure), begin resolving that method instead,
-  beginning at the pob where the alias was found. Update %validate-pob
-  to allow methods to hold symbols.
+  beginning at the pob where the alias was found.
 - [ ] Multiple inheritance (multiple bases). Use a precedence list to
   determine inheritance and "super" calls.
 
-* Milestone 8: Optimization
+* Milestone 6: Optimization
 
 - [ ] Make primitive prop and method accessors work with both alists
   and hash-tables.
