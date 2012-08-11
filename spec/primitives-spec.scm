@@ -74,4 +74,17 @@
         (raises-error? (%pob-set-methods! (%make-pob '() '())))))))
 
 
+
+(describe "primitive prop accessors"
+  (describe "%has-prop?"
+    (it "returns #t when the pob has a matching prop"
+      (%has-prop? (%make-pob '((a . 1)) '()) 'a))
+    (it "returns #f when the pob does not have a matching prop"
+      (not (%has-prop? (%make-pob '((a . 1)) '()) 'foo)))
+    (it "fails when given a non-pob"
+      (raises-error? (%has-prop? 'foo 'a)))
+    (it "fails when no prop name is specified"
+      (raises-error? (%has-prop? (%make-pob '((a . 1)) '()))))))
+
+
 (test-exit)

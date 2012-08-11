@@ -14,7 +14,7 @@ Primitive procedures (use first-order funcs or macros to reduce code
 repetition):
 
 Props:
-- [ ] =%has-prop?= procedure
+- [X] =%has-prop?= procedure
 - [ ] =%prop= procedure
 - [ ] =%add-prop!= procedure
 - [ ] =%remove-prop!= procedure

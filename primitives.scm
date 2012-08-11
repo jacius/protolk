@@ -41,4 +41,8 @@
   (methods %pob-methods %pob-set-methods!))
 
 
+(define (%has-prop? pob prop-name)
+  (and (assoc prop-name (%pob-props pob)) #t))
+
+
 ) ;; end module protolk-primitives
