@@ -30,9 +30,20 @@
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(module protolk-primitives *
+(module protolk-primitives
+  (%make-pob
+   pob?
+   %pob-props    %pob-set-props!
+   %pob-methods  %pob-set-methods!
+   %prop         %has-prop?
+   %add-prop!)
+
 (import scheme chicken)
 
+
+;;;;;;;;;;;;;;;;;;;;;
+;; POB RECORD TYPE
+;;
 
 (define-record-type pob
   (%make-pob props methods)
@@ -40,6 +51,10 @@
   (props %pob-props %pob-set-props!)
   (methods %pob-methods %pob-set-methods!))
 
+
+;;;;;;;;;;;;;;;;;;;;;
+;; PROP PROCEDURES
+;;
 
 (define (%has-prop? pob prop-name)
   (and (assoc prop-name (%pob-props pob)) #t))
