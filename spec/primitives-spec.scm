@@ -84,7 +84,22 @@
     (it "fails when given a non-pob"
       (raises-error? (%has-prop? 'foo 'a)))
     (it "fails when no prop name is specified"
-      (raises-error? (%has-prop? (%make-pob '((a . 1)) '()))))))
+      (raises-error? (%has-prop? (%make-pob '((a . 1)) '())))))
+
+  (describe "%prop"
+    (it "returns the value of a matching prop"
+      (equal? (%prop (%make-pob '((a . 1)) '()) 'a)
+              1))
+    (it "returns #<unspecified> when there is no matching prop"
+      (equal? (%prop (%make-pob '((a . 1)) '()) 'foo)
+              (void)))
+    (it "optionally accepts a default return value"
+      (equal? (%prop (%make-pob '((a . 1)) '()) 'foo 'result)
+              'result))
+    (it "fails when given a non-pob"
+      (raises-error? (%prop 'foo 'bar)))
+    (it "fails when no prop name is specified"
+      (raises-error? (%prop (%make-pob '((a . 1)) '()))))))
 
 
 (test-exit)

@@ -44,5 +44,11 @@
 (define (%has-prop? pob prop-name)
   (and (assoc prop-name (%pob-props pob)) #t))
 
+(define (%prop pob prop-name #!optional (default (void)))
+  (let ((pair (assoc prop-name (%pob-props pob))))
+    (if pair
+        (cdr pair)
+        default)))
+
 
 ) ;; end module protolk-primitives
