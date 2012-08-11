@@ -36,9 +36,18 @@
    %pob-props    %pob-set-props!
    %pob-methods  %pob-set-methods!
    %prop         %has-prop?
-   %add-prop!)
+   %add-prop!    %remove-prop!)
 
 (import scheme chicken)
+(use srfi-1)
+
+
+;;;;;;;;;;
+;; UTIL
+;;
+
+(define (car=? x #!key (pred equal?))
+  (lambda (pair) (pred (car pair) x)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -68,6 +77,10 @@
 (define (%add-prop! pob prop-name value)
   (%pob-set-props! pob (cons (cons prop-name value)
                              (%pob-props pob))))
+
+(define (%remove-prop! pob prop-name)
+  (%pob-set-props! pob (remove (car=? prop-name)
+                               (%pob-props pob))))
 
 
 ) ;; end module protolk-primitives

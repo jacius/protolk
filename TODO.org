@@ -17,7 +17,7 @@ Props:
 - [X] =%has-prop?= procedure
 - [X] =%prop= procedure
 - [X] =%add-prop!= procedure
-- [ ] =%remove-prop!= procedure
+- [X] =%remove-prop!= procedure
 - [ ] =%set-prop!= procedure
 
 Methods:

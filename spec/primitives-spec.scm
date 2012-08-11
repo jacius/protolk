@@ -117,7 +117,23 @@
     (it "fails when no prop name or value is specified"
       (raises-error? (%add-prop! (%make-pob '() '()))))
     (it "fails when no value is specified"
-      (raises-error? (%add-prop (%make-pob '() '()) 'a)))))
+      (raises-error? (%add-prop (%make-pob '() '()) 'a))))
+
+  (describe "%remove-prop!"
+    (it "removes all matching props from the pob"
+      (let ((pob (%make-pob '((a . 2) (a . 1)) '())))
+        (%remove-prop! pob 'a)
+        (not (%has-prop? pob 'a))))
+    (it "has no effect if there are no matching props"
+      (let ((pob (%make-pob '() '())))
+        (%remove-prop! pob 'a)
+        (not (%has-prop? pob 'a))))
+    (it "fails when given no args"
+      (raises-error? (%remove-prop!)))    
+    (it "fails when given a non-pob"
+      (raises-error? (%remove-prop! 'foo 'a)))
+    (it "fails when no prop name is specified"
+      (raises-error? (%remove-prop! (%make-pob '() '()))))))
 
 
 (test-exit)
