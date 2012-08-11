@@ -4,11 +4,11 @@ It will be updated as development progresses and the plan evolves.
 
 * Milestone 1: Primitive API
 
-- [ ] =pob= record type
-- [ ] =%make-pob= procedure
-- [ ] =pob?= procedure
-- [ ] =%pob-props= / =%pob-set-props!= procedures
-- [ ] =%pob-methods= / =%pob-set-methods!= procedures
+- [X] =pob= record type
+- [X] =%make-pob= procedure
+- [X] =pob?= procedure
+- [X] =%pob-props= / =%pob-set-props!= procedures
+- [X] =%pob-methods= / =%pob-set-methods!= procedures
 
 Primitive procedures (use first-order funcs or macros to reduce code
 repetition):
