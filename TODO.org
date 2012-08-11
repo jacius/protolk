@@ -16,7 +16,7 @@ repetition):
 Props:
 - [X] =%has-prop?= procedure
 - [X] =%prop= procedure
-- [ ] =%add-prop!= procedure
+- [X] =%add-prop!= procedure
 - [ ] =%remove-prop!= procedure
 - [ ] =%set-prop!= procedure
 

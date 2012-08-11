@@ -50,5 +50,9 @@
         (cdr pair)
         default)))
 
+(define (%add-prop! pob prop-name value)
+  (%pob-set-props! pob (cons (cons prop-name value)
+                             (%pob-props pob))))
+
 
 ) ;; end module protolk-primitives

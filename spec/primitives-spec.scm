@@ -99,7 +99,25 @@
     (it "fails when given a non-pob"
       (raises-error? (%prop 'foo 'bar)))
     (it "fails when no prop name is specified"
-      (raises-error? (%prop (%make-pob '((a . 1)) '()))))))
+      (raises-error? (%prop (%make-pob '((a . 1)) '())))))
+
+  (describe "%add-prop!"
+    (it "adds a prop to the pob"
+      (let ((pob (%make-pob '() '())))
+        (%add-prop! pob 'a 1)
+        (equal? (%prop pob 'a) 1)))
+    (it "replaces existing props with that name"
+      (let ((pob (%make-pob '((a . 1)) '())))
+        (%add-prop! pob 'a 2)
+        (equal? (%prop pob 'a) 2)))
+    (it "fails when given no args"
+      (raises-error? (%add-prop!)))    
+    (it "fails when given a non-pob"
+      (raises-error? (%add-prop! 'foo 'a 1)))
+    (it "fails when no prop name or value is specified"
+      (raises-error? (%add-prop! (%make-pob '() '()))))
+    (it "fails when no value is specified"
+      (raises-error? (%add-prop (%make-pob '() '()) 'a)))))
 
 
 (test-exit)
