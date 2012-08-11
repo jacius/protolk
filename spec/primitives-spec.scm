@@ -101,39 +101,39 @@
     (it "fails when no prop name is specified"
       (raises-error? (%prop (%make-pob '((a . 1)) '())))))
 
-  (describe "%add-prop!"
-    (it "adds a prop to the pob"
+  (describe "%set-prop!"
+    (it "sets the specified prop in the pob"
       (let ((pob (%make-pob '() '())))
-        (%add-prop! pob 'a 1)
+        (%set-prop! pob 'a 1)
         (equal? (%prop pob 'a) 1)))
-    (it "replaces existing props with that name"
+    (it "replaces the value of existing props with that name"
       (let ((pob (%make-pob '((a . 1)) '())))
-        (%add-prop! pob 'a 2)
+        (%set-prop! pob 'a 2)
         (equal? (%prop pob 'a) 2)))
     (it "fails when given no args"
-      (raises-error? (%add-prop!)))    
+      (raises-error? (%set-prop!)))    
     (it "fails when given a non-pob"
-      (raises-error? (%add-prop! 'foo 'a 1)))
+      (raises-error? (%set-prop! 'foo 'a 1)))
     (it "fails when no prop name or value is specified"
-      (raises-error? (%add-prop! (%make-pob '() '()))))
+      (raises-error? (%set-prop! (%make-pob '() '()))))
     (it "fails when no value is specified"
-      (raises-error? (%add-prop (%make-pob '() '()) 'a))))
+      (raises-error? (%set-prop (%make-pob '() '()) 'a))))
 
-  (describe "%remove-prop!"
+  (describe "%unset-prop!"
     (it "removes all matching props from the pob"
       (let ((pob (%make-pob '((a . 2) (a . 1)) '())))
-        (%remove-prop! pob 'a)
+        (%unset-prop! pob 'a)
         (not (%has-prop? pob 'a))))
     (it "has no effect if there are no matching props"
       (let ((pob (%make-pob '() '())))
-        (%remove-prop! pob 'a)
+        (%unset-prop! pob 'a)
         (not (%has-prop? pob 'a))))
     (it "fails when given no args"
-      (raises-error? (%remove-prop!)))    
+      (raises-error? (%unset-prop!)))    
     (it "fails when given a non-pob"
-      (raises-error? (%remove-prop! 'foo 'a)))
+      (raises-error? (%unset-prop! 'foo 'a)))
     (it "fails when no prop name is specified"
-      (raises-error? (%remove-prop! (%make-pob '() '()))))))
+      (raises-error? (%unset-prop! (%make-pob '() '()))))))
 
 
 (test-exit)

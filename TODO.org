@@ -10,22 +10,17 @@ It will be updated as development progresses and the plan evolves.
 - [X] =%pob-props= / =%pob-set-props!= procedures
 - [X] =%pob-methods= / =%pob-set-methods!= procedures
 
-Primitive procedures (use first-order funcs or macros to reduce code
-repetition):
-
 Props:
 - [X] =%has-prop?= procedure
 - [X] =%prop= procedure
-- [X] =%add-prop!= procedure
-- [X] =%remove-prop!= procedure
-- [ ] =%set-prop!= procedure
+- [X] =%set-prop!= procedure
+- [X] =%unset-prop!= procedure
 
 Methods:
 - [ ] =%has-method?= procedure
 - [ ] =%method= procedure
-- [ ] =%add-method!= procedure
-- [ ] =%remove-method!= procedure
 - [ ] =%set-method!= procedure
+- [ ] =%unset-method!= procedure
 
 * Milestone 2: Core API and stdpob
 
