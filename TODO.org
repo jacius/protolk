@@ -6,6 +6,7 @@ It will be updated as development progresses and the plan evolves.
 
 - [ ] =pob= record type
 - [ ] =%make-pob= procedure
+- [ ] =pob?= procedure
 - [ ] =%pob-props= / =%pob-set-props!= procedures
 - [ ] =%pob-methods= / =%pob-set-methods!= procedures
 

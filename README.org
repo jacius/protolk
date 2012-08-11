@@ -1,7 +1,7 @@
 
 * Protolk
 
-Prototype-based Scheme objects with message passing
+Flexible Scheme objects with message passing and prototypes
 
 - Version :: 0.0
 - Date :: (unreleased)
@@ -67,7 +67,7 @@ Protolk is made available under the following terms (the [[http://opensource.org
 License]]):
 
 #+BEGIN_QUOTE
-protolk: prototype-based Scheme objects with message passing
+Protolk: flexible Scheme objects with message passing and prototypes
 
 Copyright © 2012  John Croisant.
 All rights reserved.

@@ -1,7 +1,7 @@
 
-protolk: prototype-based Scheme objects with message passing
+Protolk: flexible Scheme objects with message passing and prototypes
 
-Copyright © 2012  John Croisant
+Copyright © 2012  John Croisant.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
