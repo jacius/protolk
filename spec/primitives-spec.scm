@@ -5,6 +5,10 @@
 (import protolk-primitives)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; POB PRITIMIVE RECORD TYPE
+;;
+
 (describe "pob pritimive record type"
 
   (describe "%make-pob"
@@ -48,34 +52,37 @@
     (it "fails when given only one arg"
       (raises-error? (%pob-set-props! (%make-pob '() '())))))
 
+  (define (fn pob) #t)
   
   (describe "%pob-methods"
     (it "returns the pob's methods alist"
-      (let ((meth (lambda (pob) #t)))
-        (equal? (%pob-methods (%make-pob '() `((m . ,meth))))
-                `((m . ,meth)))))
+      (equal? (%pob-methods (%make-pob '() `((m . ,fn))))
+              `((m . ,fn))))
     (it "fails when given a non-pob"
       (raises-error? (%pob-methods 'foo)))
     (it "fails when given no args"
       (raises-error? (%pob-methods))))
 
   (describe "%pob-set-methods!"
-    (let ((fn (lambda (pob) #t)))
-      (it "modifies the pob's methods alist"
-        (let ((pob (%make-pob '() '())))
-          (%pob-set-methods! pob `((m . ,fn)))
-          (equal? (%pob-methods pob)
-                  `((m . ,fn)))))
-      (it "fails when given a non-pob"
-        (raises-error? (%pob-set-methods! 'foo `((m . ,fn)))))
-      (it "fails when given no args"
-        (raises-error? (%pob-set-methods!)))
-      (it "fails when given only one arg"
-        (raises-error? (%pob-set-methods! (%make-pob '() '())))))))
+    (it "modifies the pob's methods alist"
+      (let ((pob (%make-pob '() '())))
+        (%pob-set-methods! pob `((m . ,fn)))
+        (equal? (%pob-methods pob)
+                `((m . ,fn)))))
+    (it "fails when given a non-pob"
+      (raises-error? (%pob-set-methods! 'foo `((m . ,fn)))))
+    (it "fails when given no args"
+      (raises-error? (%pob-set-methods!)))
+    (it "fails when given only one arg"
+      (raises-error? (%pob-set-methods! (%make-pob '() '()))))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PRIMITIVE PROP ACCESSORS
+;;
 
 (describe "primitive prop accessors"
+
   (describe "%has-prop?"
     (it "returns #t when the pob has a matching prop"
       (%has-prop? (%make-pob '((a . 1)) '()) 'a))
