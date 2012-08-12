@@ -143,4 +143,71 @@
       (raises-error? (%unset-prop! (%make-pob '() '()))))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PRIMITIVE METHOD ACCESSORS
+;;
+
+(describe "primitive method accessors"
+  (define (fn pob) #t)
+  (define (fn2 pob) #f)
+
+  (describe "%has-method?"
+    (it "returns #t when the pob has a matching method"
+      (%has-method? (%make-pob '() `((m . ,fn))) 'm))
+    (it "returns #f when the pob does not have a matching method"
+      (not (%has-method? (%make-pob '() `((m . ,fn))) 'foo)))
+    (it "fails when given a non-pob"
+      (raises-error? (%has-method? 'foo 'm)))
+    (it "fails when no method name is specified"
+      (raises-error? (%has-method? (%make-pob '() `((m . ,fn)))))))
+
+  (describe "%method"
+    (it "returns the value of a matching method"
+      (equal? (%method (%make-pob '() `((m . ,fn))) 'm)
+              fn))
+    (it "returns #<unspecified> when there is no matching method"
+      (equal? (%method (%make-pob '() `((m . ,fn))) 'foo)
+              (void)))
+    (it "optionally accepts a default return value"
+      (equal? (%method (%make-pob '() `((m . ,fn))) 'foo fn)
+              fn))
+    (it "fails when given a non-pob"
+      (raises-error? (%method 'foo 'm)))
+    (it "fails when no method name is specified"
+      (raises-error? (%method (%make-pob '() `((m . ,fn)))))))
+
+  (describe "%set-method!"
+    (it "sets the specified method in the pob"
+      (let ((pob (%make-pob '() '())))
+        (%set-method! pob 'm fn)
+        (equal? (%method pob 'm) fn)))
+    (it "replaces the value of existing methods with that name"
+      (let ((pob (%make-pob '() `((m . ,fn)))))
+        (%set-method! pob 'm fn)
+        (equal? (%method pob 'm) fn)))
+    (it "fails when given no args"
+      (raises-error? (%set-method!)))
+    (it "fails when given a non-pob"
+      (raises-error? (%set-method! 'foo 'm fn)))
+    (it "fails when no method name or value is specified"
+      (raises-error? (%set-method! (%make-pob '() '()))))
+    (it "fails when no value is specified"
+      (raises-error? (%set-method (%make-pob '() '()) 'fn))))
+
+  (describe "%unset-method!"
+    (it "removes all matching methods from the pob"
+      (let ((pob (%make-pob '() `((m . fn2) (m . fn)))))
+        (%unset-method! pob 'm)
+        (not (%has-method? pob 'm))))
+    (it "has no effect if there are no matching methods"
+      (let ((pob (%make-pob '() '())))
+        (not (%has-method? pob 'm))))
+    (it "fails when given no args"
+      (raises-error? (%unset-method!)))
+    (it "fails when given a non-pob"
+      (raises-error? (%unset-method! 'foo 'a)))
+    (it "fails when no method name is specified"
+      (raises-error? (%unset-method! (%make-pob '() '()))))))
+
+
 (test-exit)

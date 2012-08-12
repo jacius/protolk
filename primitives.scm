@@ -36,7 +36,9 @@
    %pob-props    %pob-set-props!
    %pob-methods  %pob-set-methods!
    %prop         %has-prop?
-   %set-prop!    %unset-prop!)
+   %set-prop!    %unset-prop!
+   %method       %has-method?
+   %set-method!  %unset-method!)
 
 (import scheme chicken)
 (use srfi-1)
@@ -81,6 +83,29 @@
 (define (%unset-prop! pob prop-name)
   (%pob-set-props! pob (remove (car=? prop-name)
                                (%pob-props pob))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;; MODULE PROCEDURES
+;;
+
+(define (%has-method? pob method-name)
+  (and (assoc method-name (%pob-methods pob)) #t))
+
+(define (%method pob method-name #!optional (default (void)))
+  (let ((pair (assoc method-name (%pob-methods pob))))
+    (if pair
+        (cdr pair)
+        default)))
+
+(define (%set-method! pob method-name value)
+  (%pob-set-methods! pob (cons (cons method-name value)
+                               (%pob-methods pob))))
+
+(define (%unset-method! pob method-name)
+  (%pob-set-methods! pob (remove (car=? method-name)
+                                 (%pob-methods pob))))
+
 
 
 ) ;; end module protolk-primitives

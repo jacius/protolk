@@ -17,10 +17,10 @@ Props:
 - [X] =%unset-prop!= procedure
 
 Methods:
-- [ ] =%has-method?= procedure
-- [ ] =%method= procedure
-- [ ] =%set-method!= procedure
-- [ ] =%unset-method!= procedure
+- [X] =%has-method?= procedure
+- [X] =%method= procedure
+- [X] =%set-method!= procedure
+- [X] =%unset-method!= procedure
 
 * Milestone 2: Core API and stdpob
 
