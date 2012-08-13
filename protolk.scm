@@ -33,7 +33,8 @@
 (load-relative "primitives")
 
 (module protolk
-  (make-pob)
+  (make-pob
+   stdpob)
 
 (import scheme chicken)
 (import protolk-primitives)
@@ -46,5 +47,14 @@
 (define (make-pob #!key (props '()) (methods '()))
   (%make-pob props methods))
 
+
+;;;;;;;;;;;;
+;; STDPOB
+;;
+
+(define stdpob
+  (make-pob
+   props: `((base . #f))
+   methods: `()))
 
 ) ;; end module protolk

@@ -44,4 +44,16 @@
            (equal? (%pob-methods p) '())))))
 
 
+;;;;;;;;;;;;
+;; STDPOB
+;;
+
+(describe "stdpob"
+  (it "should be a pob already provided by protolk"
+    (pob? stdpob))
+
+  (it "should have a 'base prop set to #f"
+    (equal? (%prop stdpob 'base) #f)))
+
+
 (test-exit)
