@@ -33,10 +33,18 @@
 (load-relative "primitives")
 
 (module protolk
-  ()
+  (make-pob)
 
 (import scheme chicken)
 (import protolk-primitives)
+
+
+;;;;;;;;;;;;;;
+;; CORE API
+;;
+
+(define (make-pob #!key (props '()) (methods '()))
+  (%make-pob props methods))
 
 
 ) ;; end module protolk

@@ -24,7 +24,7 @@ Methods:
 
 * Milestone 2: Core API and stdpob
 
-- [ ] =make-pob= procedure (with keyword args)
+- [X] =make-pob= procedure (with keyword args)
 - [ ] =send= procedure
 - [ ] =prop-reader= / =prop-writer= procedure factories
 
