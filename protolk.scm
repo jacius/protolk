@@ -34,7 +34,8 @@
 
 (module protolk
   (make-pob
-   stdpob)
+   stdpob
+   stdpob-derive)
 
 (import scheme chicken)
 (import protolk-primitives)
@@ -52,9 +53,15 @@
 ;; STDPOB
 ;;
 
+(define (stdpob-derive self #!key (props '()) (methods '()))
+  (if (and (not (pob? self)) (not (equal? self #f)))
+      (error "Cannot derive from non-pob:" self))
+  (make-pob props: `((base . ,self) ,@props)
+            methods: methods))
+
 (define stdpob
   (make-pob
    props: `((base . #f))
-   methods: `()))
+   methods: `((derive . ,stdpob-derive))))
 
 ) ;; end module protolk

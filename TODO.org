@@ -29,7 +29,7 @@ Methods:
 - [ ] =prop-reader= / =prop-writer= procedure factories
 
 =stdpob= predefined pob:
-- [ ] =[stdpob derive #!key props methods]=
+- [X] =[stdpob derive #!key props methods]=
 - [ ] =[stdpob responds-to? message #!optional args]=
 - [ ] =[stdpob ancestors]=
 - [ ] =[stdpob has-ancestor?]=
