@@ -56,7 +56,10 @@
     (equal? (%prop stdpob 'base) #f))
 
   (it "should have a 'derive method set to stdpob-derive"
-    (equal? (%method stdpob 'derive) stdpob-derive)))
+    (equal? (%method stdpob 'derive) stdpob-derive))
+
+  (it "should have an 'ancestors method set to stdpob-ancestors"
+    (equal? (%method stdpob 'ancestors) stdpob-ancestors)))
 
 
 (describe "stdpob-derive"
@@ -90,6 +93,30 @@
   (it "sets no methods if #:methods is omitted"
     (let ((new-pob (stdpob-derive base-pob)))
       (equal? (%pob-methods new-pob) '()))))
+
+
+(describe "stdpob-ancestors"
+  (define pob1 (make-pob props: '((base . #f))))
+  (define pob2 (stdpob-derive pob1))
+  (define pob3 (stdpob-derive pob2))
+  (define pob4 (stdpob-derive pob3))
+
+  (it "returns a list of all the pob's ancestors, most immediate first"
+    (equal? (stdpob-ancestors pob4) (list pob3 pob2 pob1)))
+
+  (it "ends the lookup chain when it encounters a non-pob base"
+    (let* ((pob-a (make-pob props: '((base . foo))))
+           (pob-b (stdpob-derive pob-a)))
+      (equal? (stdpob-ancestors pob-b) (list pob-a))))
+  
+  (it "returns an empty list if the pob's base is #f"
+    (equal? (stdpob-ancestors (make-pob props: '((base . #f)))) '()))
+
+  (it "returns an empty list if the pob's base is unspecified"
+    (equal? (stdpob-ancestors (make-pob)) '()))
+
+  (it "fails when given a non-pob"
+    (raises-error? (stdpob-ancestors #f))))
 
 
 (test-exit)

@@ -30,12 +30,12 @@ Methods:
 
 =stdpob= predefined pob:
 - [X] =[stdpob derive #!key props methods]=
-- [ ] =[stdpob responds-to? message #!optional args]=
-- [ ] =[stdpob ancestors]=
+- [X] =[stdpob ancestors]=
 - [ ] =[stdpob has-ancestor?]=
 - [ ] =[stdpob _resolve-prop name]=
 - [ ] =[stdpob _resolve-method name #!optional args]=
 - [ ] =[stdpob _method-missing name #!optional args]=
+- [ ] =[stdpob responds-to? message #!optional args]=
 
 Make stdpob methods available as procedures, e.g. =stdpob-derive=,
 =stdpob-_resolve-prop=.
