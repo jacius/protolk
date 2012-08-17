@@ -36,7 +36,8 @@
   (make-pob
    stdpob
    stdpob-derive
-   stdpob-ancestors)
+   stdpob-ancestors
+   stdpob-has-ancestor?)
 
 (import scheme chicken)
 (import protolk-primitives)
@@ -66,10 +67,20 @@
         (cons base (stdpob-ancestors base))
         '())))
 
+(define (stdpob-has-ancestor? self other)
+  (let ((base (%prop self 'base #f)))
+    (cond ((not (pob? base))
+           #f)
+          ((eq? base other)
+           #t)
+          (else
+           (stdpob-has-ancestor? base other)))))
+
 (define stdpob
   (make-pob
    props: `((base . #f))
    methods: `((derive . ,stdpob-derive)
-              (ancestors . ,stdpob-ancestors))))
+              (ancestors . ,stdpob-ancestors)
+              (has-ancestor? . ,stdpob-has-ancestor?))))
 
 ) ;; end module protolk

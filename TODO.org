@@ -31,7 +31,7 @@ Methods:
 =stdpob= predefined pob:
 - [X] =[stdpob derive #!key props methods]=
 - [X] =[stdpob ancestors]=
-- [ ] =[stdpob has-ancestor?]=
+- [X] =[stdpob has-ancestor?]=
 - [ ] =[stdpob _resolve-prop name]=
 - [ ] =[stdpob _resolve-method name #!optional args]=
 - [ ] =[stdpob _method-missing name #!optional args]=

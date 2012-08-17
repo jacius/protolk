@@ -59,7 +59,10 @@
     (equal? (%method stdpob 'derive) stdpob-derive))
 
   (it "should have an 'ancestors method set to stdpob-ancestors"
-    (equal? (%method stdpob 'ancestors) stdpob-ancestors)))
+    (equal? (%method stdpob 'ancestors) stdpob-ancestors))
+
+  (it "should have a 'has-ancestor? method set to stdpob-has-ancestor?"
+    (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?)))
 
 
 (describe "stdpob-derive"
@@ -117,6 +120,40 @@
 
   (it "fails when given a non-pob"
     (raises-error? (stdpob-ancestors #f))))
+
+
+(describe "stdpob-has-ancestor?"
+  (define pob1 (make-pob props: '((base . #f))))
+  (define pob2 (stdpob-derive pob1))
+  (define pob3 (stdpob-derive pob2))
+  (define pob2b (stdpob-derive pob1))
+
+  (it "returns #t if the second pob is an ancestor of the first pob"
+    (stdpob-has-ancestor? pob3 pob1))
+
+  (it "returns #f if the second pob is not an ancestor of the first pob"
+    (not (stdpob-has-ancestor? pob3 pob2b)))
+
+  (it "returns #f if both arguments are the same pob"
+    (not (stdpob-has-ancestor? pob2 pob2)))
+
+  (it "returns #f if the second argument is #f"
+    (not (stdpob-has-ancestor? pob1 #f)))
+
+  (it "returns #f if the second argument is not a pob"
+    (not (stdpob-has-ancestor? pob3 'foo)))
+  
+  (it "fails when given no args"
+    (raises-error? (stdpob-has-ancestor?)))
+
+  (it "fails when given only one pob"
+    (raises-error? (stdpob-has-ancestor? pob3)))
+
+  (it "fails when given too many pobs"
+    (raises-error? (stdpob-has-ancestor? pob3 pob2 pob1)))
+
+  (it "fails when the first argument is not a pob"
+    (raises-error? (stdpob-has-ancestor? 'foo pob1))))
 
 
 (test-exit)
