@@ -77,16 +77,13 @@
           (else
            (stdpob-has-ancestor? base other)))))
 
-(define (stdpob-_resolve-prop self prop-name #!optional (default (void)))
+(define (stdpob-_resolve-prop self prop-name)
   (if (%has-prop? self prop-name)
-      (let ((value (%prop self prop-name)))
-        (if (eq? value (void))
-            default
-            value))
+      (%prop self prop-name)
       (let ((base (%prop self 'base #f)))
         (if (pob? base)
-            (stdpob-_resolve-prop base prop-name default)
-            default))))
+            (stdpob-_resolve-prop base prop-name)
+            (void)))))
 
 ;;;;;;;;;;;;
 ;; STDPOB

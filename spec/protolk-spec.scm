@@ -173,17 +173,11 @@
   (it "searches ancestors recursively to find the value of the prop"
     (equal? (stdpob-_resolve-prop pob3 'd) 4))
  
-  (it "accepts a value to return when the prop is not found"
-    (equal? (stdpob-_resolve-prop pob3 'z 'foo) 'foo))
-
-  (it "defaults to returning #<unspecified> when the prop is not found"
+  (it "returns #<unspecified> if the prop is not found"
     (equal? (stdpob-_resolve-prop pob3 'z) (void)))
 
   (it "stops searching if it ever finds the prop defined as #<unspecified>"
     (equal? (stdpob-_resolve-prop pob3 'c) (void)))
-
-  (it "returns the 'not found' value if the prop is defined as #<unspecified>"
-    (equal? (stdpob-_resolve-prop pob3 'c 'foo) 'foo))
 
   (it "fails if given no args"
     (raises-error? (stdpob-_resolve-prop)))
