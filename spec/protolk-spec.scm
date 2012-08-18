@@ -65,7 +65,10 @@
     (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?))
 
   (it "should have a '_resolve-prop method set to stdpob-_resolve-prop"
-    (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop)))
+    (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop))
+
+  (it "should have a '_resolve-method method set to stdpob-_resolve-method"
+    (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method)))
 
 
 (describe "stdpob-derive"
@@ -190,6 +193,50 @@
   
   (it "fails if given a non-pob for the first arg"
     (raises-error? (stdpob-_resolve-prop 'foo 'a))))
+
+
+(describe "stdpob-_resolve-method"
+  (define (fn1 self) 1)
+  (define (fn2 self) 2)
+  (define (fn3 self) 3)
+  (define (fn4 self) 4)
+  (define (fn5 self) 5)
+  (define (fn6 self) 6)
+
+  (define pob1
+    (make-pob props: '((base . #f))
+              methods: `((m . ,fn1) (n . ,fn2) (o . ,fn3) (p . ,fn4))))
+  (define pob2
+    (stdpob-derive pob1 methods: `((m . ,fn5) (o . ,(void)))))
+  (define pob3
+    (stdpob-derive pob2 methods: `((n . ,fn6))))
+
+  (it "returns the definition from the object itself if it has one"
+    (equal? (stdpob-_resolve-method pob3 'n) fn6))
+
+  (it "returns the definition from the nearest ancestor that has one"
+    (equal? (stdpob-_resolve-method pob3 'm) fn5))
+
+  (it "searches ancestors recursively to find the definition"
+    (equal? (stdpob-_resolve-method pob3 'p) fn4))
+ 
+  (it "returns #<unspecified> if the method is not found"
+    (equal? (stdpob-_resolve-method pob3 'z) (void)))
+
+  (it "stops searching if it ever finds the method defined as #<unspecified>"
+    (equal? (stdpob-_resolve-method pob3 'o) (void)))
+
+  (it "fails if given no args"
+    (raises-error? (stdpob-_resolve-method)))
+
+  (it "fails if given only one arg"
+    (raises-error? (stdpob-_resolve-method pob3)))
+
+  (it "fails if given too many args"
+    (raises-error? (stdpob-_resolve-method pob3 'm 'n 'o)))
+  
+  (it "fails if given a non-pob for the first arg"
+    (raises-error? (stdpob-_resolve-method 'foo 'm))))
 
 
 (test-exit)

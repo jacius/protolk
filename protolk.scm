@@ -38,7 +38,8 @@
    stdpob-derive
    stdpob-ancestors
    stdpob-has-ancestor?
-   stdpob-_resolve-prop)
+   stdpob-_resolve-prop
+   stdpob-_resolve-method)
 
 (import scheme chicken)
 (import protolk-primitives)
@@ -85,6 +86,15 @@
             (stdpob-_resolve-prop base prop-name)
             (void)))))
 
+(define (stdpob-_resolve-method self method-name)
+  (if (%has-method? self method-name)
+      (%method self method-name)
+      (let ((base (%prop self 'base #f)))
+        (if (pob? base)
+            (stdpob-_resolve-method base method-name)
+            (void)))))
+
+
 ;;;;;;;;;;;;
 ;; STDPOB
 ;;
@@ -95,6 +105,7 @@
    methods: `((derive . ,stdpob-derive)
               (ancestors . ,stdpob-ancestors)
               (has-ancestor? . ,stdpob-has-ancestor?)
-              (_resolve-prop . ,stdpob-_resolve-prop))))
+              (_resolve-prop . ,stdpob-_resolve-prop)
+              (_resolve-method . ,stdpob-_resolve-method))))
 
 ) ;; end module protolk

@@ -33,7 +33,7 @@ Methods:
 - [X] =[stdpob ancestors]=
 - [X] =[stdpob has-ancestor?]=
 - [X] =[stdpob _resolve-prop name]=
-- [ ] =[stdpob _resolve-method name #!optional args]=
+- [X] =[stdpob _resolve-method name]=
 - [ ] =[stdpob _method-missing name #!optional args]=
 - [ ] =[stdpob responds-to? message #!optional args]=
 
