@@ -62,7 +62,10 @@
     (equal? (%method stdpob 'ancestors) stdpob-ancestors))
 
   (it "should have a 'has-ancestor? method set to stdpob-has-ancestor?"
-    (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?)))
+    (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?))
+
+  (it "should have a '_resolve-prop method set to stdpob-_resolve-prop"
+    (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop)))
 
 
 (describe "stdpob-derive"
@@ -154,6 +157,45 @@
 
   (it "fails when the first argument is not a pob"
     (raises-error? (stdpob-has-ancestor? 'foo pob1))))
+
+
+(describe "stdpob-_resolve-prop"
+  (define pob1 (make-pob props: '((base . #f) (a . 1) (b . 2) (c . 3) (d . 4))))
+  (define pob2 (stdpob-derive pob1 props: `((a . 11) (c . ,(void)))))
+  (define pob3 (stdpob-derive pob2 props: '((b . 22))))
+
+  (it "returns the prop value from the object's own prop if it is defined"
+    (equal? (stdpob-_resolve-prop pob3 'b) 22))
+
+  (it "returns the prop value from the nearest ancestor that defines the prop"
+    (equal? (stdpob-_resolve-prop pob3 'a) 11))
+
+  (it "searches ancestors recursively to find the value of the prop"
+    (equal? (stdpob-_resolve-prop pob3 'd) 4))
+ 
+  (it "accepts a value to return when the prop is not found"
+    (equal? (stdpob-_resolve-prop pob3 'z 'foo) 'foo))
+
+  (it "defaults to returning #<unspecified> when the prop is not found"
+    (equal? (stdpob-_resolve-prop pob3 'z) (void)))
+
+  (it "stops searching if it ever finds the prop defined as #<unspecified>"
+    (equal? (stdpob-_resolve-prop pob3 'c) (void)))
+
+  (it "returns the 'not found' value if the prop is defined as #<unspecified>"
+    (equal? (stdpob-_resolve-prop pob3 'c 'foo) 'foo))
+
+  (it "fails if given no args"
+    (raises-error? (stdpob-_resolve-prop)))
+
+  (it "fails if given too few args"
+    (raises-error? (stdpob-_resolve-prop pob3)))
+
+  (it "fails if given too many args"
+    (raises-error? (stdpob-_resolve-prop pob3 'a 'b 'c)))
+  
+  (it "fails if given a non-pob for the first arg"
+    (raises-error? (stdpob-_resolve-prop 'foo 'a))))
 
 
 (test-exit)
