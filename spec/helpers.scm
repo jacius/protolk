@@ -28,12 +28,35 @@
 ;; TEST EXPRESSIONS
 ;;
 
-;;; Returns #t if the body raises an error when run, otherwise #f.
-(define-syntax raises-error?
+;;; (raises-exception? (exn-kind) body ...)
+;;;
+;;; Runs the body, watching for an exception of the specified kind(s)
+;;; to be raised. If the body runs to completion, returns #f. If a
+;;; matching exception is raised, returns the exception as a condition
+;;; object.  If a non-matching exception is raised, the it will pass
+;;; through. Use () to match any kind of exception.  Examples:
+;;;
+;;;   (raises-exception? ()
+;;;     (vector-ref '#(0) 0))
+;;;   ; #f
+;;;
+;;;   (raises-exception? ()
+;;;     (vector-ref '#(0) 1))
+;;;   ; #<condition: (exn bounds)>
+;;;
+;;;   (raises-exception? (bounds)
+;;;     (vector-ref '#(0) 1))
+;;;   ; #<condition: (exn bounds)>
+;;;
+;;;   (raises-exception? (arithmetic)
+;;;     (vector-ref '#(0) 1))
+;;;   ; Error: (vector-ref) out of range ...
+;;;
+(define-syntax raises-exception?
   (er-macro-transformer
-   (lambda (exp rename compare)
-     `(,(rename 'handle-exceptions) exn
-       #t
-       (,(rename 'begin)
-        ,@(cdr exp)
-        #f)))))
+   (lambda (expression rename compare)
+     (let ((expected-exn (cadr expression))
+           (body (cddr expression)))
+       `(,(rename 'condition-case)
+         (,(rename 'begin) ,@body #f)
+         (var ,expected-exn var))))))
