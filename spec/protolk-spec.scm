@@ -44,32 +44,10 @@
            (equal? (%pob-methods p) '())))))
 
 
-;;;;;;;;;;;;
-;; STDPOB
+
+;;;;;;;;;;;;;;;;;;;;
+;; STDPOB METHODS
 ;;
-
-(describe "stdpob"
-  (it "should be a pob already provided by protolk"
-    (pob? stdpob))
-
-  (it "should have a 'base prop set to #f"
-    (equal? (%prop stdpob 'base) #f))
-
-  (it "should have a 'derive method set to stdpob-derive"
-    (equal? (%method stdpob 'derive) stdpob-derive))
-
-  (it "should have an 'ancestors method set to stdpob-ancestors"
-    (equal? (%method stdpob 'ancestors) stdpob-ancestors))
-
-  (it "should have a 'has-ancestor? method set to stdpob-has-ancestor?"
-    (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?))
-
-  (it "should have a '_resolve-prop method set to stdpob-_resolve-prop"
-    (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop))
-
-  (it "should have a '_resolve-method method set to stdpob-_resolve-method"
-    (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method)))
-
 
 (describe "stdpob-derive"
   (define base-pob (make-pob))
@@ -237,6 +215,35 @@
   
   (it "fails if given a non-pob for the first arg"
     (raises-error? (stdpob-_resolve-method 'foo 'm))))
+
+
+
+;;;;;;;;;;;;
+;; STDPOB
+;;
+
+(describe "stdpob"
+  (it "should be a pob already provided by protolk"
+    (pob? stdpob))
+
+  (it "should have a 'base prop set to #f"
+    (equal? (%prop stdpob 'base) #f))
+
+  (it "should have a 'derive method set to stdpob-derive"
+    (equal? (%method stdpob 'derive) stdpob-derive))
+
+  (it "should have an 'ancestors method set to stdpob-ancestors"
+    (equal? (%method stdpob 'ancestors) stdpob-ancestors))
+
+  (it "should have a 'has-ancestor? method set to stdpob-has-ancestor?"
+    (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?))
+
+  (it "should have a '_resolve-prop method set to stdpob-_resolve-prop"
+    (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop))
+
+  (it "should have a '_resolve-method method set to stdpob-_resolve-method"
+    (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method)))
+
 
 
 (test-exit)
