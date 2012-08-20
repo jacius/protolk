@@ -64,7 +64,7 @@
     (equal? (%prop (stdpob-derive #f) 'base) #f))
 
   (it "fails when given a non-pob other than #f"
-    (raises-exception? ()
+    (raises-exception? (type)
       (stdpob-derive 'foo)))
 
   (it "fails when the pob argument is omitted"

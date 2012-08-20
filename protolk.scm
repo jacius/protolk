@@ -30,6 +30,7 @@
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+(load-relative "util")
 (load-relative "primitives")
 
 (module protolk
@@ -42,7 +43,8 @@
    stdpob-_resolve-method)
 
 (import scheme chicken)
-(import protolk-primitives)
+(import %protolk-util protolk-primitives)
+(use extras)
 
 
 ;;;;;;;;;;;;;;
@@ -58,8 +60,8 @@
 ;;
 
 (define (stdpob-derive self #!key (props '()) (methods '()))
-  (if (and (not (pob? self)) (not (equal? self #f)))
-      (error "Cannot derive from non-pob:" self))
+  (unless (or (pob? self) (equal? self #f))
+    (raise 'type (sprintf "Not a pob: ~s" self)))
   (make-pob props: `((base . ,self) ,@props)
             methods: methods))
 
