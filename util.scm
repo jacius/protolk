@@ -38,6 +38,23 @@
 (import scheme chicken)
 
 
+;;; Returns a lambda that takes a pair and returns true if the car of
+;;; that pair matches x. The keyword argument pred is the predicate to
+;;; use for comparing x to the car of the pair. This is mainly useful
+;;; for searching or filtering alists.
+;;;
+;;; Example:
+;;;
+;;; ((car=? b) '(b . 2))
+;;; ; #t
+;;;
+;;; (remove (car=? 'b) '((a . 1) (b . 2) (c . 3)))
+;;; ; ((a . 1) (c . 3))
+;;;
+(define (car=? x #!key (pred equal?))
+  (lambda (pair) (pred (car pair) x)))
+
+
 (define (make-exception kind message . other-properties)
   (make-composite-condition
    (make-property-condition 'exn 'message message)

@@ -30,6 +30,9 @@
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+(load-relative "util")
+
+
 (module protolk-primitives
   (%make-pob
    pob?
@@ -41,15 +44,8 @@
    %set-method!  %unset-method!)
 
 (import scheme chicken)
+(import %protolk-util)
 (use srfi-1)
-
-
-;;;;;;;;;;
-;; UTIL
-;;
-
-(define (car=? x #!key (pred equal?))
-  (lambda (pair) (pred (car pair) x)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
