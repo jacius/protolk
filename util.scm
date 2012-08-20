@@ -55,13 +55,19 @@
   (lambda (pair) (pred (car pair) x)))
 
 
-(define (make-exception kind message . other-properties)
-  (make-composite-condition
-   (make-property-condition 'exn 'message message)
-   (apply make-property-condition kind other-properties)))
+(define (make-exception kinds message . other-properties)
+  (apply make-composite-condition
+         (make-property-condition 'exn 'message message)
+         (map (lambda (kind)
+                (apply make-property-condition kind
+                       'message message
+                       other-properties))
+              (if (list? kinds)
+                  kinds
+                  (list kinds)))))
 
-(define (raise kind message . other-properties)
-  (abort (apply make-exception kind message other-properties)))
+(define (raise kinds message . other-properties)
+  (abort (apply make-exception kinds message other-properties)))
 
 
 ) ;; end  module %protolk-util
