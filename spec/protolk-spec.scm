@@ -156,20 +156,20 @@
   (define pob2 (stdpob-derive pob1 props: `((a . 11) (c . ,(void)))))
   (define pob3 (stdpob-derive pob2 props: '((b . 22))))
 
-  (it "returns the prop value from the object's own prop if it is defined"
-    (equal? (stdpob-_resolve-prop pob3 'b) 22))
+  (it "returns a list with self and the prop value, if self defines the prop"
+    (equal? (stdpob-_resolve-prop pob3 'b) (cons pob3 22)))
 
-  (it "returns the prop value from the nearest ancestor that defines the prop"
-    (equal? (stdpob-_resolve-prop pob3 'a) 11))
+  (it "returns a cons with the nearest ancestor that defines the prop, and the prop value"
+    (equal? (stdpob-_resolve-prop pob3 'a) (cons pob2 11)))
 
-  (it "searches ancestors recursively to find the value of the prop"
-    (equal? (stdpob-_resolve-prop pob3 'd) 4))
+  (it "searches ancestors recursively to find the prop value"
+    (equal? (stdpob-_resolve-prop pob3 'd) (cons pob1 4)))
  
-  (it "returns #<unspecified> if the prop is not found"
-    (equal? (stdpob-_resolve-prop pob3 'z) (void)))
+  (it "returns (#f . #<unspecified>) if the prop is not found"
+    (equal? (stdpob-_resolve-prop pob3 'z) (cons #f (void))))
 
   (it "stops searching if it ever finds the prop defined as #<unspecified>"
-    (equal? (stdpob-_resolve-prop pob3 'c) (void)))
+    (equal? (stdpob-_resolve-prop pob3 'c) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises-exception? (arity)
@@ -204,20 +204,20 @@
   (define pob3
     (stdpob-derive pob2 methods: `((n . ,fn6))))
 
-  (it "returns the definition from the object itself if it has one"
-    (equal? (stdpob-_resolve-method pob3 'n) fn6))
+  (it "returns a pair with self and the definition if self defines it"
+    (equal? (stdpob-_resolve-method pob3 'n) (cons pob3 fn6)))
 
-  (it "returns the definition from the nearest ancestor that has one"
-    (equal? (stdpob-_resolve-method pob3 'm) fn5))
+  (it "returns a pair with the nearest ancestor that defines the method, and the definition"
+    (equal? (stdpob-_resolve-method pob3 'm) (cons pob2 fn5)))
 
   (it "searches ancestors recursively to find the definition"
-    (equal? (stdpob-_resolve-method pob3 'p) fn4))
+    (equal? (stdpob-_resolve-method pob3 'p) (cons pob1 fn4)))
  
-  (it "returns #<unspecified> if the method is not found"
-    (equal? (stdpob-_resolve-method pob3 'z) (void)))
+  (it "returns (#f . #<unspecified>) if the method is not found"
+    (equal? (stdpob-_resolve-method pob3 'z) (cons #f (void))))
 
   (it "stops searching if it ever finds the method defined as #<unspecified>"
-    (equal? (stdpob-_resolve-method pob3 'o) (void)))
+    (equal? (stdpob-_resolve-method pob3 'o) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises-exception? (arity)

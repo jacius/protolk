@@ -82,19 +82,19 @@
 
 (define (stdpob-_resolve-prop self prop-name)
   (if (%has-prop? self prop-name)
-      (%prop self prop-name)
+      (cons self (%prop self prop-name))
       (let ((base (%prop self 'base #f)))
         (if (pob? base)
             (stdpob-_resolve-prop base prop-name)
-            (void)))))
+            (cons #f (void))))))
 
 (define (stdpob-_resolve-method self method-name)
   (if (%has-method? self method-name)
-      (%method self method-name)
+      (cons self (%method self method-name))
       (let ((base (%prop self 'base #f)))
         (if (pob? base)
             (stdpob-_resolve-method base method-name)
-            (void)))))
+            (cons #f (void))))))
 
 
 ;;;;;;;;;;;;
