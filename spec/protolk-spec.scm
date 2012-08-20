@@ -236,6 +236,47 @@
       (stdpob-_resolve-method 'foo 'm))))
 
 
+(describe "stdpob-_method-missing"
+  (define pob1 (make-pob))
+
+  (it "fails when given only one arg"
+    (raises-exception? (arity)
+      (stdpob-_method-missing pob1)))
+
+  (it "fails when given only two args"
+    (raises-exception? (arity)
+      (stdpob-_method-missing pob1 'badmethod)))
+
+  (it "fails when given too many args"
+    (raises-exception? (arity)
+      (stdpob-_method-missing pob1 'badmethod '(1 2 3) 'foo)))
+
+  (it "raises a 'no-method exception as part of normal operation"
+    (raises-exception? (no-method)
+      (stdpob-_method-missing pob1 'badmethod '(1 2 3))))
+
+  (describe "the 'no-method exception"
+    (define exn (raises-exception? (no-method)
+                  (stdpob-_method-missing
+                   pob1 'badmethod '(1 2 3))))
+
+   (it "contains an informative error message"
+     (string=? (get-condition-property exn 'no-method 'message)
+               "undefined method 'badmethod for #<pob>"))
+
+   (it "contains a 'pob property with the pob who received the message"
+     (equal? (get-condition-property exn 'no-method 'pob)
+             pob1))
+   
+   (it "contains a 'method-name property with the method name"
+     (equal? (get-condition-property exn 'no-method 'method-name)
+             'badmethod))
+
+   (it "contains an 'args property with the args intended for the method"
+     (equal? (get-condition-property exn 'no-method 'args)
+             '(1 2 3)))))
+
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -261,8 +302,10 @@
     (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop))
 
   (it "should have a '_resolve-method method set to stdpob-_resolve-method"
-    (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method)))
+    (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method))
 
+  (it "should have a '_method-missing method set to stdpob-_method-missing"
+    (equal? (%method stdpob '_method-missing) stdpob-_method-missing)))
 
 
 (test-exit)

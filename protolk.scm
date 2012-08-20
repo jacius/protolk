@@ -40,7 +40,8 @@
    stdpob-ancestors
    stdpob-has-ancestor?
    stdpob-_resolve-prop
-   stdpob-_resolve-method)
+   stdpob-_resolve-method
+   stdpob-_method-missing)
 
 (import scheme chicken)
 (import %protolk-util protolk-primitives)
@@ -96,6 +97,13 @@
             (stdpob-_resolve-method base method-name)
             (cons #f (void))))))
 
+(define (stdpob-_method-missing self method-name args)
+  (raise 'no-method
+         (sprintf "undefined method '~s for ~s" method-name self)
+         'pob self
+         'method-name method-name
+         'args args))
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -108,6 +116,7 @@
               (ancestors . ,stdpob-ancestors)
               (has-ancestor? . ,stdpob-has-ancestor?)
               (_resolve-prop . ,stdpob-_resolve-prop)
-              (_resolve-method . ,stdpob-_resolve-method))))
+              (_resolve-method . ,stdpob-_resolve-method)
+              (_method-missing . ,stdpob-_method-missing))))
 
 ) ;; end module protolk

@@ -34,8 +34,8 @@ Methods:
 - [X] =[stdpob has-ancestor?]=
 - [X] =[stdpob _resolve-prop name]=
 - [X] =[stdpob _resolve-method name]=
-- [ ] =[stdpob _method-missing name #!optional args]=
-- [ ] =[stdpob _receive message #!optional args]=
+- [X] =[stdpob _method-missing name args]=
+- [ ] =[stdpob _receive message args]=
 - [ ] =[stdpob responds-to? message #!optional args]=
 
 Make stdpob methods available as procedures, e.g. =stdpob-derive=,
