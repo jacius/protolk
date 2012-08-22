@@ -43,7 +43,8 @@
    stdpob-_resolve-prop
    stdpob-_resolve-method
    stdpob-_method-missing
-   stdpob-_receive)
+   stdpob-_receive
+   stdpob-responds-to?)
 
 (import scheme chicken)
 (import %protolk-util protolk-primitives)
@@ -138,6 +139,13 @@
                      stdpob-_method-missing))))
           (method-missing self message args)))))
 
+(define (stdpob-responds-to? self message . args)
+  (let ((resolve-method (cdr (stdpob-_resolve-method
+                              self '_resolve-method
+                              stdpob-_resolve-method))))
+    (not (equal? (cdr (resolve-method self message (void)))
+                 (void)))))
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -152,6 +160,7 @@
               (_resolve-prop . ,stdpob-_resolve-prop)
               (_resolve-method . ,stdpob-_resolve-method)
               (_method-missing . ,stdpob-_method-missing)
-              (_receive . ,stdpob-_receive))))
+              (_receive . ,stdpob-_receive)
+              (responds-to? . ,stdpob-responds-to?))))
 
 ) ;; end module protolk

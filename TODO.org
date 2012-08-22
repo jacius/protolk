@@ -36,7 +36,7 @@ Methods:
 - [X] =[stdpob _resolve-method name #!optional default]=
 - [X] =[stdpob _method-missing name args]=
 - [X] =[stdpob _receive message args]=
-- [ ] =[stdpob responds-to? message #!optional args]=
+- [X] =[stdpob responds-to? message #!optional args]=
 
 Make stdpob methods available as procedures, e.g. =stdpob-derive=,
 =stdpob-_resolve-prop=.

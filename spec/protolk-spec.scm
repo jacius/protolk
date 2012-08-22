@@ -402,6 +402,44 @@
       (stdpob-_receive base-pob 'amethod '(arg1 arg2) 'foo))))
 
 
+(describe "stdpob-responds-to?"
+  (define (fn self) #t)
+
+  (define pob1
+    (make-pob props: '((base . #f)) methods: `((a . ,fn) (x . ,(void)))))
+  (define pob2
+    (stdpob-derive pob1 methods: `((b . ,fn) (y . ,(void)))))
+  (define pob3
+    (stdpob-derive pob2 methods: `((c . ,fn) (z . ,(void)))))
+
+  (it "returns #t if the pob has its own matching method"
+    (stdpob-responds-to? pob3 'c))
+  (it "returns #t if the pob inherits a matching method from its base"
+    (stdpob-responds-to? pob3 'b))
+  (it "returns #t if the pob inherits a matching method from any ancestor"
+    (stdpob-responds-to? pob3 'a))
+
+  (it "returns #f if neither the pob nor ancestors have a matching method"
+    (not (stdpob-responds-to? pob3 'foo)))
+  
+  (it "returns #f if the pob defines the matching method as #<unspecified>"
+    (not (stdpob-responds-to? pob3 'z)))
+  (it "returns #f if the pob inherits #<unspecified> from its base"
+    (not (stdpob-responds-to? pob3 'y)))
+  (it "returns #f if the pob inherits #<unspecified> from any ancestor"
+    (not (stdpob-responds-to? pob3 'x)))
+
+  (it "accepts (but ignores) any number of args after the message"
+    (not (raises-exception? ()
+           (stdpob-responds-to? pob3 'a 1 2 3 4 5 6 7 8 9 0))))
+  
+  (it "fails if given no args"
+    (raises-exception? (arity) (stdpob-responds-to?)))
+  
+  (it "fails if the message is omitted"
+    (raises-exception? (arity) (stdpob-responds-to? pob3))))
+
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -433,7 +471,10 @@
     (equal? (%method stdpob '_method-missing) stdpob-_method-missing))
 
   (it "should have a '_receive method set to stdpob-_receive"
-    (equal? (%method stdpob '_receive) stdpob-_receive)))
+    (equal? (%method stdpob '_receive) stdpob-_receive))
+
+  (it "should have a 'responds-to? method set to stdpob-responds-to?"
+    (equal? (%method stdpob 'responds-to?) stdpob-responds-to?)))
 
 
 (test-exit)
