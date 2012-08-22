@@ -32,8 +32,8 @@ Methods:
 - [X] =[stdpob derive #!key props methods]=
 - [X] =[stdpob ancestors]=
 - [X] =[stdpob has-ancestor?]=
-- [X] =[stdpob _resolve-prop name]=
-- [X] =[stdpob _resolve-method name]=
+- [X] =[stdpob _resolve-prop name #!optional default]=
+- [X] =[stdpob _resolve-method name #!optional default]=
 - [X] =[stdpob _method-missing name args]=
 - [ ] =[stdpob _receive message args]=
 - [ ] =[stdpob responds-to? message #!optional args]=

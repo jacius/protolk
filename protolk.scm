@@ -81,21 +81,23 @@
           (else
            (stdpob-has-ancestor? base other)))))
 
-(define (stdpob-_resolve-prop self prop-name)
+(define (stdpob-_resolve-prop self prop-name
+                              #!optional (default (void)))
   (if (%has-prop? self prop-name)
       (cons self (%prop self prop-name))
       (let ((base (%prop self 'base #f)))
         (if (pob? base)
-            (stdpob-_resolve-prop base prop-name)
-            (cons #f (void))))))
+            (stdpob-_resolve-prop base prop-name default)
+            (cons #f default)))))
 
-(define (stdpob-_resolve-method self method-name)
+(define (stdpob-_resolve-method self method-name
+                                #!optional (default (void)))
   (if (%has-method? self method-name)
       (cons self (%method self method-name))
       (let ((base (%prop self 'base #f)))
         (if (pob? base)
-            (stdpob-_resolve-method base method-name)
-            (cons #f (void))))))
+            (stdpob-_resolve-method base method-name default)
+            (cons #f default)))))
 
 (define (stdpob-_method-missing self method-name args)
   (raise 'no-method

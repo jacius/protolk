@@ -165,7 +165,10 @@
   (it "searches ancestors recursively to find the prop value"
     (equal? (stdpob-_resolve-prop pob3 'd) (cons pob1 4)))
  
-  (it "returns (#f . #<unspecified>) if the prop is not found"
+  (it "returns #f and the default value if the prop is not found"
+    (equal? (stdpob-_resolve-prop pob3 'z 'default) (cons #f 'default)))
+
+  (it "uses #<unspecified> as the default value by default"
     (equal? (stdpob-_resolve-prop pob3 'z) (cons #f (void))))
 
   (it "stops searching if it ever finds the prop defined as #<unspecified>"
@@ -175,12 +178,20 @@
     (raises-exception? (arity)
       (stdpob-_resolve-prop)))
 
-  (it "fails if given too few args"
+  (it "fails if the prop name is omitted"
     (raises-exception? (arity)
       (stdpob-_resolve-prop pob3)))
 
+  (it "does not fail if given the pob and prop name"
+    (not (raises-exception? ()
+           (stdpob-_resolve-prop pob3 'a))))
+
+  (it "does not fail if given the pob, prop name, and default value"
+    (not (raises-exception? ()
+           (stdpob-_resolve-prop pob3 'a 'default))))
+  
   (it "fails if given too many args"
-    (raises-exception? (arity)
+    (raises-exception? ()
       (stdpob-_resolve-prop pob3 'a 'b 'c)))
 
   (it "fails if given a non-pob for the first arg"
@@ -213,9 +224,12 @@
   (it "searches ancestors recursively to find the definition"
     (equal? (stdpob-_resolve-method pob3 'p) (cons pob1 fn4)))
  
-  (it "returns (#f . #<unspecified>) if the method is not found"
-    (equal? (stdpob-_resolve-method pob3 'z) (cons #f (void))))
+  (it "returns #f and the default value if the method is not found"
+    (equal? (stdpob-_resolve-method pob3 'z 'default) (cons #f 'default)))
 
+  (it "uses #<unspecified> as the default value by default"
+    (equal? (stdpob-_resolve-method pob3 'z) (cons #f (void))))
+  
   (it "stops searching if it ever finds the method defined as #<unspecified>"
     (equal? (stdpob-_resolve-method pob3 'o) (cons pob2 (void))))
 
@@ -223,13 +237,21 @@
     (raises-exception? (arity)
       (stdpob-_resolve-method)))
 
-  (it "fails if given only one arg"
+  (it "fails if the method name is omitted"
     (raises-exception? (arity)
       (stdpob-_resolve-method pob3)))
 
+  (it "does not fail if given the pob and method name"
+    (not (raises-exception? ()
+           (stdpob-_resolve-method pob3 'm))))
+
+  (it "does not fail if given the pob, method name, and default value"
+    (not (raises-exception? ()
+           (stdpob-_resolve-method pob3 'm 'default))))
+  
   (it "fails if given too many args"
-    (raises-exception? (arity)
-      (stdpob-_resolve-method pob3 'm 'n 'o)))
+    (raises-exception? ()
+      (stdpob-_resolve-method pob3 'm 'default 'o)))
 
   (it "fails if given a non-pob for the first arg"
     (raises-exception? (type)
