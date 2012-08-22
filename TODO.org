@@ -37,9 +37,12 @@ Methods:
 - [X] =[stdpob _method-missing name args]=
 - [X] =[stdpob _receive message args]=
 - [X] =[stdpob responds-to? message #!optional args]=
+- [ ] =[stdpob _display port]=
 
 Make stdpob methods available as procedures, e.g. =stdpob-derive=,
 =stdpob-_resolve-prop=.
+
+- [ ] pob record type printer invokes =_display= method
 
 * Milestone 3: Methods and Encapsulation
 
