@@ -299,6 +299,71 @@
              '(1 2 3)))))
 
 
+(describe "stdpob-_receive"
+  (define (noop . args) #t)
+  (define base-pob
+    (make-pob props: '((base . #f))
+              methods: `((_resolve-method . ,stdpob-_resolve-method)
+                         (_resolve-prop   . ,stdpob-_resolve-prop)
+                         (_method-missing . ,stdpob-_method-missing))))
+
+  (it "uses _resolve-method to find a matching method"
+    (let* ((results #f)
+           (stub-resolve (lambda args
+                           (set! results args)
+                           (cons 'foo noop)))
+           (pob (stdpob-derive base-pob
+                 methods: `((_resolve-method . ,stub-resolve)))))
+      (stdpob-_receive pob 'amethod '(1 2 3))
+      (equal? results (list pob 'amethod))))
+
+  (it "invokes the method returned by _resolve-method if found"
+    (let* ((results #f)
+           (stub-method (lambda args (set! results args)))
+           (stub-resolve (lambda args (cons 'foo stub-method)))
+           (pob (stdpob-derive base-pob
+                 methods: `((_resolve-method . ,stub-resolve)))))
+      (stdpob-_receive pob 'amethod '(1 2 3))
+      (equal? results (list pob 1 2 3))))
+
+  (it "uses _resolve-method to find _method-missing if method not found"
+    (let* ((results #f)
+           (stub-resolve (lambda (self method-name #!optional default)
+                           (case method-name
+                             ((amethod) (cons #f default))
+                             ((_method-missing)
+                              (set! results (list self method-name))
+                              (cons 'foo noop)))))
+           (pob (stdpob-derive base-pob
+                 methods: `((_resolve-method . ,stub-resolve)))))
+      (stdpob-_receive pob 'amethod '(1 2 3))
+      (equal? results (list pob '_method-missing))))
+
+  (it "invokes _method-missing if method not found"
+    (let* ((results #f)
+           (stub-mm (lambda args (set! results args)))
+           (stub-resolve (lambda (self method-name #!optional default)
+                           (case method-name
+                             ((amethod) (cons #f default))
+                             ((_method-missing) (cons 'foo stub-mm)))))
+           (pob (stdpob-derive base-pob
+                 methods: `((_resolve-method . ,stub-resolve)))))
+      (stdpob-_receive pob 'amethod '(1 2 3))
+      (equal? results (list pob 'amethod '(1 2 3)))))
+
+  (it "fails if given only a pob"
+    (raises-exception? (arity)
+      (stdpob-_receive base-pob)))
+
+  (it "fails if given only a pob and method name"
+    (raises-exception? (arity)
+      (stdpob-_receive base-pob 'amethod)))
+
+  (it "fails if given too many args"
+    (raises-exception? (arity)
+      (stdpob-_receive base-pob 'amethod '(arg1 arg2) 'foo))))
+
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -327,7 +392,10 @@
     (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method))
 
   (it "should have a '_method-missing method set to stdpob-_method-missing"
-    (equal? (%method stdpob '_method-missing) stdpob-_method-missing)))
+    (equal? (%method stdpob '_method-missing) stdpob-_method-missing))
+
+  (it "should have a '_receive method set to stdpob-_receive"
+    (equal? (%method stdpob '_receive) stdpob-_receive)))
 
 
 (test-exit)

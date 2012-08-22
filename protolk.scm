@@ -41,11 +41,12 @@
    stdpob-has-ancestor?
    stdpob-_resolve-prop
    stdpob-_resolve-method
-   stdpob-_method-missing)
+   stdpob-_method-missing
+   stdpob-_receive)
 
 (import scheme chicken)
 (import %protolk-util protolk-primitives)
-(use extras)
+(use extras bindings)
 
 
 ;;;;;;;;;;;;;;
@@ -106,6 +107,26 @@
          'method-name method-name
          'args args))
 
+(define (stdpob-_receive self message args)
+  ;; Use stdpob-_resolve-method to find self's _resolve-method method
+  ;; (or stdpob-_resolve-method if not found), then use that to find
+  ;; the method matching the message and call it. If the method is not
+  ;; found, find and call self's _method-missing method (or
+  ;; stdpob-_method-missing if not found).
+  (let* ((resolve-method (cdr (stdpob-_resolve-method
+                               self '_resolve-method
+                               stdpob-_resolve-method)))
+         (res (resolve-method self message))
+         (found-m (car res))
+         (method (cdr res)))
+    (if found-m
+        (apply method self args)
+        (let ((method-missing
+               (cdr (resolve-method
+                     self '_method-missing
+                     stdpob-_method-missing))))
+          (method-missing self message args)))))
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -119,6 +140,7 @@
               (has-ancestor? . ,stdpob-has-ancestor?)
               (_resolve-prop . ,stdpob-_resolve-prop)
               (_resolve-method . ,stdpob-_resolve-method)
-              (_method-missing . ,stdpob-_method-missing))))
+              (_method-missing . ,stdpob-_method-missing)
+              (_receive . ,stdpob-_receive))))
 
 ) ;; end module protolk
