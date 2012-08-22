@@ -3,7 +3,10 @@
 
 (load-relative "../protolk")
 (import protolk
-        protolk-primitives)
+        protolk-primitives
+        %protolk-util)
+
+(use extras)
 
 
 ;;;;;;;;;;;;;;
@@ -46,6 +49,41 @@
     (let ((p (make-pob)))
       (and (equal? (%pob-props p) '())
            (equal? (%pob-methods p) '())))))
+
+
+(describe "send"
+  (define (noop . args) #t)
+  (define base-pob
+    (make-pob props: '((base . #f))
+              methods: `((_resolve-method . ,stdpob-_resolve-method)
+                         (_resolve-prop   . ,stdpob-_resolve-prop)
+                         (_method-missing . ,noop))))
+  
+  ;; it "uses the pob's _resolve-method method to find its _receive method"
+  (let* ((pob (stdpob-derive base-pob))
+         (stub-resolve
+          (lambda (self method-name #!optional default)
+            (if (eq? method-name '_receive)
+                (raise 'success "Success!")
+                (stdpob-_resolve-method self method-name default)))))
+    (%set-method! pob '_resolve-method stub-resolve)
+    (it "uses the pob's _resolve-method method to find its _receive method"
+      (raises-exception? (success)
+        (send pob 'amethod 1 2 3))))
+
+  ;; it "invokes the _receive method with the expected arguments"
+  (let* ((pob (stdpob-derive base-pob))
+         (expected-args (list pob 'amethod '(1 2 3)))
+         (stub-receive (lambda args
+                         (if (equal? args expected-args)
+                              (raise 'success "Success!")
+                              (raise 'failure
+                                     (sprintf "Expected args ~s, got ~s"
+                                              expected-args args))))))
+    (%set-method! pob '_receive stub-receive)
+    (it "invokes the _receive method with the expected arguments"
+      (raises-exception? (success)
+        (send pob 'amethod 1 2 3)))))
 
 
 

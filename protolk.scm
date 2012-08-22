@@ -35,6 +35,7 @@
 
 (module protolk
   (make-pob
+   send
    stdpob
    stdpob-derive
    stdpob-ancestors
@@ -55,6 +56,16 @@
 
 (define (make-pob #!key (props '()) (methods '()))
   (%make-pob props methods))
+
+
+(define (send pob message . args)
+  (let* ((resolve-method (cdr (stdpob-_resolve-method
+                               pob '_resolve-method
+                               stdpob-_resolve-method)))
+         (receive (cdr (resolve-method
+                        pob '_receive
+                        stdpob-_receive))))
+    (receive pob message args)))
 
 
 ;;;;;;;;;;;;;;;;;;;;
