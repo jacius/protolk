@@ -497,37 +497,37 @@
 ;;
 
 (describe "stdpob"
-  (it "should be a pob already provided by protolk"
+  (it "is a pob that exists by default"
     (pob? stdpob))
 
-  (it "should have a 'base prop set to #f"
+  (it "has a 'base prop set to #f"
     (equal? (%prop stdpob 'base) #f))
 
-  (it "should have a 'derive method set to stdpob-derive"
+  (it "has a 'derive method set to stdpob-derive"
     (equal? (%method stdpob 'derive) stdpob-derive))
 
-  (it "should have an 'ancestors method set to stdpob-ancestors"
+  (it "has an 'ancestors method set to stdpob-ancestors"
     (equal? (%method stdpob 'ancestors) stdpob-ancestors))
 
-  (it "should have a 'has-ancestor? method set to stdpob-has-ancestor?"
+  (it "has a 'has-ancestor? method set to stdpob-has-ancestor?"
     (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?))
 
-  (it "should have a '_resolve-prop method set to stdpob-_resolve-prop"
+  (it "has a '_resolve-prop method set to stdpob-_resolve-prop"
     (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop))
 
-  (it "should have a '_resolve-method method set to stdpob-_resolve-method"
+  (it "has a '_resolve-method method set to stdpob-_resolve-method"
     (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method))
 
-  (it "should have a '_method-missing method set to stdpob-_method-missing"
+  (it "has a '_method-missing method set to stdpob-_method-missing"
     (equal? (%method stdpob '_method-missing) stdpob-_method-missing))
 
-  (it "should have a '_receive method set to stdpob-_receive"
+  (it "has a '_receive method set to stdpob-_receive"
     (equal? (%method stdpob '_receive) stdpob-_receive))
 
-  (it "should have a 'responds-to? method set to stdpob-responds-to?"
+  (it "has a 'responds-to? method set to stdpob-responds-to?"
     (equal? (%method stdpob 'responds-to?) stdpob-responds-to?))
 
-  (it "should have a '_display method set to stdpob-_display?"
+  (it "has a '_display method set to stdpob-_display?"
     (equal? (%method stdpob '_display) stdpob-_display)))
 
 
