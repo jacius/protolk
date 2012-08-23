@@ -147,6 +147,46 @@
         (some-prop-reader pob1 'foo)))))
 
 
+(describe "prop-writer"
+  (it "accepts a prop name and returns a procedure"
+    (procedure? (prop-writer 'some-prop)))
+
+  (it "fails if given no args"
+    (raises? (arity)
+      (prop-writer)))
+
+  (it "fails if given too many args"
+    (raises? (arity)
+      (prop-writer 'some-prop 'foo)))
+  
+  (describe "the procedure"
+    (define some-prop-writer (prop-writer 'some-prop))
+
+    (it "sets the matching prop's value in the given pob"
+      (let ((pob (make-pob)))
+        (some-prop-writer pob 'some-value)
+        (equal? (%prop pob 'some-prop)
+                'some-value)))
+
+    (it "returns void"
+      (let ((pob (make-pob)))
+        (equal? (some-prop-writer pob 'some-value)
+                (void))))
+    
+    (it "fails if given a non-pob"
+      (raises? (type)
+        (some-prop-writer 'foo 'bar)))
+    
+    (it "fails if given no args"
+      (raises? (arity)
+        (some-prop-writer)))
+
+    (it "fails if given too many args"
+      (let ((pob (make-pob)))
+        (raises? (arity)
+          (some-prop-writer pob 'some-value 'foo))))))
+
+
 ;;;;;;;;;;;;;;;;;;;;
 ;; STDPOB METHODS
 ;;

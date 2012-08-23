@@ -37,6 +37,7 @@
   (make-pob
    send
    prop-reader
+   prop-writer
    stdpob
    stdpob-derive
    stdpob-ancestors
@@ -96,6 +97,10 @@
                                self '_resolve-prop
                                stdpob-_resolve-prop))))
       (cdr (resolve-prop self prop-name)))))
+
+(define (prop-writer prop-name)
+  (lambda (self value)
+    (%set-prop! self prop-name value)))
 
 
 ;;;;;;;;;;;;;;;;;;;;

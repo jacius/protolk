@@ -27,7 +27,7 @@ Methods:
 - [X] =make-pob= procedure (with keyword args)
 - [X] =send= procedure
 - [X] =prop-reader= procedure factory
-- [ ] =prop-writer= procedure factory
+- [X] =prop-writer= procedure factory
 
 =stdpob= predefined pob:
 - [X] =[stdpob derive #!key props methods]=
