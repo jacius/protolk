@@ -9,6 +9,34 @@
 (use extras)
 
 
+;;;;;;;;;;;;;
+;; PRINTER
+;;
+
+(describe "pob record type printer"
+  (define (display-foo self port) (display "foo" port))
+  
+  (define pob1 (make-pob))
+  (define pob2 (stdpob-derive pob1 methods: `((_display . ,display-foo))))
+  (define pob3 (stdpob-derive pob2))
+
+  (it "uses stdpob-_display if it has no _display method"
+    (equal? (with-output-to-string
+              (lambda () (display pob1)))
+            "#<pob>"))
+  
+  (it "uses the pob's _display method if it has one"
+    (equal? (with-output-to-string
+              (lambda () (display pob2)))
+            "foo"))
+
+  (it "uses the _display method inherited from its ancestors"
+    (equal? (with-output-to-string
+              (lambda () (display pob3)))
+            "foo")))
+
+
+
 ;;;;;;;;;;;;;;
 ;; CORE API
 ;;

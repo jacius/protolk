@@ -52,6 +52,23 @@
 (use extras bindings)
 
 
+;;;;;;;;;;;;;
+;; PRINTER
+;;
+
+(define-record-printer pob
+  (lambda (pob out)
+    (let* ((_resolve-method
+            (cdr (stdpob-_resolve-method
+                  pob '_resolve-method
+                  stdpob-_resolve-method)))
+           (_display
+            (cdr (_resolve-method
+                  pob '_display
+                  stdpob-_display))))
+      (_display pob out))))
+
+
 ;;;;;;;;;;;;;;
 ;; CORE API
 ;;
