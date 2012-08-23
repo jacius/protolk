@@ -114,6 +114,38 @@
         (send pob 'amethod 1 2 3)))))
 
 
+(describe "prop-reader"
+  (it "accepts a prop name and returns a procedure"
+    (procedure? (prop-reader 'some-prop)))
+
+  (it "fails if given no args"
+    (raises? (arity)
+      (prop-reader)))
+
+  (it "fails if given too many args"
+    (raises? (arity)
+      (prop-reader 'some-prop 'foo)))
+  
+  (describe "the procedure"
+    (define some-prop-reader (prop-reader 'some-prop))
+    (define pob1 (make-pob props: '((some-prop . some-value))))
+
+    (it "returns the given pob's value for the matching prop"
+      (equal? (some-prop-reader pob1)
+              'some-value))
+
+    (it "fails if given a non-pob"
+      (raises? (type)
+        (some-prop-reader 'foo)))
+    
+    (it "fails if given no args"
+      (raises? (arity)
+        (some-prop-reader)))
+
+    (it "fails if given too many args"
+      (raises? (arity)
+        (some-prop-reader pob1 'foo)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; STDPOB METHODS

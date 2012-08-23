@@ -36,6 +36,7 @@
 (module protolk
   (make-pob
    send
+   prop-reader
    stdpob
    stdpob-derive
    stdpob-ancestors
@@ -85,6 +86,16 @@
                         pob '_receive
                         stdpob-_receive))))
     (receive pob message args)))
+
+(define (prop-reader prop-name)
+  (lambda (self)
+    (let* ((resolve-method (cdr (stdpob-_resolve-method
+                                 self '_resolve-method
+                                 stdpob-_resolve-method)))
+           (resolve-prop (cdr (resolve-method
+                               self '_resolve-prop
+                               stdpob-_resolve-prop))))
+      (cdr (resolve-prop self prop-name)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;
