@@ -45,7 +45,7 @@
   (define (fn pob) #t)
 
   (it "accepts #:props and #:methods keyword arguments"
-    (not (raises-exception? ()
+    (not (raises? ()
            (make-pob props: '((a . 1))
                      methods: `((m . ,fn))))))
 
@@ -56,15 +56,15 @@
            (equal? (%pob-methods p) `((m . ,fn))))))
 
   (it "allows the props argument to be omitted"
-    (not (raises-exception? ()
+    (not (raises? ()
            (make-pob methods: `((m . ,fn))))))
 
   (it "allows the methods argument to be omitted"
-    (not (raises-exception? ()
+    (not (raises? ()
            (make-pob props: `((a . 1))))))
 
   (it "allows both arguments to be omitted"
-    (not (raises-exception? ()
+    (not (raises? ()
            (make-pob))))
 
   (it "returns a pob with no props if the props argument is omitted"
@@ -96,7 +96,7 @@
                 (stdpob-_resolve-method self method-name default)))))
     (%set-method! pob '_resolve-method stub-resolve)
     (it "uses the pob's _resolve-method method to find its _receive method"
-      (raises-exception? (success)
+      (raises? (success)
         (send pob 'amethod 1 2 3))))
 
   ;; it "invokes the _receive method with the expected arguments"
@@ -110,7 +110,7 @@
                                               expected-args args))))))
     (%set-method! pob '_receive stub-receive)
     (it "invokes the _receive method with the expected arguments"
-      (raises-exception? (success)
+      (raises? (success)
         (send pob 'amethod 1 2 3)))))
 
 
@@ -130,11 +130,11 @@
     (equal? (%prop (stdpob-derive #f) 'base) #f))
 
   (it "fails when given a non-pob other than #f"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-derive 'foo)))
 
   (it "fails when the pob argument is omitted"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-derive)))
 
   (it "sets the specified props to the new pob"
@@ -175,7 +175,7 @@
     (equal? (stdpob-ancestors (make-pob)) '()))
 
   (it "fails when given a non-pob"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-ancestors #f))))
 
 
@@ -201,19 +201,19 @@
     (not (stdpob-has-ancestor? pob3 'foo)))
   
   (it "fails when given no args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-has-ancestor?)))
 
   (it "fails when given only one pob"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-has-ancestor? pob3)))
 
   (it "fails when given too many args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-has-ancestor? pob3 pob2 pob1)))
 
   (it "fails when the first argument is not a pob"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-has-ancestor? 'foo pob1))))
 
 
@@ -241,27 +241,27 @@
     (equal? (stdpob-_resolve-prop pob3 'c) (cons pob2 (void))))
 
   (it "fails if given no args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_resolve-prop)))
 
   (it "fails if the prop name is omitted"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_resolve-prop pob3)))
 
   (it "does not fail if given the pob and prop name"
-    (not (raises-exception? ()
+    (not (raises? ()
            (stdpob-_resolve-prop pob3 'a))))
 
   (it "does not fail if given the pob, prop name, and default value"
-    (not (raises-exception? ()
+    (not (raises? ()
            (stdpob-_resolve-prop pob3 'a 'default))))
   
   (it "fails if given too many args"
-    (raises-exception? ()
+    (raises? ()
       (stdpob-_resolve-prop pob3 'a 'b 'c)))
 
   (it "fails if given a non-pob for the first arg"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-_resolve-prop 'foo 'a))))
 
 
@@ -300,27 +300,27 @@
     (equal? (stdpob-_resolve-method pob3 'o) (cons pob2 (void))))
 
   (it "fails if given no args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_resolve-method)))
 
   (it "fails if the method name is omitted"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_resolve-method pob3)))
 
   (it "does not fail if given the pob and method name"
-    (not (raises-exception? ()
+    (not (raises? ()
            (stdpob-_resolve-method pob3 'm))))
 
   (it "does not fail if given the pob, method name, and default value"
-    (not (raises-exception? ()
+    (not (raises? ()
            (stdpob-_resolve-method pob3 'm 'default))))
   
   (it "fails if given too many args"
-    (raises-exception? ()
+    (raises? ()
       (stdpob-_resolve-method pob3 'm 'default 'o)))
 
   (it "fails if given a non-pob for the first arg"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-_resolve-method 'foo 'm))))
 
 
@@ -328,23 +328,23 @@
   (define pob1 (make-pob))
 
   (it "fails when given only one arg"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_method-missing pob1)))
 
   (it "fails when given only two args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_method-missing pob1 'badmethod)))
 
   (it "fails when given too many args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_method-missing pob1 'badmethod '(1 2 3) 'foo)))
 
   (it "raises a 'no-method exception as part of normal operation"
-    (raises-exception? (no-method)
+    (raises? (no-method)
       (stdpob-_method-missing pob1 'badmethod '(1 2 3))))
 
   (describe "the 'no-method exception"
-    (define exn (raises-exception? (no-method)
+    (define exn (raises? (no-method)
                   (stdpob-_method-missing
                    pob1 'badmethod '(1 2 3))))
 
@@ -418,15 +418,15 @@
       (equal? results (list pob 'amethod '(1 2 3)))))
 
   (it "fails if given only a pob"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_receive base-pob)))
 
   (it "fails if given only a pob and method name"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_receive base-pob 'amethod)))
 
   (it "fails if given too many args"
-    (raises-exception? (arity)
+    (raises? (arity)
       (stdpob-_receive base-pob 'amethod '(arg1 arg2) 'foo))))
 
 
@@ -458,14 +458,14 @@
     (not (stdpob-responds-to? pob3 'x)))
 
   (it "accepts (but ignores) any number of args after the message"
-    (not (raises-exception? ()
+    (not (raises? ()
            (stdpob-responds-to? pob3 'a 1 2 3 4 5 6 7 8 9 0))))
   
   (it "fails if given no args"
-    (raises-exception? (arity) (stdpob-responds-to?)))
+    (raises? (arity) (stdpob-responds-to?)))
   
   (it "fails if the message is omitted"
-    (raises-exception? (arity) (stdpob-responds-to? pob3))))
+    (raises? (arity) (stdpob-responds-to? pob3))))
 
 
 (describe "stdpob-_display"
@@ -483,11 +483,11 @@
             "#<pob>"))
 
   (it "fails if given a non-pob"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-_display 'foo (current-output-port))))
 
   (it "fails if the port is not a port"
-    (raises-exception? (type)
+    (raises? (type)
       (stdpob-_display pob 'foo))))
 
 

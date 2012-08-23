@@ -28,31 +28,32 @@
 ;; TEST EXPRESSIONS
 ;;
 
-;;; (raises-exception? (exn-kind) body ...)
+;;; (raises? (exn-kind ...) body ...)
 ;;;
-;;; Runs the body, watching for an exception of the specified kind(s)
-;;; to be raised. If the body runs to completion, returns #f. If a
-;;; matching exception is raised, returns the exception as a condition
-;;; object.  If a non-matching exception is raised, the it will pass
-;;; through. Use () to match any kind of exception.  Examples:
+;;; Runs the body, watching for an exception matching all the
+;;; specified kind(s) to be raised. If the body runs to completion,
+;;; returns #f. If a matching exception is raised, returns the
+;;; exception as a condition object.  If a non-matching exception is
+;;; raised, the it will pass through. Use () to match any kind of
+;;; exception. Examples:
 ;;;
-;;;   (raises-exception? ()
+;;;   (raises? ()
 ;;;     (vector-ref '#(0) 0))
 ;;;   ; #f
 ;;;
-;;;   (raises-exception? ()
+;;;   (raises? ()
 ;;;     (vector-ref '#(0) 1))
 ;;;   ; #<condition: (exn bounds)>
 ;;;
-;;;   (raises-exception? (bounds)
+;;;   (raises? (bounds)
 ;;;     (vector-ref '#(0) 1))
 ;;;   ; #<condition: (exn bounds)>
 ;;;
-;;;   (raises-exception? (arithmetic)
+;;;   (raises? (arithmetic)
 ;;;     (vector-ref '#(0) 1))
 ;;;   ; Error: (vector-ref) out of range ...
 ;;;
-(define-syntax raises-exception?
+(define-syntax raises?
   (er-macro-transformer
    (lambda (expression rename compare)
      (let ((expected-exn (cadr expression))
