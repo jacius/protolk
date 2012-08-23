@@ -440,6 +440,29 @@
     (raises-exception? (arity) (stdpob-responds-to? pob3))))
 
 
+(describe "stdpob-_display"
+  (define pob (make-pob))
+  
+  (it "writes \"#<pob>\" to the given port"
+    (equal? (call-with-output-string
+             (lambda (port)
+               (stdpob-_display pob port)))
+            "#<pob>"))
+
+  (it "uses (current-output-port) if the port is omitted"
+    (equal? (with-output-to-string
+              (lambda () (stdpob-_display pob)))
+            "#<pob>"))
+
+  (it "fails if given a non-pob"
+    (raises-exception? (type)
+      (stdpob-_display 'foo (current-output-port))))
+
+  (it "fails if the port is not a port"
+    (raises-exception? (type)
+      (stdpob-_display pob 'foo))))
+
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -474,7 +497,10 @@
     (equal? (%method stdpob '_receive) stdpob-_receive))
 
   (it "should have a 'responds-to? method set to stdpob-responds-to?"
-    (equal? (%method stdpob 'responds-to?) stdpob-responds-to?)))
+    (equal? (%method stdpob 'responds-to?) stdpob-responds-to?))
+
+  (it "should have a '_display method set to stdpob-_display?"
+    (equal? (%method stdpob '_display) stdpob-_display)))
 
 
 (test-exit)

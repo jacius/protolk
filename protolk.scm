@@ -44,7 +44,8 @@
    stdpob-_resolve-method
    stdpob-_method-missing
    stdpob-_receive
-   stdpob-responds-to?)
+   stdpob-responds-to?
+   stdpob-_display)
 
 (import scheme chicken)
 (import %protolk-util protolk-primitives)
@@ -146,6 +147,10 @@
     (not (equal? (cdr (resolve-method self message (void)))
                  (void)))))
 
+(define (stdpob-_display self #!optional (port (current-output-port)))
+  (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))
+  (display "#<pob>" port))
+
 
 ;;;;;;;;;;;;
 ;; STDPOB
@@ -161,6 +166,7 @@
               (_resolve-method . ,stdpob-_resolve-method)
               (_method-missing . ,stdpob-_method-missing)
               (_receive . ,stdpob-_receive)
-              (responds-to? . ,stdpob-responds-to?))))
+              (responds-to? . ,stdpob-responds-to?)
+              (_display . ,stdpob-_display))))
 
 ) ;; end module protolk
