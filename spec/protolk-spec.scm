@@ -446,48 +446,41 @@
                          (_method-missing . ,stdpob-_method-missing))))
 
   (it "uses _resolve-method to find a matching method"
-    (let* ((results #f)
-           (stub-resolve (lambda args
-                           (set! results args)
-                           (cons 'foo noop)))
+    (let* ((stub-resolve (lambda args (raise 'success "Success!")))
            (pob (stdpob-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
-      (stdpob-_receive pob 'amethod '(1 2 3))
-      (equal? results (list pob 'amethod))))
+      (raises? (success)
+        (stdpob-_receive pob 'amethod '(1 2 3)))))
 
   (it "invokes the method returned by _resolve-method if found"
-    (let* ((results #f)
-           (stub-method (lambda args (set! results args)))
+    (let* ((stub-method (lambda args (raise 'success "Success!")))
            (stub-resolve (lambda args (cons 'foo stub-method)))
            (pob (stdpob-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
-      (stdpob-_receive pob 'amethod '(1 2 3))
-      (equal? results (list pob 1 2 3))))
+      (raises? (success)
+        (stdpob-_receive pob 'amethod '(1 2 3)))))
 
   (it "uses _resolve-method to find _method-missing if method not found"
-    (let* ((results #f)
-           (stub-resolve (lambda (self method-name #!optional default)
+    (let* ((stub-resolve (lambda (self method-name #!optional default)
                            (case method-name
                              ((amethod) (cons #f default))
                              ((_method-missing)
-                              (set! results (list self method-name))
-                              (cons 'foo noop)))))
+                              (raise 'success "Success!")))))
            (pob (stdpob-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
-      (stdpob-_receive pob 'amethod '(1 2 3))
-      (equal? results (list pob '_method-missing))))
+      (raises? (success)
+        (stdpob-_receive pob 'amethod '(1 2 3)))))
 
   (it "invokes _method-missing if method not found"
-    (let* ((results #f)
-           (stub-mm (lambda args (set! results args)))
+    (let* ((stub-mm (lambda args (raise 'success "Success")))
            (stub-resolve (lambda (self method-name #!optional default)
                            (case method-name
                              ((amethod) (cons #f default))
                              ((_method-missing) (cons 'foo stub-mm)))))
            (pob (stdpob-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
-      (stdpob-_receive pob 'amethod '(1 2 3))
-      (equal? results (list pob 'amethod '(1 2 3)))))
+      (raises? (success)
+        (stdpob-_receive pob 'amethod '(1 2 3)))))
 
   (it "fails if given only a pob"
     (raises? (arity)
