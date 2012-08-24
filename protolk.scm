@@ -54,21 +54,30 @@
 (use extras bindings)
 
 
+;;;;;;;;;;
+;; UTIL
+;;
+
+;; Use stdpob-_resolve-method to find self's _resolve-method method
+;; (or stdpob-_resolve-method if not found), then use that to find
+;; the desired method and return it (or the default if not found).
+(define (%resolved-method self method-name #!optional (default (void)))
+  (let ((resolve-method
+         (cdr (stdpob-_resolve-method self '_resolve-method
+                                      stdpob-_resolve-method))))
+    (cdr (resolve-method
+          self method-name
+          default))))
+
+
 ;;;;;;;;;;;;;
 ;; PRINTER
 ;;
 
 (define-record-printer pob
   (lambda (pob out)
-    (let* ((_resolve-method
-            (cdr (stdpob-_resolve-method
-                  pob '_resolve-method
-                  stdpob-_resolve-method)))
-           (_display
-            (cdr (_resolve-method
-                  pob '_display
-                  stdpob-_display))))
-      (_display pob out))))
+    ((%resolved-method pob '_display stdpob-_display)
+     pob out)))
 
 
 ;;;;;;;;;;;;;;
@@ -80,23 +89,13 @@
 
 
 (define (send pob message . args)
-  (let* ((resolve-method (cdr (stdpob-_resolve-method
-                               pob '_resolve-method
-                               stdpob-_resolve-method)))
-         (receive (cdr (resolve-method
-                        pob '_receive
-                        stdpob-_receive))))
-    (receive pob message args)))
+  ((%resolved-method pob '_receive stdpob-_receive)
+   pob message args))
 
 (define (prop-reader prop-name)
   (lambda (self)
-    (let* ((resolve-method (cdr (stdpob-_resolve-method
-                                 self '_resolve-method
-                                 stdpob-_resolve-method)))
-           (resolve-prop (cdr (resolve-method
-                               self '_resolve-prop
-                               stdpob-_resolve-prop))))
-      (cdr (resolve-prop self prop-name)))))
+    (cdr ((%resolved-method self '_resolve-prop stdpob-_resolve-prop)
+          self prop-name))))
 
 (define (prop-writer prop-name)
   (lambda (self value)
@@ -154,31 +153,14 @@
          'args args))
 
 (define (stdpob-_receive self message args)
-  ;; Use stdpob-_resolve-method to find self's _resolve-method method
-  ;; (or stdpob-_resolve-method if not found), then use that to find
-  ;; the method matching the message and call it. If the method is not
-  ;; found, find and call self's _method-missing method (or
-  ;; stdpob-_method-missing if not found).
-  (let* ((resolve-method (cdr (stdpob-_resolve-method
-                               self '_resolve-method
-                               stdpob-_resolve-method)))
-         (res (resolve-method self message))
-         (found-m (car res))
-         (method (cdr res)))
-    (if found-m
+  (let ((method (%resolved-method self message)))
+    (if (not (equal? method (void)))
         (apply method self args)
-        (let ((method-missing
-               (cdr (resolve-method
-                     self '_method-missing
-                     stdpob-_method-missing))))
-          (method-missing self message args)))))
+        ((%resolved-method self '_method-missing stdpob-_method-missing)
+         self message args))))
 
 (define (stdpob-responds-to? self message . args)
-  (let ((resolve-method (cdr (stdpob-_resolve-method
-                              self '_resolve-method
-                              stdpob-_resolve-method))))
-    (not (equal? (cdr (resolve-method self message (void)))
-                 (void)))))
+  (not (equal? (%resolved-method self message) (void))))
 
 (define (stdpob-_display self #!optional (port (current-output-port)))
   (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))
