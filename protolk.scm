@@ -30,8 +30,8 @@
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(load-relative "util")
-(load-relative "primitives")
+(load-relative "protolk-internal")
+(load-relative "protolk-primitives")
 
 (module protolk
   (make-pob
@@ -50,7 +50,7 @@
    stdpob-_display)
 
 (import scheme chicken)
-(import %protolk-util protolk-primitives)
+(import protolk-internal protolk-primitives)
 (use extras)
 
 

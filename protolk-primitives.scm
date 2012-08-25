@@ -30,7 +30,7 @@
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(load-relative "util")
+(load-relative "protolk-internal")
 
 
 (module protolk-primitives
@@ -44,7 +44,7 @@
    %set-method!  %unset-method!)
 
 (import scheme chicken)
-(import %protolk-util)
+(import protolk-internal)
 (use srfi-1)
 
 

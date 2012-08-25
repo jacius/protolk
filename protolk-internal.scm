@@ -34,7 +34,7 @@
 ;;; Protolk source code itself. These are NOT part of the Protolk API,
 ;;; and may change at any time. Do not use them.
 
-(module %protolk-util *
+(module protolk-internal *
 (import scheme chicken)
 
 
@@ -74,4 +74,4 @@
   (abort (apply make-exception kinds message other-properties)))
 
 
-) ;; end  module %protolk-util
+) ;; end module protolk-internal

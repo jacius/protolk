@@ -4,7 +4,7 @@
 (load-relative "../protolk")
 (import protolk
         protolk-primitives
-        %protolk-util)
+        protolk-internal)
 
 (use extras)
 

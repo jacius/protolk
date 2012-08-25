@@ -1,7 +1,7 @@
 
 (load-relative "helpers")
 
-(load-relative "../primitives")
+(load-relative "../protolk-primitives")
 (import protolk-primitives)
 
 
