@@ -51,7 +51,7 @@
 
 (import scheme chicken)
 (import %protolk-util protolk-primitives)
-(use extras bindings)
+(use extras)
 
 
 ;;;;;;;;;;
