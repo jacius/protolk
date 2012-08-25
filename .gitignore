@@ -5,3 +5,4 @@
 *.so
 *.dll
 *.import.scm
+salmonella.log
