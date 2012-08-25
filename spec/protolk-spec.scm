@@ -268,7 +268,8 @@
 
 
 (describe "stdpob-has-ancestor?"
-  (define pob1 (make-pob props: '((base . #f))))
+  (define pob1 (make-pob props: '((base . #f))
+                         methods: `((has-ancestor? . ,stdpob-has-ancestor?))))
   (define pob2 (stdpob-derive pob1))
   (define pob3 (stdpob-derive pob2))
   (define pob2b (stdpob-derive pob1))
@@ -287,6 +288,19 @@
 
   (it "returns #f if the second argument is not a pob"
     (not (stdpob-has-ancestor? pob3 'foo)))
+
+  (it "sends 'has-ancestor? to the base to continue the lookup"
+    (let* ((pob-a (make-pob))
+           (pob-b (stdpob-derive pob-a))
+           (pob-c (stdpob-derive pob-b
+                   methods: `((has-ancestor? . ,stdpob-has-ancestor?)))))
+      (%set-method! pob-b '_receive
+        (lambda (self message . args)
+          (if (and (equal? self pob-b) (equal? message 'has-ancestor?))
+              (raise 'success "Success!")
+              (apply stdpob-_receive self message args))))
+      (raises? (success)
+        (stdpob-has-ancestor? pob-c pob-a))))
   
   (it "fails when given no args"
     (raises? (arity)

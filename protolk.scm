@@ -125,7 +125,7 @@
           ((eq? base other)
            #t)
           (else
-           (stdpob-has-ancestor? base other)))))
+           (send base 'has-ancestor? other)))))
 
 (define (stdpob-_resolve-prop self prop-name
                               #!optional (default (void)))
