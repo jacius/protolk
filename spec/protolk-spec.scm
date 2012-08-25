@@ -227,24 +227,40 @@
 
 
 (describe "stdpob-ancestors"
-  (define pob1 (make-pob props: '((base . #f))))
+  (define pob1 (make-pob props: '((base . #f))
+                         methods: `((ancestors . ,stdpob-ancestors))))
   (define pob2 (stdpob-derive pob1))
   (define pob3 (stdpob-derive pob2))
   (define pob4 (stdpob-derive pob3))
 
   (it "returns a list of all the pob's ancestors, most immediate first"
-    (equal? (stdpob-ancestors pob4) (list pob3 pob2 pob1)))
+    (equal? (stdpob-ancestors pob4)
+            (list pob3 pob2 pob1)))
+
+  (it "sends 'ancestors to the base to continue the lookup chain"
+    (let* ((pob-a (make-pob))
+           (pob-b (stdpob-derive pob-a methods: `((ancestors . ,stdpob-ancestors)))))
+      (%set-method! pob-a '_receive
+        (lambda (self message . args)
+          (if (and (equal? self pob-a) (equal? message 'ancestors))
+              (raise 'success "Success!")
+              (apply stdpob-_receive self message args))))
+      (raises? (success)
+        (stdpob-ancestors pob-b))))
 
   (it "ends the lookup chain when it encounters a non-pob base"
-    (let* ((pob-a (make-pob props: '((base . foo))))
+    (let* ((pob-a (make-pob props: '((base . foo))
+                            methods: `((ancestors . ,stdpob-ancestors))))
            (pob-b (stdpob-derive pob-a)))
       (equal? (stdpob-ancestors pob-b) (list pob-a))))
-  
+
   (it "returns an empty list if the pob's base is #f"
-    (equal? (stdpob-ancestors (make-pob props: '((base . #f)))) '()))
+    (equal? (stdpob-ancestors (make-pob props: '((base . #f))))
+            '()))
 
   (it "returns an empty list if the pob's base is unspecified"
-    (equal? (stdpob-ancestors (make-pob)) '()))
+    (equal? (stdpob-ancestors (make-pob))
+            '()))
 
   (it "fails when given a non-pob"
     (raises? (type)

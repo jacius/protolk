@@ -115,7 +115,7 @@
 (define (stdpob-ancestors self)
   (let ((base (%prop self 'base #f)))
     (if (pob? base)
-        (cons base (stdpob-ancestors base))
+        (cons base (send base 'ancestors))
         '())))
 
 (define (stdpob-has-ancestor? self other)
