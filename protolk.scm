@@ -160,7 +160,10 @@
          self message args))))
 
 (define (stdpob-responds-to? self message . args)
-  (not (equal? (%resolved-method self message) (void))))
+  (or (not (void? (%method self message)))
+      (let ((base (%prop self 'base #f)))
+        (and (pob? base)
+             (apply send base 'responds-to? message args)))))
 
 (define (stdpob-_display self #!optional (port (current-output-port)))
   (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))

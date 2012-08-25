@@ -529,7 +529,9 @@
   (define (fn self) #t)
 
   (define pob1
-    (make-pob props: '((base . #f)) methods: `((a . ,fn) (x . ,(void)))))
+    (make-pob props: '((base . #f))
+              methods: `((a . ,fn) (x . ,(void))
+                         (responds-to? . ,stdpob-responds-to?))))
   (define pob2
     (stdpob-derive pob1 methods: `((b . ,fn) (y . ,(void)))))
   (define pob3
@@ -555,6 +557,18 @@
   (it "accepts (but ignores) any number of args after the message"
     (not (raises? ()
            (stdpob-responds-to? pob3 'a 1 2 3 4 5 6 7 8 9 0))))
+
+  (it "sends 'responds-to? to the base to continue the lookup"
+    (let* ((pob-a (make-pob))
+           (pob-b (stdpob-derive pob-a
+                   methods: `((responds-to? . ,stdpob-responds-to?)))))
+      (%set-method! pob-a '_receive
+        (lambda (self message . args)
+          (if (and (equal? self pob-a) (equal? message 'responds-to?))
+              (raise 'success "Success!")
+              (apply stdpob-_receive self message args))))
+      (raises? (success)
+        (stdpob-responds-to? pob-b 'foo))))
   
   (it "fails if given no args"
     (raises? (arity) (stdpob-responds-to?)))
