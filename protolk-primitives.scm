@@ -30,7 +30,11 @@
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(load-relative "protolk-internal")
+(cond-expand
+ (compiling-extension
+  (require-library protolk-internal))
+ (else
+  (load-relative "protolk-internal.scm")))
 
 
 (module protolk-primitives
