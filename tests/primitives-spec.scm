@@ -1,8 +1,13 @@
 
-(load-relative "helpers")
+(cond-expand
+ ((not protolk-all-tests)
+  (load-relative "helpers")
+  (load-relative "../protolk-primitives")
+  (import protolk
+          protolk-primitives
+          protolk-internal))
+ (else))
 
-(load-relative "../protolk-primitives")
-(import protolk-primitives)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -247,4 +252,8 @@
         (%unset-method! (%make-pob '() '()))))))
 
 
-(test-exit)
+
+(cond-expand
+ ((not protolk-all-tests)
+  (test-exit))
+ (else))

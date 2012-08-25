@@ -48,6 +48,7 @@ Misc:
 - [-] Egg install
   - [X] setup file
   - [X] meta file
+  - [X] tests/run.scm
   - [ ] documentation page
 
 Demos:

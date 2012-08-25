@@ -1,10 +1,14 @@
 
-(load-relative "helpers")
 
-(load-relative "../protolk")
-(import protolk
-        protolk-primitives
-        protolk-internal)
+(cond-expand
+ ((not protolk-all-tests)
+  (load-relative "helpers")
+  (load-relative "../protolk")
+  (import protolk
+          protolk-primitives
+          protolk-internal))
+ (else))
+
 
 (use extras)
 
@@ -640,4 +644,8 @@
     (equal? (%method stdpob '_display) stdpob-_display)))
 
 
-(test-exit)
+
+(cond-expand
+ ((not protolk-all-tests)
+  (test-exit))
+ (else))
