@@ -43,7 +43,19 @@ Methods:
 Make stdpob methods available as procedures, e.g. =stdpob-derive=,
 =stdpob-_resolve-prop=.
 
+Misc:
 - [X] pob record printer invokes =_display= method
+- [ ] Egg install
+  - [ ] setup file
+  - [ ] meta file
+  - [ ] documentation page
+
+Demos:
+- [ ] Basics
+  - Deriving from stdpob
+  - Overriding stdpob props and methods
+  - Adding custom props and methods
+- [ ] Emulating classes
 
 * Milestone 3: Methods and Encapsulation
 
