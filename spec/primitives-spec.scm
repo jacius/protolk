@@ -13,16 +13,16 @@
 
   (describe "%make-pob"
     (it "succeeds when given a props alist and a methods alist"
-      (not (raises-exception? ()
+      (not (raises? ()
              (%make-pob '() '()))))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%make-pob)))
     (it "fails when given only one arg"
-      (raises-exception? ()
+      (raises? ()
         (%make-pob '())))
     (it "fails when given too many args"
-      (raises-exception? ()
+      (raises? ()
         (%make-pob '() '() '()))))
 
   (describe "pob?"
@@ -31,7 +31,7 @@
     (it "returns #f when given a non-pob"
       (not (pob? 'foo)))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (pob?))))
 
   
@@ -40,10 +40,10 @@
       (equal? (%pob-props (%make-pob '((a . 1)) '()))
               '((a . 1))))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%pob-props 'foo)))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%pob-props))))
 
   (describe "%pob-set-props!"
@@ -53,13 +53,13 @@
         (equal? (%pob-props pob)
                 '((a . 1)))))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%pob-set-props! 'foo '((a . 1)))))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%pob-set-props!)))
     (it "fails when given only one arg"
-      (raises-exception? ()
+      (raises? ()
         (%pob-set-props! (%make-pob '() '())))))
 
   (define (fn pob) #t)
@@ -69,10 +69,10 @@
       (equal? (%pob-methods (%make-pob '() `((m . ,fn))))
               `((m . ,fn))))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%pob-methods 'foo)))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%pob-methods))))
 
   (describe "%pob-set-methods!"
@@ -82,13 +82,13 @@
         (equal? (%pob-methods pob)
                 `((m . ,fn)))))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%pob-set-methods! 'foo `((m . ,fn)))))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%pob-set-methods!)))
     (it "fails when given only one arg"
-      (raises-exception? ()
+      (raises? ()
         (%pob-set-methods! (%make-pob '() '()))))))
 
 
@@ -104,10 +104,10 @@
     (it "returns #f when the pob does not have a matching prop"
       (not (%has-prop? (%make-pob '((a . 1)) '()) 'foo)))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%has-prop? 'foo 'a)))
     (it "fails when no prop name is specified"
-      (raises-exception? ()
+      (raises? ()
         (%has-prop? (%make-pob '((a . 1)) '())))))
 
   (describe "%prop"
@@ -121,10 +121,10 @@
       (equal? (%prop (%make-pob '((a . 1)) '()) 'foo 'result)
               'result))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%prop 'foo 'bar)))
     (it "fails when no prop name is specified"
-      (raises-exception? ()
+      (raises? ()
         (%prop (%make-pob '((a . 1)) '())))))
 
   (describe "%set-prop!"
@@ -137,16 +137,16 @@
         (%set-prop! pob 'a 2)
         (equal? (%prop pob 'a) 2)))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%set-prop!)))    
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%set-prop! 'foo 'a 1)))
     (it "fails when no prop name or value is specified"
-      (raises-exception? ()
+      (raises? ()
         (%set-prop! (%make-pob '() '()))))
     (it "fails when no value is specified"
-      (raises-exception? ()
+      (raises? ()
         (%set-prop (%make-pob '() '()) 'a))))
 
   (describe "%unset-prop!"
@@ -159,13 +159,13 @@
         (%unset-prop! pob 'a)
         (not (%has-prop? pob 'a))))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%unset-prop!)))    
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%unset-prop! 'foo 'a)))
     (it "fails when no prop name is specified"
-      (raises-exception? ()
+      (raises? ()
         (%unset-prop! (%make-pob '() '()))))))
 
 
@@ -183,10 +183,10 @@
     (it "returns #f when the pob does not have a matching method"
       (not (%has-method? (%make-pob '() `((m . ,fn))) 'foo)))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%has-method? 'foo 'm)))
     (it "fails when no method name is specified"
-      (raises-exception? ()
+      (raises? ()
         (%has-method? (%make-pob '() `((m . ,fn)))))))
 
   (describe "%method"
@@ -200,10 +200,10 @@
       (equal? (%method (%make-pob '() `((m . ,fn))) 'foo fn)
               fn))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%method 'foo 'm)))
     (it "fails when no method name is specified"
-      (raises-exception? ()
+      (raises? ()
         (%method (%make-pob '() `((m . ,fn)))))))
 
   (describe "%set-method!"
@@ -216,16 +216,16 @@
         (%set-method! pob 'm fn)
         (equal? (%method pob 'm) fn)))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%set-method!)))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%set-method! 'foo 'm fn)))
     (it "fails when no method name or value is specified"
-      (raises-exception? ()
+      (raises? ()
         (%set-method! (%make-pob '() '()))))
     (it "fails when no value is specified"
-      (raises-exception? ()
+      (raises? ()
         (%set-method (%make-pob '() '()) 'fn))))
 
   (describe "%unset-method!"
@@ -237,13 +237,13 @@
       (let ((pob (%make-pob '() '())))
         (not (%has-method? pob 'm))))
     (it "fails when given no args"
-      (raises-exception? ()
+      (raises? ()
         (%unset-method!)))
     (it "fails when given a non-pob"
-      (raises-exception? ()
+      (raises? ()
         (%unset-method! 'foo 'a)))
     (it "fails when no method name is specified"
-      (raises-exception? ()
+      (raises? ()
         (%unset-method! (%make-pob '() '()))))))
 
 
