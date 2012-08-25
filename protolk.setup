@@ -1,0 +1,35 @@
+;;;; -*- Scheme -*-
+
+(define VERSION "0.2")
+
+;;; protolk-internal
+(compile -s -O2 -d1 -J protolk-internal.scm)
+(compile -s protolk-internal.import.scm -O2 -d0)
+
+(install-extension
+  'protolk-internal
+  '("protolk-internal.so"
+    "protolk-internal.import.so")
+  `((version ,VERSION)))
+
+
+;;; protolk-primitives
+(compile -s -O2 -d1 -J protolk-primitives.scm)
+(compile -s protolk-primitives.import.scm -O2 -d0)
+
+(install-extension
+  'protolk-primitives
+  '("protolk-primitives.so"
+    "protolk-primitives.import.so")
+  `((version ,VERSION)))
+
+
+;;; protolk
+(compile -s -O2 -d1 -J protolk.scm)
+(compile -s protolk.import.scm -O2 -d0)
+
+(install-extension
+  'protolk
+  '("protolk.so"
+    "protolk.import.so")
+  `((version ,VERSION)))

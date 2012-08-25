@@ -1,0 +1,9 @@
+;;;; -*- Scheme -*-
+
+((egg "protolk.egg")
+ (author "John Croisant <protolk@croisant.net>")
+ (synopsis "Flexible Scheme objects with message passing and prototypes")
+ (category oop)
+ (license "BSD")
+ ;; (depends)
+ (test-depends test miscmacros))

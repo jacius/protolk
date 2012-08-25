@@ -45,9 +45,9 @@ Make stdpob methods available as procedures, e.g. =stdpob-derive=,
 
 Misc:
 - [X] pob record printer invokes =_display= method
-- [ ] Egg install
-  - [ ] setup file
-  - [ ] meta file
+- [-] Egg install
+  - [X] setup file
+  - [X] meta file
   - [ ] documentation page
 
 Demos:
