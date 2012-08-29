@@ -51,13 +51,6 @@ Misc:
   - [X] tests/run.scm
   - [X] documentation page
 
-Demos:
-- [ ] Basics
-  - Deriving from stdpob
-  - Overriding stdpob props and methods
-  - Adding custom props and methods
-- [ ] Emulating classes
-
 * Milestone 3: Methods and Encapsulation
 
 - [ ] =in-method= macro
@@ -72,12 +65,21 @@ Demos:
   (raise exception unless given pob is current-self)
 - [ ] =define-private-method= macro
 
+Demos:
+- [ ] Basics
+  - Deriving from stdpob
+  - Overriding stdpob props and methods
+  - Adding custom props and methods
+- [ ] Emulating classical inheritance
+
 * Milestone 4: Syntax Sugar
 
 - [ ] =own-prop= syntax: =@foo=
 - [ ] =send= syntax: =[pob msg args...]=
 - [ ] =enable-protolk-syntax= procedure
 - [ ] =with-protolk-syntax= macro
+
+- [ ] Update demos
 
 * Milestone 5: Aliases and Multiple Inheritance
 
