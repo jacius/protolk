@@ -106,8 +106,7 @@
 
 (define (prop-reader prop-name)
   (lambda (self)
-    (cdr ((%resolved-method self '_resolve-prop std-resolve-prop)
-          self prop-name))))
+    (cdr (%resolve-prop self prop-name))))
 
 (define (prop-writer prop-name)
   (lambda (self value)
