@@ -43,16 +43,18 @@
    send
    prop-reader
    prop-writer
-   stdpob
-   stdpob-derive
-   stdpob-ancestors
-   stdpob-has-ancestor?
-   stdpob-_resolve-prop
-   stdpob-_resolve-method
-   stdpob-_method-missing
-   stdpob-_receive
-   stdpob-responds-to?
-   stdpob-_display)
+
+   std-derive
+   std-ancestors
+   std-has-ancestor?
+   std-_resolve-prop
+   std-_resolve-method
+   std-_method-missing
+   std-_receive
+   std-responds-to?
+   std-_display
+
+   stdpob)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -63,13 +65,13 @@
 ;; UTIL
 ;;
 
-;; Use stdpob-_resolve-method to find self's _resolve-method method
-;; (or stdpob-_resolve-method if not found), then use that to find
+;; Use std-_resolve-method to find self's _resolve-method method
+;; (or std-_resolve-method if not found), then use that to find
 ;; the desired method and return it (or the default if not found).
 (define (%resolved-method self method-name #!optional (default (void)))
   (let ((resolve-method
-         (cdr (stdpob-_resolve-method self '_resolve-method
-                                      stdpob-_resolve-method))))
+         (cdr (std-_resolve-method self '_resolve-method
+                                      std-_resolve-method))))
     (cdr (resolve-method
           self method-name
           default))))
@@ -81,7 +83,7 @@
 
 (define-record-printer pob
   (lambda (pob out)
-    ((%resolved-method pob '_display stdpob-_display)
+    ((%resolved-method pob '_display std-_display)
      pob out)))
 
 
@@ -94,12 +96,12 @@
 
 
 (define (send pob message . args)
-  ((%resolved-method pob '_receive stdpob-_receive)
+  ((%resolved-method pob '_receive std-_receive)
    pob message args))
 
 (define (prop-reader prop-name)
   (lambda (self)
-    (cdr ((%resolved-method self '_resolve-prop stdpob-_resolve-prop)
+    (cdr ((%resolved-method self '_resolve-prop std-_resolve-prop)
           self prop-name))))
 
 (define (prop-writer prop-name)
@@ -107,22 +109,22 @@
     (%set-prop! self prop-name value)))
 
 
-;;;;;;;;;;;;;;;;;;;;
-;; STDPOB METHODS
+;;;;;;;;;;;;;;;;;;;;;;
+;; STANDARD METHODS
 ;;
 
-(define (stdpob-derive self #!key (props '()) (methods '()))
+(define (std-derive self #!key (props '()) (methods '()))
   (unless (or (pob? self) (equal? self #f))
     (raise 'type (sprintf "Not a pob: ~s" self)))
   (make-pob base: self props: props methods: methods))
 
-(define (stdpob-ancestors self)
+(define (std-ancestors self)
   (let ((base (%pob-base self)))
     (if (pob? base)
         (cons base (send base 'ancestors))
         '())))
 
-(define (stdpob-has-ancestor? self other)
+(define (std-has-ancestor? self other)
   (let ((base (%pob-base self)))
     (cond ((not (pob? base))
            #f)
@@ -131,45 +133,45 @@
           (else
            (send base 'has-ancestor? other)))))
 
-(define (stdpob-_resolve-prop self prop-name
-                              #!optional (default (void)))
+(define (std-_resolve-prop self prop-name
+                           #!optional (default (void)))
   (if (%has-prop? self prop-name)
       (cons self (%prop self prop-name))
       (let ((base (%pob-base self)))
         (if (pob? base)
-            (stdpob-_resolve-prop base prop-name default)
+            (std-_resolve-prop base prop-name default)
             (cons #f default)))))
 
-(define (stdpob-_resolve-method self method-name
-                                #!optional (default (void)))
+(define (std-_resolve-method self method-name
+                             #!optional (default (void)))
   (if (%has-method? self method-name)
       (cons self (%method self method-name))
       (let ((base (%pob-base self)))
         (if (pob? base)
-            (stdpob-_resolve-method base method-name default)
+            (std-_resolve-method base method-name default)
             (cons #f default)))))
 
-(define (stdpob-_method-missing self method-name args)
+(define (std-_method-missing self method-name args)
   (raise 'no-method
          (sprintf "undefined method '~s for ~s" method-name self)
          'pob self
          'method-name method-name
          'args args))
 
-(define (stdpob-_receive self message args)
+(define (std-_receive self message args)
   (let ((method (%resolved-method self message)))
     (if (not (equal? method (void)))
         (apply method self args)
-        ((%resolved-method self '_method-missing stdpob-_method-missing)
+        ((%resolved-method self '_method-missing std-_method-missing)
          self message args))))
 
-(define (stdpob-responds-to? self message . args)
+(define (std-responds-to? self message . args)
   (or (not (void? (%method self message)))
       (let ((base (%pob-base self)))
         (and (pob? base)
              (apply send base 'responds-to? message args)))))
 
-(define (stdpob-_display self #!optional (port (current-output-port)))
+(define (std-_display self #!optional (port (current-output-port)))
   (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))
   (display "#<pob>" port))
 
@@ -181,14 +183,14 @@
 (define stdpob
   (make-pob
    base: #f
-   methods: `((derive . ,stdpob-derive)
-              (ancestors . ,stdpob-ancestors)
-              (has-ancestor? . ,stdpob-has-ancestor?)
-              (_resolve-prop . ,stdpob-_resolve-prop)
-              (_resolve-method . ,stdpob-_resolve-method)
-              (_method-missing . ,stdpob-_method-missing)
-              (_receive . ,stdpob-_receive)
-              (responds-to? . ,stdpob-responds-to?)
-              (_display . ,stdpob-_display))))
+   methods: `((derive          . ,std-derive)
+              (ancestors       . ,std-ancestors)
+              (has-ancestor?   . ,std-has-ancestor?)
+              (_resolve-prop   . ,std-_resolve-prop)
+              (_resolve-method . ,std-_resolve-method)
+              (_method-missing . ,std-_method-missing)
+              (_receive        . ,std-_receive)
+              (responds-to?    . ,std-responds-to?)
+              (_display        . ,std-_display))))
 
 ) ;; end module protolk

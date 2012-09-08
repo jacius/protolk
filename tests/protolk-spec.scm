@@ -21,10 +21,10 @@
   (define (display-foo self port) (display "foo" port))
   
   (define pob1 (make-pob))
-  (define pob2 (stdpob-derive pob1 methods: `((_display . ,display-foo))))
-  (define pob3 (stdpob-derive pob2))
+  (define pob2 (std-derive pob1 methods: `((_display . ,display-foo))))
+  (define pob3 (std-derive pob2))
 
-  (it "uses stdpob-_display if it has no _display method"
+  (it "uses std-_display if it has no _display method"
     (equal? (with-output-to-string
               (lambda () (display pob1)))
             "#<pob>"))
@@ -86,24 +86,24 @@
 (describe "send"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_resolve-method . ,stdpob-_resolve-method)
-                         (_resolve-prop   . ,stdpob-_resolve-prop)
+    (make-pob methods: `((_resolve-method . ,std-_resolve-method)
+                         (_resolve-prop   . ,std-_resolve-prop)
                          (_method-missing . ,noop))))
   
   ;; it "uses the pob's _resolve-method method to find its _receive method"
-  (let* ((pob (stdpob-derive base-pob))
+  (let* ((pob (std-derive base-pob))
          (stub-resolve
           (lambda (self method-name #!optional default)
             (if (eq? method-name '_receive)
                 (raise 'success "Success!")
-                (stdpob-_resolve-method self method-name default)))))
+                (std-_resolve-method self method-name default)))))
     (%set-method! pob '_resolve-method stub-resolve)
     (it "uses the pob's _resolve-method method to find its _receive method"
       (raises? (success)
         (send pob 'amethod 1 2 3))))
 
   ;; it "invokes the _receive method with the expected arguments"
-  (let* ((pob (stdpob-derive base-pob))
+  (let* ((pob (std-derive base-pob))
          (expected-args (list pob 'amethod '(1 2 3)))
          (stub-receive (lambda args
                          (if (equal? args expected-args)
@@ -191,183 +191,183 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;
-;; STDPOB METHODS
+;; STD METHODS
 ;;
 
-(describe "stdpob-derive"
+(describe "std-derive"
   (define base-pob (make-pob))
   (define (fn pob) #t)
 
   (it "returns a new pob based on the given pob"
-    (equal? (%pob-base (stdpob-derive base-pob)) base-pob))
+    (equal? (%pob-base (std-derive base-pob)) base-pob))
 
   (it "allows the base pob to be #f"
-    (equal? (%pob-base (stdpob-derive #f)) #f))
+    (equal? (%pob-base (std-derive #f)) #f))
 
   (it "fails when given a non-pob other than #f"
     (raises? (type)
-      (stdpob-derive 'notapob)))
+      (std-derive 'notapob)))
 
   (it "fails when the pob argument is omitted"
     (raises? (arity)
-      (stdpob-derive)))
+      (std-derive)))
 
   (it "sets the specified props to the new pob"
-    (let ((new-pob (stdpob-derive base-pob #:props '((a . 1)))))
+    (let ((new-pob (std-derive base-pob #:props '((a . 1)))))
       (equal? (%prop new-pob 'a) 1)))
 
   (it "sets no props if #:props is omitted"
-    (let ((new-pob (stdpob-derive base-pob)))
+    (let ((new-pob (std-derive base-pob)))
       (equal? (%pob-props new-pob) `())))
 
   (it "sets the specified methods to the new pob"
-    (let ((new-pob (stdpob-derive base-pob #:methods `((m . ,fn)))))
+    (let ((new-pob (std-derive base-pob #:methods `((m . ,fn)))))
       (equal? (%method new-pob 'm) fn)))
 
   (it "sets no methods if #:methods is omitted"
-    (let ((new-pob (stdpob-derive base-pob)))
+    (let ((new-pob (std-derive base-pob)))
       (equal? (%pob-methods new-pob) '()))))
 
 
-(describe "stdpob-ancestors"
-  (define pob1 (make-pob methods: `((ancestors . ,stdpob-ancestors))))
-  (define pob2 (stdpob-derive pob1))
-  (define pob3 (stdpob-derive pob2))
-  (define pob4 (stdpob-derive pob3))
+(describe "std-ancestors"
+  (define pob1 (make-pob methods: `((ancestors . ,std-ancestors))))
+  (define pob2 (std-derive pob1))
+  (define pob3 (std-derive pob2))
+  (define pob4 (std-derive pob3))
 
   (it "returns a list of all the pob's ancestors, most immediate first"
-    (equal? (stdpob-ancestors pob4)
+    (equal? (std-ancestors pob4)
             (list pob3 pob2 pob1)))
 
   (it "sends 'ancestors to the base to continue the lookup chain"
     (let* ((pob-a (make-pob))
-           (pob-b (stdpob-derive pob-a methods: `((ancestors . ,stdpob-ancestors)))))
+           (pob-b (std-derive pob-a methods: `((ancestors . ,std-ancestors)))))
       (%set-method! pob-a '_receive
         (lambda (self message . args)
           (if (and (equal? self pob-a) (equal? message 'ancestors))
               (raise 'success "Success!")
-              (apply stdpob-_receive self message args))))
+              (apply std-_receive self message args))))
       (raises? (success)
-        (stdpob-ancestors pob-b))))
+        (std-ancestors pob-b))))
 
   (it "ends the lookup chain when it encounters a #f base"
-    (let* ((pob-a (make-pob methods: `((ancestors . ,stdpob-ancestors))))
-           (pob-b (stdpob-derive pob-a)))
-      (equal? (stdpob-ancestors pob-b) (list pob-a))))
+    (let* ((pob-a (make-pob methods: `((ancestors . ,std-ancestors))))
+           (pob-b (std-derive pob-a)))
+      (equal? (std-ancestors pob-b) (list pob-a))))
 
   (it "returns an empty list if the pob's base is #f"
-    (equal? (stdpob-ancestors (make-pob base: #f))
+    (equal? (std-ancestors (make-pob base: #f))
             '()))
 
   (it "returns an empty list if the pob's base is unspecified"
-    (equal? (stdpob-ancestors (make-pob))
+    (equal? (std-ancestors (make-pob))
             '()))
 
   (it "fails when given a non-pob"
     (raises? (type)
-      (stdpob-ancestors #f))))
+      (std-ancestors #f))))
 
 
-(describe "stdpob-has-ancestor?"
-  (define pob1 (make-pob methods: `((has-ancestor? . ,stdpob-has-ancestor?))))
-  (define pob2 (stdpob-derive pob1))
-  (define pob3 (stdpob-derive pob2))
-  (define pob2b (stdpob-derive pob1))
+(describe "std-has-ancestor?"
+  (define pob1 (make-pob methods: `((has-ancestor? . ,std-has-ancestor?))))
+  (define pob2 (std-derive pob1))
+  (define pob3 (std-derive pob2))
+  (define pob2b (std-derive pob1))
 
   (it "returns #t if the second pob is an ancestor of the first pob"
-    (stdpob-has-ancestor? pob3 pob1))
+    (std-has-ancestor? pob3 pob1))
 
   (it "returns #f if the second pob is not an ancestor of the first pob"
-    (not (stdpob-has-ancestor? pob3 pob2b)))
+    (not (std-has-ancestor? pob3 pob2b)))
 
   (it "returns #f if both arguments are the same pob"
-    (not (stdpob-has-ancestor? pob2 pob2)))
+    (not (std-has-ancestor? pob2 pob2)))
 
   (it "returns #f if the second argument is #f"
-    (not (stdpob-has-ancestor? pob1 #f)))
+    (not (std-has-ancestor? pob1 #f)))
 
   (it "returns #f if the second argument is not a pob"
-    (not (stdpob-has-ancestor? pob3 'foo)))
+    (not (std-has-ancestor? pob3 'foo)))
 
   (it "sends 'has-ancestor? to the base to continue the lookup"
     (let* ((pob-a (make-pob))
-           (pob-b (stdpob-derive pob-a))
-           (pob-c (stdpob-derive pob-b
-                   methods: `((has-ancestor? . ,stdpob-has-ancestor?)))))
+           (pob-b (std-derive pob-a))
+           (pob-c (std-derive pob-b
+                   methods: `((has-ancestor? . ,std-has-ancestor?)))))
       (%set-method! pob-b '_receive
         (lambda (self message . args)
           (if (and (equal? self pob-b) (equal? message 'has-ancestor?))
               (raise 'success "Success!")
-              (apply stdpob-_receive self message args))))
+              (apply std-_receive self message args))))
       (raises? (success)
-        (stdpob-has-ancestor? pob-c pob-a))))
+        (std-has-ancestor? pob-c pob-a))))
   
   (it "fails when given no args"
     (raises? (arity)
-      (stdpob-has-ancestor?)))
+      (std-has-ancestor?)))
 
   (it "fails when given only one pob"
     (raises? (arity)
-      (stdpob-has-ancestor? pob3)))
+      (std-has-ancestor? pob3)))
 
   (it "fails when given too many args"
     (raises? (arity)
-      (stdpob-has-ancestor? pob3 pob2 pob1)))
+      (std-has-ancestor? pob3 pob2 pob1)))
 
   (it "fails when the first argument is not a pob"
     (raises? (type)
-      (stdpob-has-ancestor? 'foo pob1))))
+      (std-has-ancestor? 'foo pob1))))
 
 
-(describe "stdpob-_resolve-prop"
+(describe "std-_resolve-prop"
   (define pob1 (make-pob props: '((a . 1) (b . 2) (c . 3) (d . 4))))
-  (define pob2 (stdpob-derive pob1 props: `((a . 11) (c . ,(void)))))
-  (define pob3 (stdpob-derive pob2 props: '((b . 22))))
+  (define pob2 (std-derive pob1 props: `((a . 11) (c . ,(void)))))
+  (define pob3 (std-derive pob2 props: '((b . 22))))
 
   (it "returns a list with self and the prop value, if self defines the prop"
-    (equal? (stdpob-_resolve-prop pob3 'b) (cons pob3 22)))
+    (equal? (std-_resolve-prop pob3 'b) (cons pob3 22)))
 
   (it "returns a cons with the nearest ancestor that defines the prop, and the prop value"
-    (equal? (stdpob-_resolve-prop pob3 'a) (cons pob2 11)))
+    (equal? (std-_resolve-prop pob3 'a) (cons pob2 11)))
 
   (it "searches ancestors recursively to find the prop value"
-    (equal? (stdpob-_resolve-prop pob3 'd) (cons pob1 4)))
+    (equal? (std-_resolve-prop pob3 'd) (cons pob1 4)))
  
   (it "returns #f and the default value if the prop is not found"
-    (equal? (stdpob-_resolve-prop pob3 'z 'default) (cons #f 'default)))
+    (equal? (std-_resolve-prop pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
-    (equal? (stdpob-_resolve-prop pob3 'z) (cons #f (void))))
+    (equal? (std-_resolve-prop pob3 'z) (cons #f (void))))
 
   (it "stops searching if it ever finds the prop defined as #<unspecified>"
-    (equal? (stdpob-_resolve-prop pob3 'c) (cons pob2 (void))))
+    (equal? (std-_resolve-prop pob3 'c) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises? (arity)
-      (stdpob-_resolve-prop)))
+      (std-_resolve-prop)))
 
   (it "fails if the prop name is omitted"
     (raises? (arity)
-      (stdpob-_resolve-prop pob3)))
+      (std-_resolve-prop pob3)))
 
   (it "does not fail if given the pob and prop name"
     (not (raises? ()
-           (stdpob-_resolve-prop pob3 'a))))
+           (std-_resolve-prop pob3 'a))))
 
   (it "does not fail if given the pob, prop name, and default value"
     (not (raises? ()
-           (stdpob-_resolve-prop pob3 'a 'default))))
+           (std-_resolve-prop pob3 'a 'default))))
   
   (it "fails if given too many args"
     (raises? ()
-      (stdpob-_resolve-prop pob3 'a 'b 'c)))
+      (std-_resolve-prop pob3 'a 'b 'c)))
 
   (it "fails if given a non-pob for the first arg"
     (raises? (type)
-      (stdpob-_resolve-prop 'foo 'a))))
+      (std-_resolve-prop 'foo 'a))))
 
 
-(describe "stdpob-_resolve-method"
+(describe "std-_resolve-method"
   (define (fn1 self) 1)
   (define (fn2 self) 2)
   (define (fn3 self) 3)
@@ -378,75 +378,75 @@
   (define pob1
     (make-pob methods: `((m . ,fn1) (n . ,fn2) (o . ,fn3) (p . ,fn4))))
   (define pob2
-    (stdpob-derive pob1 methods: `((m . ,fn5) (o . ,(void)))))
+    (std-derive pob1 methods: `((m . ,fn5) (o . ,(void)))))
   (define pob3
-    (stdpob-derive pob2 methods: `((n . ,fn6))))
+    (std-derive pob2 methods: `((n . ,fn6))))
 
   (it "returns a pair with self and the definition if self defines it"
-    (equal? (stdpob-_resolve-method pob3 'n) (cons pob3 fn6)))
+    (equal? (std-_resolve-method pob3 'n) (cons pob3 fn6)))
 
   (it "returns a pair with the nearest ancestor that defines the method, and the definition"
-    (equal? (stdpob-_resolve-method pob3 'm) (cons pob2 fn5)))
+    (equal? (std-_resolve-method pob3 'm) (cons pob2 fn5)))
 
   (it "searches ancestors recursively to find the definition"
-    (equal? (stdpob-_resolve-method pob3 'p) (cons pob1 fn4)))
+    (equal? (std-_resolve-method pob3 'p) (cons pob1 fn4)))
  
   (it "returns #f and the default value if the method is not found"
-    (equal? (stdpob-_resolve-method pob3 'z 'default) (cons #f 'default)))
+    (equal? (std-_resolve-method pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
-    (equal? (stdpob-_resolve-method pob3 'z) (cons #f (void))))
+    (equal? (std-_resolve-method pob3 'z) (cons #f (void))))
   
   (it "stops searching if it ever finds the method defined as #<unspecified>"
-    (equal? (stdpob-_resolve-method pob3 'o) (cons pob2 (void))))
+    (equal? (std-_resolve-method pob3 'o) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises? (arity)
-      (stdpob-_resolve-method)))
+      (std-_resolve-method)))
 
   (it "fails if the method name is omitted"
     (raises? (arity)
-      (stdpob-_resolve-method pob3)))
+      (std-_resolve-method pob3)))
 
   (it "does not fail if given the pob and method name"
     (not (raises? ()
-           (stdpob-_resolve-method pob3 'm))))
+           (std-_resolve-method pob3 'm))))
 
   (it "does not fail if given the pob, method name, and default value"
     (not (raises? ()
-           (stdpob-_resolve-method pob3 'm 'default))))
+           (std-_resolve-method pob3 'm 'default))))
   
   (it "fails if given too many args"
     (raises? ()
-      (stdpob-_resolve-method pob3 'm 'default 'o)))
+      (std-_resolve-method pob3 'm 'default 'o)))
 
   (it "fails if given a non-pob for the first arg"
     (raises? (type)
-      (stdpob-_resolve-method 'foo 'm))))
+      (std-_resolve-method 'foo 'm))))
 
 
-(describe "stdpob-_method-missing"
+(describe "std-_method-missing"
   (define pob1 (make-pob))
 
   (it "fails when given only one arg"
     (raises? (arity)
-      (stdpob-_method-missing pob1)))
+      (std-_method-missing pob1)))
 
   (it "fails when given only two args"
     (raises? (arity)
-      (stdpob-_method-missing pob1 'badmethod)))
+      (std-_method-missing pob1 'badmethod)))
 
   (it "fails when given too many args"
     (raises? (arity)
-      (stdpob-_method-missing pob1 'badmethod '(1 2 3) 'foo)))
+      (std-_method-missing pob1 'badmethod '(1 2 3) 'foo)))
 
   (it "raises a 'no-method exception as part of normal operation"
     (raises? (no-method)
-      (stdpob-_method-missing pob1 'badmethod '(1 2 3))))
+      (std-_method-missing pob1 'badmethod '(1 2 3))))
 
   (describe "the 'no-method exception"
     (define exn (raises? (no-method)
-                  (stdpob-_method-missing
+                  (std-_method-missing
                    pob1 'badmethod '(1 2 3))))
 
    (it "contains an informative error message"
@@ -466,27 +466,27 @@
              '(1 2 3)))))
 
 
-(describe "stdpob-_receive"
+(describe "std-_receive"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_resolve-method . ,stdpob-_resolve-method)
-                         (_resolve-prop   . ,stdpob-_resolve-prop)
-                         (_method-missing . ,stdpob-_method-missing))))
+    (make-pob methods: `((_resolve-method . ,std-_resolve-method)
+                         (_resolve-prop   . ,std-_resolve-prop)
+                         (_method-missing . ,std-_method-missing))))
 
   (it "uses _resolve-method to find a matching method"
     (let* ((stub-resolve (lambda args (raise 'success "Success!")))
-           (pob (stdpob-derive base-pob
+           (pob (std-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
       (raises? (success)
-        (stdpob-_receive pob 'amethod '(1 2 3)))))
+        (std-_receive pob 'amethod '(1 2 3)))))
 
   (it "invokes the method returned by _resolve-method if found"
     (let* ((stub-method (lambda args (raise 'success "Success!")))
            (stub-resolve (lambda args (cons 'foo stub-method)))
-           (pob (stdpob-derive base-pob
+           (pob (std-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
       (raises? (success)
-        (stdpob-_receive pob 'amethod '(1 2 3)))))
+        (std-_receive pob 'amethod '(1 2 3)))))
 
   (it "uses _resolve-method to find _method-missing if method not found"
     (let* ((stub-resolve (lambda (self method-name #!optional default)
@@ -494,10 +494,10 @@
                              ((amethod) (cons #f default))
                              ((_method-missing)
                               (raise 'success "Success!")))))
-           (pob (stdpob-derive base-pob
+           (pob (std-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
       (raises? (success)
-        (stdpob-_receive pob 'amethod '(1 2 3)))))
+        (std-_receive pob 'amethod '(1 2 3)))))
 
   (it "invokes _method-missing if method not found"
     (let* ((stub-mm (lambda args (raise 'success "Success")))
@@ -505,96 +505,96 @@
                            (case method-name
                              ((amethod) (cons #f default))
                              ((_method-missing) (cons 'foo stub-mm)))))
-           (pob (stdpob-derive base-pob
+           (pob (std-derive base-pob
                  methods: `((_resolve-method . ,stub-resolve)))))
       (raises? (success)
-        (stdpob-_receive pob 'amethod '(1 2 3)))))
+        (std-_receive pob 'amethod '(1 2 3)))))
 
   (it "fails if given only a pob"
     (raises? (arity)
-      (stdpob-_receive base-pob)))
+      (std-_receive base-pob)))
 
   (it "fails if given only a pob and method name"
     (raises? (arity)
-      (stdpob-_receive base-pob 'amethod)))
+      (std-_receive base-pob 'amethod)))
 
   (it "fails if given too many args"
     (raises? (arity)
-      (stdpob-_receive base-pob 'amethod '(arg1 arg2) 'foo))))
+      (std-_receive base-pob 'amethod '(arg1 arg2) 'foo))))
 
 
-(describe "stdpob-responds-to?"
+(describe "std-responds-to?"
   (define (fn self) #t)
 
   (define pob1
     (make-pob methods: `((a . ,fn) (x . ,(void))
-                         (responds-to? . ,stdpob-responds-to?))))
+                         (responds-to? . ,std-responds-to?))))
   (define pob2
-    (stdpob-derive pob1 methods: `((b . ,fn) (y . ,(void)))))
+    (std-derive pob1 methods: `((b . ,fn) (y . ,(void)))))
   (define pob3
-    (stdpob-derive pob2 methods: `((c . ,fn) (z . ,(void)))))
+    (std-derive pob2 methods: `((c . ,fn) (z . ,(void)))))
 
   (it "returns #t if the pob has its own matching method"
-    (stdpob-responds-to? pob3 'c))
+    (std-responds-to? pob3 'c))
   (it "returns #t if the pob inherits a matching method from its base"
-    (stdpob-responds-to? pob3 'b))
+    (std-responds-to? pob3 'b))
   (it "returns #t if the pob inherits a matching method from any ancestor"
-    (stdpob-responds-to? pob3 'a))
+    (std-responds-to? pob3 'a))
 
   (it "returns #f if neither the pob nor ancestors have a matching method"
-    (not (stdpob-responds-to? pob3 'foo)))
+    (not (std-responds-to? pob3 'foo)))
   
   (it "returns #f if the pob defines the matching method as #<unspecified>"
-    (not (stdpob-responds-to? pob3 'z)))
+    (not (std-responds-to? pob3 'z)))
   (it "returns #f if the pob inherits #<unspecified> from its base"
-    (not (stdpob-responds-to? pob3 'y)))
+    (not (std-responds-to? pob3 'y)))
   (it "returns #f if the pob inherits #<unspecified> from any ancestor"
-    (not (stdpob-responds-to? pob3 'x)))
+    (not (std-responds-to? pob3 'x)))
 
   (it "accepts (but ignores) any number of args after the message"
     (not (raises? ()
-           (stdpob-responds-to? pob3 'a 1 2 3 4 5 6 7 8 9 0))))
+           (std-responds-to? pob3 'a 1 2 3 4 5 6 7 8 9 0))))
 
   (it "sends 'responds-to? to the base to continue the lookup"
     (let* ((pob-a (make-pob))
-           (pob-b (stdpob-derive pob-a
-                   methods: `((responds-to? . ,stdpob-responds-to?)))))
+           (pob-b (std-derive pob-a
+                   methods: `((responds-to? . ,std-responds-to?)))))
       (%set-method! pob-a '_receive
         (lambda (self message . args)
           (if (and (equal? self pob-a) (equal? message 'responds-to?))
               (raise 'success "Success!")
-              (apply stdpob-_receive self message args))))
+              (apply std-_receive self message args))))
       (raises? (success)
-        (stdpob-responds-to? pob-b 'foo))))
+        (std-responds-to? pob-b 'foo))))
   
   (it "fails if given no args"
-    (raises? (arity) (stdpob-responds-to?)))
+    (raises? (arity) (std-responds-to?)))
   
   (it "fails if the message is omitted"
-    (raises? (arity) (stdpob-responds-to? pob3))))
+    (raises? (arity) (std-responds-to? pob3))))
 
 
-(describe "stdpob-_display"
+(describe "std-_display"
   (define pob (make-pob))
   
   (it "writes \"#<pob>\" to the given port"
     (equal? (call-with-output-string
              (lambda (port)
-               (stdpob-_display pob port)))
+               (std-_display pob port)))
             "#<pob>"))
 
   (it "uses (current-output-port) if the port is omitted"
     (equal? (with-output-to-string
-              (lambda () (stdpob-_display pob)))
+              (lambda () (std-_display pob)))
             "#<pob>"))
 
   (it "fails if given a non-pob"
     (raises? (type)
-      (stdpob-_display 'foo (current-output-port))))
+      (std-_display 'foo (current-output-port))))
 
   (it "fails if the port is not a port"
     (raises? (type)
-      (stdpob-_display pob 'foo))))
+      (std-_display pob 'foo))))
 
 
 
@@ -609,32 +609,32 @@
   (it "has a 'base prop set to #f"
     (equal? (%pob-base stdpob) #f))
 
-  (it "has a 'derive method set to stdpob-derive"
-    (equal? (%method stdpob 'derive) stdpob-derive))
+  (it "has a 'derive method set to std-derive"
+    (equal? (%method stdpob 'derive) std-derive))
 
-  (it "has an 'ancestors method set to stdpob-ancestors"
-    (equal? (%method stdpob 'ancestors) stdpob-ancestors))
+  (it "has an 'ancestors method set to std-ancestors"
+    (equal? (%method stdpob 'ancestors) std-ancestors))
 
-  (it "has a 'has-ancestor? method set to stdpob-has-ancestor?"
-    (equal? (%method stdpob 'has-ancestor?) stdpob-has-ancestor?))
+  (it "has a 'has-ancestor? method set to std-has-ancestor?"
+    (equal? (%method stdpob 'has-ancestor?) std-has-ancestor?))
 
-  (it "has a '_resolve-prop method set to stdpob-_resolve-prop"
-    (equal? (%method stdpob '_resolve-prop) stdpob-_resolve-prop))
+  (it "has a '_resolve-prop method set to std-_resolve-prop"
+    (equal? (%method stdpob '_resolve-prop) std-_resolve-prop))
 
-  (it "has a '_resolve-method method set to stdpob-_resolve-method"
-    (equal? (%method stdpob '_resolve-method) stdpob-_resolve-method))
+  (it "has a '_resolve-method method set to std-_resolve-method"
+    (equal? (%method stdpob '_resolve-method) std-_resolve-method))
 
-  (it "has a '_method-missing method set to stdpob-_method-missing"
-    (equal? (%method stdpob '_method-missing) stdpob-_method-missing))
+  (it "has a '_method-missing method set to std-_method-missing"
+    (equal? (%method stdpob '_method-missing) std-_method-missing))
 
-  (it "has a '_receive method set to stdpob-_receive"
-    (equal? (%method stdpob '_receive) stdpob-_receive))
+  (it "has a '_receive method set to std-_receive"
+    (equal? (%method stdpob '_receive) std-_receive))
 
-  (it "has a 'responds-to? method set to stdpob-responds-to?"
-    (equal? (%method stdpob 'responds-to?) stdpob-responds-to?))
+  (it "has a 'responds-to? method set to std-responds-to?"
+    (equal? (%method stdpob 'responds-to?) std-responds-to?))
 
-  (it "has a '_display method set to stdpob-_display?"
-    (equal? (%method stdpob '_display) stdpob-_display)))
+  (it "has a '_display method set to std-_display?"
+    (equal? (%method stdpob '_display) std-_display)))
 
 
 
