@@ -51,7 +51,23 @@ Misc:
   - [X] tests/run.scm
   - [X] documentation page
 
-* Milestone 3: Methods and Encapsulation
+* Milestone 3: Simplification
+
+The API of Milestone 2 is overly flexible, and the internals overly
+complex. The goal of this milestone is to simplify the system,
+focusing on realistic use cases and /useful/ flexibility, not
+flexibility for its own sake.
+
+- [ ] Prototypal inheritance is a fundamental characteristic of pobs,
+  so the =base= should be stored as a slot in the pob, rather than as
+  a prop.
+
+- [ ] The abilities to resolve props and methods are inherent to all
+  pobs, so these methods should be /required/ to be contained in every
+  pob itself. These methods should be copied from the base pob when
+  the pob is derived, rather than inherited.
+
+* Milestone 4: Methods and Encapsulation
 
 - [ ] =in-method= macro
 - [ ] =define-method= macro
@@ -72,7 +88,7 @@ Demos:
   - Adding custom props and methods
 - [ ] Emulating classical inheritance
 
-* Milestone 4: Syntax Sugar
+* Milestone 5: Syntax Sugar
 
 - [ ] =own-prop= syntax: =@foo=
 - [ ] =send= syntax: =[pob msg args...]=
@@ -81,7 +97,7 @@ Demos:
 
 - [ ] Update demos
 
-* Milestone 5: Aliases and Multiple Inheritance
+* Milestone 6: Aliases and Multiple Inheritance
 
 - [ ] Method aliases in stdpob. If the value of a method is a symbol
   (instead of a procedure), begin resolving that method instead,
@@ -89,7 +105,7 @@ Demos:
 - [ ] Multiple inheritance (multiple bases). Use a precedence list to
   determine inheritance and "super" calls.
 
-* Milestone 6: Optimization
+* Milestone 7: Optimization
 
 - [ ] Make primitive prop and method accessors work with both alists
   and hash-tables.
