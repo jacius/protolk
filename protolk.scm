@@ -47,8 +47,8 @@
    std-derive
    std-ancestors
    std-has-ancestor?
-   std-_resolve-prop
-   std-_resolve-method
+   std-resolve-prop
+   std-resolve-method
    std-_method-missing
    std-_receive
    std-responds-to?
@@ -65,13 +65,13 @@
 ;; UTIL
 ;;
 
-;; Use std-_resolve-method to find self's _resolve-method method
-;; (or std-_resolve-method if not found), then use that to find
+;; Use std-resolve-method to find self's _resolve-method method
+;; (or std-resolve-method if not found), then use that to find
 ;; the desired method and return it (or the default if not found).
 (define (%resolved-method self method-name #!optional (default (void)))
   (let ((resolve-method
-         (cdr (std-_resolve-method self '_resolve-method
-                                      std-_resolve-method))))
+         (cdr (std-resolve-method self '_resolve-method
+                                      std-resolve-method))))
     (cdr (resolve-method
           self method-name
           default))))
@@ -91,7 +91,10 @@
 ;; CORE API
 ;;
 
-(define (make-pob #!key (base #f) (props '()) (methods '()))
+(define (make-pob #!key
+                  (base #f)
+                  (props '())
+                  (methods '()))
   (%make-pob base props methods #f #f))
 
 
@@ -101,7 +104,7 @@
 
 (define (prop-reader prop-name)
   (lambda (self)
-    (cdr ((%resolved-method self '_resolve-prop std-_resolve-prop)
+    (cdr ((%resolved-method self '_resolve-prop std-resolve-prop)
           self prop-name))))
 
 (define (prop-writer prop-name)
@@ -133,22 +136,22 @@
           (else
            (send base 'has-ancestor? other)))))
 
-(define (std-_resolve-prop self prop-name
+(define (std-resolve-prop self prop-name
                            #!optional (default (void)))
   (if (%has-prop? self prop-name)
       (cons self (%prop self prop-name))
       (let ((base (%pob-base self)))
         (if (pob? base)
-            (std-_resolve-prop base prop-name default)
+            (std-resolve-prop base prop-name default)
             (cons #f default)))))
 
-(define (std-_resolve-method self method-name
+(define (std-resolve-method self method-name
                              #!optional (default (void)))
   (if (%has-method? self method-name)
       (cons self (%method self method-name))
       (let ((base (%pob-base self)))
         (if (pob? base)
-            (std-_resolve-method base method-name default)
+            (std-resolve-method base method-name default)
             (cons #f default)))))
 
 (define (std-_method-missing self method-name args)
@@ -186,8 +189,8 @@
    methods: `((derive          . ,std-derive)
               (ancestors       . ,std-ancestors)
               (has-ancestor?   . ,std-has-ancestor?)
-              (_resolve-prop   . ,std-_resolve-prop)
-              (_resolve-method . ,std-_resolve-method)
+              (_resolve-prop   . ,std-resolve-prop)
+              (_resolve-method . ,std-resolve-method)
               (_method-missing . ,std-_method-missing)
               (_receive        . ,std-_receive)
               (responds-to?    . ,std-responds-to?)

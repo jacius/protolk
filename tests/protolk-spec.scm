@@ -86,8 +86,8 @@
 (describe "send"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_resolve-method . ,std-_resolve-method)
-                         (_resolve-prop   . ,std-_resolve-prop)
+    (make-pob methods: `((_resolve-method . ,std-resolve-method)
+                         (_resolve-prop   . ,std-resolve-prop)
                          (_method-missing . ,noop))))
   
   ;; it "uses the pob's _resolve-method method to find its _receive method"
@@ -96,7 +96,7 @@
           (lambda (self method-name #!optional default)
             (if (eq? method-name '_receive)
                 (raise 'success "Success!")
-                (std-_resolve-method self method-name default)))))
+                (std-resolve-method self method-name default)))))
     (%set-method! pob '_resolve-method stub-resolve)
     (it "uses the pob's _resolve-method method to find its _receive method"
       (raises? (success)
@@ -319,55 +319,55 @@
       (std-has-ancestor? 'foo pob1))))
 
 
-(describe "std-_resolve-prop"
+(describe "std-resolve-prop"
   (define pob1 (make-pob props: '((a . 1) (b . 2) (c . 3) (d . 4))))
   (define pob2 (std-derive pob1 props: `((a . 11) (c . ,(void)))))
   (define pob3 (std-derive pob2 props: '((b . 22))))
 
   (it "returns a list with self and the prop value, if self defines the prop"
-    (equal? (std-_resolve-prop pob3 'b) (cons pob3 22)))
+    (equal? (std-resolve-prop pob3 'b) (cons pob3 22)))
 
   (it "returns a cons with the nearest ancestor that defines the prop, and the prop value"
-    (equal? (std-_resolve-prop pob3 'a) (cons pob2 11)))
+    (equal? (std-resolve-prop pob3 'a) (cons pob2 11)))
 
   (it "searches ancestors recursively to find the prop value"
-    (equal? (std-_resolve-prop pob3 'd) (cons pob1 4)))
+    (equal? (std-resolve-prop pob3 'd) (cons pob1 4)))
  
   (it "returns #f and the default value if the prop is not found"
-    (equal? (std-_resolve-prop pob3 'z 'default) (cons #f 'default)))
+    (equal? (std-resolve-prop pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
-    (equal? (std-_resolve-prop pob3 'z) (cons #f (void))))
+    (equal? (std-resolve-prop pob3 'z) (cons #f (void))))
 
   (it "stops searching if it ever finds the prop defined as #<unspecified>"
-    (equal? (std-_resolve-prop pob3 'c) (cons pob2 (void))))
+    (equal? (std-resolve-prop pob3 'c) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises? (arity)
-      (std-_resolve-prop)))
+      (std-resolve-prop)))
 
   (it "fails if the prop name is omitted"
     (raises? (arity)
-      (std-_resolve-prop pob3)))
+      (std-resolve-prop pob3)))
 
   (it "does not fail if given the pob and prop name"
     (not (raises? ()
-           (std-_resolve-prop pob3 'a))))
+           (std-resolve-prop pob3 'a))))
 
   (it "does not fail if given the pob, prop name, and default value"
     (not (raises? ()
-           (std-_resolve-prop pob3 'a 'default))))
+           (std-resolve-prop pob3 'a 'default))))
   
   (it "fails if given too many args"
     (raises? ()
-      (std-_resolve-prop pob3 'a 'b 'c)))
+      (std-resolve-prop pob3 'a 'b 'c)))
 
   (it "fails if given a non-pob for the first arg"
     (raises? (type)
-      (std-_resolve-prop 'foo 'a))))
+      (std-resolve-prop 'foo 'a))))
 
 
-(describe "std-_resolve-method"
+(describe "std-resolve-method"
   (define (fn1 self) 1)
   (define (fn2 self) 2)
   (define (fn3 self) 3)
@@ -383,46 +383,46 @@
     (std-derive pob2 methods: `((n . ,fn6))))
 
   (it "returns a pair with self and the definition if self defines it"
-    (equal? (std-_resolve-method pob3 'n) (cons pob3 fn6)))
+    (equal? (std-resolve-method pob3 'n) (cons pob3 fn6)))
 
   (it "returns a pair with the nearest ancestor that defines the method, and the definition"
-    (equal? (std-_resolve-method pob3 'm) (cons pob2 fn5)))
+    (equal? (std-resolve-method pob3 'm) (cons pob2 fn5)))
 
   (it "searches ancestors recursively to find the definition"
-    (equal? (std-_resolve-method pob3 'p) (cons pob1 fn4)))
+    (equal? (std-resolve-method pob3 'p) (cons pob1 fn4)))
  
   (it "returns #f and the default value if the method is not found"
-    (equal? (std-_resolve-method pob3 'z 'default) (cons #f 'default)))
+    (equal? (std-resolve-method pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
-    (equal? (std-_resolve-method pob3 'z) (cons #f (void))))
+    (equal? (std-resolve-method pob3 'z) (cons #f (void))))
   
   (it "stops searching if it ever finds the method defined as #<unspecified>"
-    (equal? (std-_resolve-method pob3 'o) (cons pob2 (void))))
+    (equal? (std-resolve-method pob3 'o) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises? (arity)
-      (std-_resolve-method)))
+      (std-resolve-method)))
 
   (it "fails if the method name is omitted"
     (raises? (arity)
-      (std-_resolve-method pob3)))
+      (std-resolve-method pob3)))
 
   (it "does not fail if given the pob and method name"
     (not (raises? ()
-           (std-_resolve-method pob3 'm))))
+           (std-resolve-method pob3 'm))))
 
   (it "does not fail if given the pob, method name, and default value"
     (not (raises? ()
-           (std-_resolve-method pob3 'm 'default))))
+           (std-resolve-method pob3 'm 'default))))
   
   (it "fails if given too many args"
     (raises? ()
-      (std-_resolve-method pob3 'm 'default 'o)))
+      (std-resolve-method pob3 'm 'default 'o)))
 
   (it "fails if given a non-pob for the first arg"
     (raises? (type)
-      (std-_resolve-method 'foo 'm))))
+      (std-resolve-method 'foo 'm))))
 
 
 (describe "std-_method-missing"
@@ -469,8 +469,8 @@
 (describe "std-_receive"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_resolve-method . ,std-_resolve-method)
-                         (_resolve-prop   . ,std-_resolve-prop)
+    (make-pob methods: `((_resolve-method . ,std-resolve-method)
+                         (_resolve-prop   . ,std-resolve-prop)
                          (_method-missing . ,std-_method-missing))))
 
   (it "uses _resolve-method to find a matching method"
@@ -618,11 +618,11 @@
   (it "has a 'has-ancestor? method set to std-has-ancestor?"
     (equal? (%method stdpob 'has-ancestor?) std-has-ancestor?))
 
-  (it "has a '_resolve-prop method set to std-_resolve-prop"
-    (equal? (%method stdpob '_resolve-prop) std-_resolve-prop))
+  (it "has a '_resolve-prop method set to std-resolve-prop"
+    (equal? (%method stdpob '_resolve-prop) std-resolve-prop))
 
-  (it "has a '_resolve-method method set to std-_resolve-method"
-    (equal? (%method stdpob '_resolve-method) std-_resolve-method))
+  (it "has a '_resolve-method method set to std-resolve-method"
+    (equal? (%method stdpob '_resolve-method) std-resolve-method))
 
   (it "has a '_method-missing method set to std-_method-missing"
     (equal? (%method stdpob '_method-missing) std-_method-missing))
