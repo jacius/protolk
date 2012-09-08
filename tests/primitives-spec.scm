@@ -135,6 +135,20 @@
       (raises? ()
         (%prop (%make-pob #f '((a . 1)) '() #f #f)))))
 
+  (describe "%resolve-prop"
+    (it "calls the pob's resolve-prop procedure with the given args"
+      (let ((p (%make-pob #f '() '() #f #f)))
+        (%pob-set-resolve-prop!
+         p
+         (lambda (pob prop-name default)
+           (if (and (equal? pob p)
+                    (equal? prop-name 'some-prop)
+                    (equal? default 'default-value))
+               (raise 'success "Success!")
+               (raise 'success "Failure!"))))
+        (raises? (success)
+          (%resolve-prop p 'some-prop 'default-value)))))
+
   (describe "%set-prop!"
     (it "sets the specified prop in the pob"
       (let ((pob (%make-pob #f '() '() #f #f)))
@@ -213,6 +227,20 @@
     (it "fails when no method name is specified"
       (raises? ()
         (%method (%make-pob #f '() `((m . ,fn)) #f #f)))))
+
+  (describe "%resolve-method"
+    (it "calls the pob's resolve-method procedure with the given args"
+      (let ((p (%make-pob #f '() '() #f #f)))
+        (%pob-set-resolve-method!
+         p
+         (lambda (pob method-name default)
+           (if (and (equal? pob p)
+                    (equal? method-name 'some-method)
+                    (equal? default 'default-value))
+               (raise 'success "Success!")
+               (raise 'success "Failure!"))))
+        (raises? (success)
+          (%resolve-method p 'some-method 'default-value)))))
 
   (describe "%set-method!"
     (it "sets the specified method in the pob"

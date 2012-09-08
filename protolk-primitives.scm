@@ -48,10 +48,12 @@
    %pob-resolve-prop    %pob-set-resolve-prop!
    %pob-resolve-method  %pob-set-resolve-method!
 
-   %prop         %has-prop?
+   %has-prop?
+   %prop         %resolve-prop
    %set-prop!    %unset-prop!
 
-   %method       %has-method?
+   %has-method?
+   %method       %resolve-method
    %set-method!  %unset-method!)
 
 
@@ -122,6 +124,9 @@
         (cdr pair)
         default)))
 
+(define (%resolve-prop pob prop-name #!optional (default (void)))
+  ((%pob-resolve-prop pob) pob prop-name default))
+
 (define (%set-prop! pob prop-name value)
   (%pob-set-props! pob (cons (cons prop-name value)
                              (%pob-props pob))))
@@ -143,6 +148,9 @@
     (if pair
         (cdr pair)
         default)))
+
+(define (%resolve-method pob method-name #!optional (default (void)))
+  ((%pob-resolve-method pob) pob method-name default))
 
 (define (%set-method! pob method-name value)
   (%pob-set-methods! pob (cons (cons method-name value)
