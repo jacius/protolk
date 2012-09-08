@@ -154,7 +154,7 @@
       (cons self (%prop self prop-name))
       (let ((base (%pob-base self)))
         (if (pob? base)
-            (std-resolve-prop base prop-name default)
+            (%resolve-prop base prop-name default)
             (cons #f default)))))
 
 (define (std-resolve-method self method-name
@@ -163,7 +163,7 @@
       (cons self (%method self method-name))
       (let ((base (%pob-base self)))
         (if (pob? base)
-            (std-resolve-method base method-name default)
+            (%resolve-method base method-name default)
             (cons #f default)))))
 
 (define (std-_method-missing self method-name args)
