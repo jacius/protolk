@@ -63,9 +63,9 @@ flexibility for its own sake.
   a prop.
 
 - [ ] The abilities to resolve props and methods are inherent to all
-  pobs, so these methods should be /required/ to be contained in every
-  pob itself. These methods should be copied from the base pob when
-  the pob is derived, rather than inherited.
+  pobs, so these procedures should be stored as slots in the pob,
+  /required/ in every pob. These methods should be copied from the
+  base pob when the pob is derived.
 
 * Milestone 4: Methods and Encapsulation
 

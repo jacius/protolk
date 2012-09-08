@@ -14,7 +14,7 @@
 (define-syntax describe-pob-slot
   (er-macro-transformer
    (lambda (exp rename compare)
-     (let* ((make-pob-exp '(%make-pob 0 1 2))
+     (let* ((make-pob-exp '(%make-pob 0 1 2 3 4))
             (slotnum  (list-ref exp 1))
             (slotname (list-ref exp 2))
             (getter   (list-ref exp 3))
@@ -56,9 +56,9 @@
 (describe "pob pritimive record type"
 
   (describe "%make-pob"
-    (it "succeeds when given a base, a props alist, and a methods alist"
+    (it "succeeds when given a base, props, methods, resolve-prop, and resolve-method"
       (not (raises? ()
-             (%make-pob #f '() '()))))
+             (%make-pob #f '() '() #f #f))))
     (it "fails when given no args"
       (raises? ()
         (%make-pob)))
@@ -68,14 +68,20 @@
     (it "fails when given only two args"
       (raises? ()
         (%make-pob #f '())))
-    (it "fails when given four or more args"
+    (it "fails when given only three args"
       (raises? ()
-        (%make-pob #f '() '() '()))))
+        (%make-pob #f '() '())))
+    (it "fails when given only four args"
+      (raises? ()
+        (%make-pob #f '() '() #f)))
+    (it "fails when given six or more args"
+      (raises? ()
+        (%make-pob #f '() '() #f #f #f))))
 
 
   (describe "pob?"
     (it "returns #t when given a pob"
-      (pob? (%make-pob #f '() '())))
+      (pob? (%make-pob #f '() '() #f #f)))
     (it "returns #f when given a non-pob"
       (not (pob? 'notapob)))
     (it "fails when given no args"
@@ -85,7 +91,13 @@
 
   (describe-pob-slot 0 "base"    %pob-base    %pob-set-base!)
   (describe-pob-slot 1 "props"   %pob-props   %pob-set-props!)
-  (describe-pob-slot 2 "methods" %pob-methods %pob-set-methods!))
+  (describe-pob-slot 2 "methods" %pob-methods %pob-set-methods!)
+  (describe-pob-slot 3 "resolve-prop"
+                     %pob-resolve-prop
+                     %pob-set-resolve-prop!)
+  (describe-pob-slot 4 "resolve-method"
+                     %pob-resolve-method
+                     %pob-set-resolve-method!))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -96,40 +108,40 @@
 
   (describe "%has-prop?"
     (it "returns #t when the pob has a matching prop"
-      (%has-prop? (%make-pob #f '((a . 1)) '()) 'a))
+      (%has-prop? (%make-pob #f '((a . 1)) '() #f #f) 'a))
     (it "returns #f when the pob does not have a matching prop"
-      (not (%has-prop? (%make-pob #f '((a . 1)) '()) 'foo)))
+      (not (%has-prop? (%make-pob #f '((a . 1)) '() #f #f) 'foo)))
     (it "fails when given a non-pob"
       (raises? ()
         (%has-prop? 'foo 'a)))
     (it "fails when no prop name is specified"
       (raises? ()
-        (%has-prop? (%make-pob #f '((a . 1)) '())))))
+        (%has-prop? (%make-pob #f '((a . 1)) '() #f #f)))))
 
   (describe "%prop"
     (it "returns the value of a matching prop"
-      (equal? (%prop (%make-pob #f '((a . 1)) '()) 'a)
+      (equal? (%prop (%make-pob #f '((a . 1)) '() #f #f) 'a)
               1))
     (it "returns #<unspecified> when there is no matching prop"
-      (equal? (%prop (%make-pob #f '((a . 1)) '()) 'foo)
+      (equal? (%prop (%make-pob #f '((a . 1)) '() #f #f) 'foo)
               (void)))
     (it "optionally accepts a default return value"
-      (equal? (%prop (%make-pob #f '((a . 1)) '()) 'foo 'result)
+      (equal? (%prop (%make-pob #f '((a . 1)) '() #f #f) 'foo 'result)
               'result))
     (it "fails when given a non-pob"
       (raises? ()
         (%prop 'foo 'bar)))
     (it "fails when no prop name is specified"
       (raises? ()
-        (%prop (%make-pob #f '((a . 1)) '())))))
+        (%prop (%make-pob #f '((a . 1)) '() #f #f)))))
 
   (describe "%set-prop!"
     (it "sets the specified prop in the pob"
-      (let ((pob (%make-pob #f '() '())))
+      (let ((pob (%make-pob #f '() '() #f #f)))
         (%set-prop! pob 'a 1)
         (equal? (%prop pob 'a) 1)))
     (it "replaces the value of existing props with that name"
-      (let ((pob (%make-pob #f '((a . 1)) '())))
+      (let ((pob (%make-pob #f '((a . 1)) '() #f #f)))
         (%set-prop! pob 'a 2)
         (equal? (%prop pob 'a) 2)))
     (it "fails when given no args"
@@ -140,18 +152,18 @@
         (%set-prop! 'foo 'a 1)))
     (it "fails when no prop name or value is specified"
       (raises? ()
-        (%set-prop! (%make-pob #f '() '()))))
+        (%set-prop! (%make-pob #f '() '() #f #f))))
     (it "fails when no value is specified"
       (raises? ()
-        (%set-prop (%make-pob #f '() '()) 'a))))
+        (%set-prop (%make-pob #f '() '() #f #f) 'a))))
 
   (describe "%unset-prop!"
     (it "removes all matching props from the pob"
-      (let ((pob (%make-pob #f '((a . 2) (a . 1)) '())))
+      (let ((pob (%make-pob #f '((a . 2) (a . 1)) '() #f #f)))
         (%unset-prop! pob 'a)
         (not (%has-prop? pob 'a))))
     (it "has no effect if there are no matching props"
-      (let ((pob (%make-pob #f '() '())))
+      (let ((pob (%make-pob #f '() '() #f #f)))
         (%unset-prop! pob 'a)
         (not (%has-prop? pob 'a))))
     (it "fails when given no args"
@@ -162,7 +174,7 @@
         (%unset-prop! 'foo 'a)))
     (it "fails when no prop name is specified"
       (raises? ()
-        (%unset-prop! (%make-pob #f '() '()))))))
+        (%unset-prop! (%make-pob #f '() '() #f #f))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -175,40 +187,40 @@
 
   (describe "%has-method?"
     (it "returns #t when the pob has a matching method"
-      (%has-method? (%make-pob #f '() `((m . ,fn))) 'm))
+      (%has-method? (%make-pob #f '() `((m . ,fn)) #f #f) 'm))
     (it "returns #f when the pob does not have a matching method"
-      (not (%has-method? (%make-pob #f '() `((m . ,fn))) 'foo)))
+      (not (%has-method? (%make-pob #f '() `((m . ,fn)) #f #f) 'foo)))
     (it "fails when given a non-pob"
       (raises? ()
         (%has-method? 'foo 'm)))
     (it "fails when no method name is specified"
       (raises? ()
-        (%has-method? (%make-pob #f '() `((m . ,fn)))))))
+        (%has-method? (%make-pob #f '() `((m . ,fn)) #f #f)))))
 
   (describe "%method"
     (it "returns the value of a matching method"
-      (equal? (%method (%make-pob #f '() `((m . ,fn))) 'm)
+      (equal? (%method (%make-pob #f '() `((m . ,fn)) #f #f) 'm)
               fn))
     (it "returns #<unspecified> when there is no matching method"
-      (equal? (%method (%make-pob #f '() `((m . ,fn))) 'foo)
+      (equal? (%method (%make-pob #f '() `((m . ,fn)) #f #f) 'foo)
               (void)))
     (it "optionally accepts a default return value"
-      (equal? (%method (%make-pob #f '() `((m . ,fn))) 'foo fn)
+      (equal? (%method (%make-pob #f '() `((m . ,fn)) #f #f) 'foo fn)
               fn))
     (it "fails when given a non-pob"
       (raises? ()
         (%method 'foo 'm)))
     (it "fails when no method name is specified"
       (raises? ()
-        (%method (%make-pob #f '() `((m . ,fn)))))))
+        (%method (%make-pob #f '() `((m . ,fn)) #f #f)))))
 
   (describe "%set-method!"
     (it "sets the specified method in the pob"
-      (let ((pob (%make-pob #f '() '())))
+      (let ((pob (%make-pob #f '() '() #f #f)))
         (%set-method! pob 'm fn)
         (equal? (%method pob 'm) fn)))
     (it "replaces the value of existing methods with that name"
-      (let ((pob (%make-pob #f '() `((m . ,fn)))))
+      (let ((pob (%make-pob #f '() `((m . ,fn)) #f #f)))
         (%set-method! pob 'm fn)
         (equal? (%method pob 'm) fn)))
     (it "fails when given no args"
@@ -219,18 +231,18 @@
         (%set-method! 'foo 'm fn)))
     (it "fails when no method name or value is specified"
       (raises? ()
-        (%set-method! (%make-pob #f '() '()))))
+        (%set-method! (%make-pob #f '() '() #f #f))))
     (it "fails when no value is specified"
       (raises? ()
-        (%set-method (%make-pob #f '() '()) 'fn))))
+        (%set-method (%make-pob #f '() '() #f #f) 'fn))))
 
   (describe "%unset-method!"
     (it "removes all matching methods from the pob"
-      (let ((pob (%make-pob #f '() `((m . fn2) (m . fn)))))
+      (let ((pob (%make-pob #f '() `((m . fn2) (m . fn)) #f #f)))
         (%unset-method! pob 'm)
         (not (%has-method? pob 'm))))
     (it "has no effect if there are no matching methods"
-      (let ((pob (%make-pob #f '() '())))
+      (let ((pob (%make-pob #f '() '() #f #f)))
         (not (%has-method? pob 'm))))
     (it "fails when given no args"
       (raises? ()
@@ -240,7 +252,7 @@
         (%unset-method! 'foo 'a)))
     (it "fails when no method name is specified"
       (raises? ()
-        (%unset-method! (%make-pob #f '() '()))))))
+        (%unset-method! (%make-pob #f '() '() #f #f))))))
 
 
 

@@ -92,7 +92,7 @@
 ;;
 
 (define (make-pob #!key (base #f) (props '()) (methods '()))
-  (%make-pob base props methods))
+  (%make-pob base props methods #f #f))
 
 
 (define (send pob message . args)

@@ -40,13 +40,20 @@
 (module protolk-primitives
   (%make-pob
    pob?
+
    %pob-base     %pob-set-base!
    %pob-props    %pob-set-props!
    %pob-methods  %pob-set-methods!
+
+   %pob-resolve-prop    %pob-set-resolve-prop!
+   %pob-resolve-method  %pob-set-resolve-method!
+
    %prop         %has-prop?
    %set-prop!    %unset-prop!
+
    %method       %has-method?
    %set-method!  %unset-method!)
+
 
 (import scheme chicken)
 (import protolk-internal)
@@ -58,11 +65,48 @@
 ;;
 
 (define-record-type pob
-  (%make-pob base props methods)
+  (%make-pob base props methods resolve-prop resolve-method)
   pob?
-  (base    %pob-base    %pob-set-base!)
-  (props   %pob-props   %pob-set-props!)
-  (methods %pob-methods %pob-set-methods!))
+  (base            %pob-base            %pob-set-base!)
+  (props           %pob-props           %pob-set-props!)
+  (methods         %pob-methods         %pob-set-methods!)
+  (resolve-prop    %pob-resolve-prop    %pob-set-resolve-prop!)
+  (resolve-method  %pob-resolve-method  %pob-set-resolve-method!))
+
+;;; resolve-prop and resolve-methods are procedures used to resolve a
+;;; prop/method via recursive inheritance from the base. The
+;;; procedures must accept two required args and one optional arg:
+;;;
+;;; 1. The target pob.
+;;;
+;;; 2. The prop/method name to resolve.
+;;;
+;;; 3. (Optional) Default value to return in case resolution fails.
+;;;    This optional arg must itself default to #<unspecified>,
+;;;    i.e. the return value of (void).
+;;;
+;;; If the prop/method is not found in the target pob, and the target
+;;; pob has a base pob, the procedure should invoke the base pob's
+;;; resolve-prop/resolve-method procedure on the base pob, to
+;;; recursively resolve.
+;;;
+;;; The procedures must return a cons containing:
+;;;
+;;; 1. The pob in which the prop/method was found, or #f if the
+;;;    prop/method was not found anywhere.
+;;;
+;;; 2. The value of the prop/method that was found, or (if the target
+;;;    pob has no base pob), the default value specified as the third
+;;;    (optional) arg to the procedure.
+;;;
+;;; See std-resolve-prop and std-resolve-method in protolk.scm for
+;;; sample implementations.
+;;;
+;;; These procedures are required to be set in a pob. When a pob is
+;;; derived to create another pob, the original pob's resolve-prop and
+;;; resolve-method procedures should be copied into the derived pob at
+;;; the time of derivation, unless replacement procedures are
+;;; specified at the time of derivation.
 
 
 ;;;;;;;;;;;;;;;;;;;;;
