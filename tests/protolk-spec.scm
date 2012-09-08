@@ -667,9 +667,15 @@
   (it "is a pob that exists by default"
     (pob? stdpob))
 
-  (it "has a 'base prop set to #f"
+  (it "has base set to #f"
     (equal? (%pob-base stdpob) #f))
 
+  (it "has resolve-prop sot to std-resolve-prop"
+    (equal? (%pob-resolve-prop stdpob) std-resolve-prop))
+
+  (it "has resolve-method set to std-resolve-method"
+    (equal? (%pob-resolve-method stdpob) std-resolve-method))
+  
   (it "has a 'derive method set to std-derive"
     (equal? (%method stdpob 'derive) std-derive))
 
@@ -678,12 +684,6 @@
 
   (it "has a 'has-ancestor? method set to std-has-ancestor?"
     (equal? (%method stdpob 'has-ancestor?) std-has-ancestor?))
-
-  (it "has a '_resolve-prop method set to std-resolve-prop"
-    (equal? (%method stdpob '_resolve-prop) std-resolve-prop))
-
-  (it "has a '_resolve-method method set to std-resolve-method"
-    (equal? (%method stdpob '_resolve-method) std-resolve-method))
 
   (it "has a '_method-missing method set to std-_method-missing"
     (equal? (%method stdpob '_method-missing) std-_method-missing))

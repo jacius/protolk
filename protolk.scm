@@ -184,8 +184,6 @@
    methods: `((derive          . ,std-derive)
               (ancestors       . ,std-ancestors)
               (has-ancestor?   . ,std-has-ancestor?)
-              (_resolve-prop   . ,std-resolve-prop)
-              (_resolve-method . ,std-resolve-method)
               (_method-missing . ,std-_method-missing)
               (_receive        . ,std-_receive)
               (responds-to?    . ,std-responds-to?)
