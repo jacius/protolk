@@ -118,15 +118,15 @@
                          (_resolve-prop   . ,std-resolve-prop)
                          (_method-missing . ,noop))))
   
-  ;; it "uses the pob's _resolve-method method to find its _receive method"
+  ;; it "uses the pob's resolve-method to find its _receive method"
   (let* ((pob (std-derive base-pob))
          (stub-resolve
           (lambda (self method-name #!optional default)
             (if (eq? method-name '_receive)
                 (raise 'success "Success!")
-                (std-resolve-method self method-name default)))))
-    (%set-method! pob '_resolve-method stub-resolve)
-    (it "uses the pob's _resolve-method method to find its _receive method"
+                (%resolve-method self method-name default)))))
+    (%pob-set-resolve-method! pob stub-resolve)
+    (it "uses the pob's resolve-method to find its _receive method"
       (raises? (success)
         (send pob 'amethod 1 2 3))))
 
@@ -534,40 +534,40 @@
                          (_resolve-prop   . ,std-resolve-prop)
                          (_method-missing . ,std-_method-missing))))
 
-  (it "uses _resolve-method to find a matching method"
+  (it "uses the pob's resolve-method to find a matching method"
     (let* ((stub-resolve (lambda args (raise 'success "Success!")))
            (pob (std-derive base-pob
-                 methods: `((_resolve-method . ,stub-resolve)))))
+                 resolve-method: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
-  (it "invokes the method returned by _resolve-method if found"
+  (it "invokes the matching method if found"
     (let* ((stub-method (lambda args (raise 'success "Success!")))
-           (stub-resolve (lambda args (cons 'foo stub-method)))
+           (stub-resolve (lambda args (cons 'some-pob stub-method)))
            (pob (std-derive base-pob
-                 methods: `((_resolve-method . ,stub-resolve)))))
+                 resolve-method: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
-  (it "uses _resolve-method to find _method-missing if method not found"
+  (it "resolves _method-missing if no matching method was found"
     (let* ((stub-resolve (lambda (self method-name #!optional default)
                            (case method-name
                              ((amethod) (cons #f default))
                              ((_method-missing)
                               (raise 'success "Success!")))))
            (pob (std-derive base-pob
-                 methods: `((_resolve-method . ,stub-resolve)))))
+                 resolve-method: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
-  (it "invokes _method-missing if method not found"
+  (it "invokes _method-missing if no matching method was found"
     (let* ((stub-mm (lambda args (raise 'success "Success")))
            (stub-resolve (lambda (self method-name #!optional default)
                            (case method-name
                              ((amethod) (cons #f default))
-                             ((_method-missing) (cons 'foo stub-mm)))))
+                             ((_method-missing) (cons 'some-pob stub-mm)))))
            (pob (std-derive base-pob
-                 methods: `((_resolve-method . ,stub-resolve)))))
+                 resolve-method: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
@@ -581,7 +581,7 @@
 
   (it "fails if given too many args"
     (raises? (arity)
-      (std-_receive base-pob 'amethod '(arg1 arg2) 'foo))))
+      (std-_receive base-pob 'amethod '(1 2) 'foo))))
 
 
 (describe "std-responds-to?"

@@ -61,29 +61,13 @@
 (use extras)
 
 
-;;;;;;;;;;
-;; UTIL
-;;
-
-;; Use std-resolve-method to find self's _resolve-method method
-;; (or std-resolve-method if not found), then use that to find
-;; the desired method and return it (or the default if not found).
-(define (%resolved-method self method-name #!optional (default (void)))
-  (let ((resolve-method
-         (cdr (std-resolve-method self '_resolve-method
-                                      std-resolve-method))))
-    (cdr (resolve-method
-          self method-name
-          default))))
-
-
 ;;;;;;;;;;;;;
 ;; PRINTER
 ;;
 
 (define-record-printer pob
   (lambda (pob out)
-    ((%resolved-method pob '_display std-_display)
+    ((cdr (%resolve-method pob '_display std-_display))
      pob out)))
 
 
@@ -101,7 +85,7 @@
 
 
 (define (send pob message . args)
-  ((%resolved-method pob '_receive std-_receive)
+  ((cdr (%resolve-method pob '_receive std-_receive))
    pob message args))
 
 (define (prop-reader prop-name)
@@ -173,10 +157,10 @@
          'args args))
 
 (define (std-_receive self message args)
-  (let ((method (%resolved-method self message)))
+  (let ((method (cdr (%resolve-method self message))))
     (if (not (equal? method (void)))
         (apply method self args)
-        ((%resolved-method self '_method-missing std-_method-missing)
+        ((cdr (%resolve-method self '_method-missing std-_method-missing))
          self message args))))
 
 (define (std-responds-to? self message . args)
