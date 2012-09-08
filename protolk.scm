@@ -92,10 +92,12 @@
 ;;
 
 (define (make-pob #!key
-                  (base #f)
-                  (props '())
-                  (methods '()))
-  (%make-pob base props methods #f #f))
+                  (base    #f)
+                  (props   '())
+                  (methods '())
+                  (resolve-prop   std-resolve-prop)
+                  (resolve-method std-resolve-method))
+  (%make-pob base props methods resolve-prop resolve-method))
 
 
 (define (send pob message . args)

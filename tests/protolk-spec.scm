@@ -47,40 +47,68 @@
 
 (describe "make-pob"
   (define (fn pob) #t)
+  (define (resprop pob) (cons pob #t))
+  (define (resmeth pob) (cons pob fn))
 
-  (it "accepts #:props and #:methods keyword arguments"
+  (it "accepts base, props, methods, resolve-prop, and resolve-method keyword args"
     (not (raises? ()
-           (make-pob props: '((a . 1))
-                     methods: `((m . ,fn))))))
+           (make-pob base: #f
+                     props: '((a . 1))
+                     methods: `((m . ,fn))
+                     resolve-prop: resprop
+                     resolve-method: resmeth))))
 
-  (it "returns a pob with the specified props and methods"
-    (let ((p (make-pob props: '((a . 1)) methods: `((m . ,fn)))))
+  (it "returns a pob with the specified contents"
+    (let ((p (make-pob base: #f
+                       props: '((a . 1))
+                       methods: `((m . ,fn))
+                       resolve-prop: resprop
+                       resolve-method: resmeth)))
       (and (pob? p)
-           (equal? (%pob-props p) '((a . 1)))
-           (equal? (%pob-methods p) `((m . ,fn))))))
+           (equal? (%pob-base p)           #f)
+           (equal? (%pob-props p)          '((a . 1)))
+           (equal? (%pob-methods p)        `((m . ,fn)))
+           (equal? (%pob-resolve-prop p)   resprop)
+           (equal? (%pob-resolve-method p) resmeth))))
 
-  (it "allows the props argument to be omitted"
-    (not (raises? ()
-           (make-pob methods: `((m . ,fn))))))
-
-  (it "allows the methods argument to be omitted"
-    (not (raises? ()
-           (make-pob props: `((a . 1))))))
-
-  (it "allows both arguments to be omitted"
+  (it "allows all arguments to be omitted"
     (not (raises? ()
            (make-pob))))
 
-  (it "returns a pob with no props if the props argument is omitted"
-    (equal? (%pob-props (make-pob methods: `((m . ,fn)))) '()))
-   
-  (it "returns a pob with no methods if the props argument is omitted"
-    (equal? (%pob-methods (make-pob props: `((a . 1)))) '()))
+  (it "initializes base to #f if omitted"
+    (equal? #f
+            (%pob-base (make-pob props: '((a . 1))
+                                 methods: `((m . ,fn))
+                                 resolve-prop: resprop
+                                 resolve-method: resmeth))))
 
-  (it "returns a pob with no props or methods if both arguments are omitted"
-    (let ((p (make-pob)))
-      (and (equal? (%pob-props p) '())
-           (equal? (%pob-methods p) '())))))
+  (it "initializes props to the empty list if omitted"
+    (equal? '()
+            (%pob-props (make-pob base: #f
+                                  methods: `((m . ,fn))
+                                  resolve-prop: resprop
+                                  resolve-method: resmeth))))
+
+  (it "initializes methods to the empty list if omitted"
+    (equal? '()
+            (%pob-methods (make-pob base: #f
+                                    props: '((a . 1))
+                                    resolve-prop: resprop
+                                    resolve-method: resmeth))))
+
+  (it "initializes resolve-prop to std-resolve-prop if omitted"
+    (equal? std-resolve-prop
+            (%pob-resolve-prop (make-pob base: #f
+                                         props: '((a . 1))
+                                         methods: `((m . ,fn))
+                                         resolve-method: resmeth))))
+
+  (it "initializes resolve-method to std-resolve-method if omitted"
+    (equal? std-resolve-method
+            (%pob-resolve-method (make-pob base: #f
+                                           props: '((a . 1))
+                                           methods: `((m . ,fn))
+                                           resolve-prop: resprop)))))
 
 
 (describe "send"
