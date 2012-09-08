@@ -89,8 +89,8 @@
 ;; CORE API
 ;;
 
-(define (make-pob #!key (props '()) (methods '()))
-  (%make-pob props methods))
+(define (make-pob #!key (base #f) (props '()) (methods '()))
+  (%make-pob base props methods))
 
 
 (define (send pob message . args)
@@ -114,17 +114,16 @@
 (define (stdpob-derive self #!key (props '()) (methods '()))
   (unless (or (pob? self) (equal? self #f))
     (raise 'type (sprintf "Not a pob: ~s" self)))
-  (make-pob props: `((base . ,self) ,@props)
-            methods: methods))
+  (make-pob base: self props: props methods: methods))
 
 (define (stdpob-ancestors self)
-  (let ((base (%prop self 'base #f)))
+  (let ((base (%pob-base self)))
     (if (pob? base)
         (cons base (send base 'ancestors))
         '())))
 
 (define (stdpob-has-ancestor? self other)
-  (let ((base (%prop self 'base #f)))
+  (let ((base (%pob-base self)))
     (cond ((not (pob? base))
            #f)
           ((eq? base other)
@@ -136,7 +135,7 @@
                               #!optional (default (void)))
   (if (%has-prop? self prop-name)
       (cons self (%prop self prop-name))
-      (let ((base (%prop self 'base #f)))
+      (let ((base (%pob-base self)))
         (if (pob? base)
             (stdpob-_resolve-prop base prop-name default)
             (cons #f default)))))
@@ -145,7 +144,7 @@
                                 #!optional (default (void)))
   (if (%has-method? self method-name)
       (cons self (%method self method-name))
-      (let ((base (%prop self 'base #f)))
+      (let ((base (%pob-base self)))
         (if (pob? base)
             (stdpob-_resolve-method base method-name default)
             (cons #f default)))))
@@ -166,7 +165,7 @@
 
 (define (stdpob-responds-to? self message . args)
   (or (not (void? (%method self message)))
-      (let ((base (%prop self 'base #f)))
+      (let ((base (%pob-base self)))
         (and (pob? base)
              (apply send base 'responds-to? message args)))))
 
@@ -181,7 +180,7 @@
 
 (define stdpob
   (make-pob
-   props: `((base . #f))
+   base: #f
    methods: `((derive . ,stdpob-derive)
               (ancestors . ,stdpob-ancestors)
               (has-ancestor? . ,stdpob-has-ancestor?)

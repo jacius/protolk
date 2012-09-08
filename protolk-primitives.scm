@@ -40,6 +40,7 @@
 (module protolk-primitives
   (%make-pob
    pob?
+   %pob-base     %pob-set-base!
    %pob-props    %pob-set-props!
    %pob-methods  %pob-set-methods!
    %prop         %has-prop?
@@ -57,8 +58,9 @@
 ;;
 
 (define-record-type pob
-  (%make-pob props methods)
+  (%make-pob base props methods)
   pob?
+  (base %pob-base %pob-set-base!)
   (props %pob-props %pob-set-props!)
   (methods %pob-methods %pob-set-methods!))
 
@@ -86,7 +88,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;
-;; MODULE PROCEDURES
+;; METHOD PROCEDURES
 ;;
 
 (define (%has-method? pob method-name)

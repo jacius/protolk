@@ -86,8 +86,7 @@
 (describe "send"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob props: '((base . #f))
-              methods: `((_resolve-method . ,stdpob-_resolve-method)
+    (make-pob methods: `((_resolve-method . ,stdpob-_resolve-method)
                          (_resolve-prop   . ,stdpob-_resolve-prop)
                          (_method-missing . ,noop))))
   
@@ -200,14 +199,14 @@
   (define (fn pob) #t)
 
   (it "returns a new pob based on the given pob"
-    (equal? (%prop (stdpob-derive base-pob) 'base) base-pob))
+    (equal? (%pob-base (stdpob-derive base-pob)) base-pob))
 
   (it "allows the base pob to be #f"
-    (equal? (%prop (stdpob-derive #f) 'base) #f))
+    (equal? (%pob-base (stdpob-derive #f)) #f))
 
   (it "fails when given a non-pob other than #f"
     (raises? (type)
-      (stdpob-derive 'foo)))
+      (stdpob-derive 'notapob)))
 
   (it "fails when the pob argument is omitted"
     (raises? (arity)
@@ -217,9 +216,9 @@
     (let ((new-pob (stdpob-derive base-pob #:props '((a . 1)))))
       (equal? (%prop new-pob 'a) 1)))
 
-  (it "sets no props (except base) if #:props is omitted"
+  (it "sets no props if #:props is omitted"
     (let ((new-pob (stdpob-derive base-pob)))
-      (equal? (%pob-props new-pob) `((base . ,base-pob)))))
+      (equal? (%pob-props new-pob) `())))
 
   (it "sets the specified methods to the new pob"
     (let ((new-pob (stdpob-derive base-pob #:methods `((m . ,fn)))))
@@ -231,8 +230,7 @@
 
 
 (describe "stdpob-ancestors"
-  (define pob1 (make-pob props: '((base . #f))
-                         methods: `((ancestors . ,stdpob-ancestors))))
+  (define pob1 (make-pob methods: `((ancestors . ,stdpob-ancestors))))
   (define pob2 (stdpob-derive pob1))
   (define pob3 (stdpob-derive pob2))
   (define pob4 (stdpob-derive pob3))
@@ -252,14 +250,13 @@
       (raises? (success)
         (stdpob-ancestors pob-b))))
 
-  (it "ends the lookup chain when it encounters a non-pob base"
-    (let* ((pob-a (make-pob props: '((base . foo))
-                            methods: `((ancestors . ,stdpob-ancestors))))
+  (it "ends the lookup chain when it encounters a #f base"
+    (let* ((pob-a (make-pob methods: `((ancestors . ,stdpob-ancestors))))
            (pob-b (stdpob-derive pob-a)))
       (equal? (stdpob-ancestors pob-b) (list pob-a))))
 
   (it "returns an empty list if the pob's base is #f"
-    (equal? (stdpob-ancestors (make-pob props: '((base . #f))))
+    (equal? (stdpob-ancestors (make-pob base: #f))
             '()))
 
   (it "returns an empty list if the pob's base is unspecified"
@@ -272,8 +269,7 @@
 
 
 (describe "stdpob-has-ancestor?"
-  (define pob1 (make-pob props: '((base . #f))
-                         methods: `((has-ancestor? . ,stdpob-has-ancestor?))))
+  (define pob1 (make-pob methods: `((has-ancestor? . ,stdpob-has-ancestor?))))
   (define pob2 (stdpob-derive pob1))
   (define pob3 (stdpob-derive pob2))
   (define pob2b (stdpob-derive pob1))
@@ -324,7 +320,7 @@
 
 
 (describe "stdpob-_resolve-prop"
-  (define pob1 (make-pob props: '((base . #f) (a . 1) (b . 2) (c . 3) (d . 4))))
+  (define pob1 (make-pob props: '((a . 1) (b . 2) (c . 3) (d . 4))))
   (define pob2 (stdpob-derive pob1 props: `((a . 11) (c . ,(void)))))
   (define pob3 (stdpob-derive pob2 props: '((b . 22))))
 
@@ -380,8 +376,7 @@
   (define (fn6 self) 6)
 
   (define pob1
-    (make-pob props: '((base . #f))
-              methods: `((m . ,fn1) (n . ,fn2) (o . ,fn3) (p . ,fn4))))
+    (make-pob methods: `((m . ,fn1) (n . ,fn2) (o . ,fn3) (p . ,fn4))))
   (define pob2
     (stdpob-derive pob1 methods: `((m . ,fn5) (o . ,(void)))))
   (define pob3
@@ -474,8 +469,7 @@
 (describe "stdpob-_receive"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob props: '((base . #f))
-              methods: `((_resolve-method . ,stdpob-_resolve-method)
+    (make-pob methods: `((_resolve-method . ,stdpob-_resolve-method)
                          (_resolve-prop   . ,stdpob-_resolve-prop)
                          (_method-missing . ,stdpob-_method-missing))))
 
@@ -533,8 +527,7 @@
   (define (fn self) #t)
 
   (define pob1
-    (make-pob props: '((base . #f))
-              methods: `((a . ,fn) (x . ,(void))
+    (make-pob methods: `((a . ,fn) (x . ,(void))
                          (responds-to? . ,stdpob-responds-to?))))
   (define pob2
     (stdpob-derive pob1 methods: `((b . ,fn) (y . ,(void)))))
@@ -614,7 +607,7 @@
     (pob? stdpob))
 
   (it "has a 'base prop set to #f"
-    (equal? (%prop stdpob 'base) #f))
+    (equal? (%pob-base stdpob) #f))
 
   (it "has a 'derive method set to stdpob-derive"
     (equal? (%method stdpob 'derive) stdpob-derive))

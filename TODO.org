@@ -58,7 +58,7 @@ complex. The goal of this milestone is to simplify the system,
 focusing on realistic use cases and /useful/ flexibility, not
 flexibility for its own sake.
 
-- [ ] Prototypal inheritance is a fundamental characteristic of pobs,
+- [X] Prototypal inheritance is a fundamental characteristic of pobs,
   so the =base= should be stored as a slot in the pob, rather than as
   a prop.
 
