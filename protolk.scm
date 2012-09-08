@@ -119,7 +119,7 @@
 ;;
 
 (define (std-derive self #!key (props '()) (methods '()))
-  (unless (or (pob? self) (equal? self #f))
+  (unless (pob? self)
     (raise 'type (sprintf "Not a pob: ~s" self)))
   (make-pob base: self props: props methods: methods))
 

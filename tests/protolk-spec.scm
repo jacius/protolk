@@ -229,10 +229,11 @@
   (it "returns a new pob based on the given pob"
     (equal? (%pob-base (std-derive base-pob)) base-pob))
 
-  (it "allows the base pob to be #f"
-    (equal? (%pob-base (std-derive #f)) #f))
+  (it "fails when given #f as the base"
+    (raises? (type)
+      (std-derive #f)))
 
-  (it "fails when given a non-pob other than #f"
+  (it "fails when given a non-pob as the base"
     (raises? (type)
       (std-derive 'notapob)))
 
