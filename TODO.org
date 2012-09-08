@@ -62,7 +62,7 @@ flexibility for its own sake.
   so the =base= should be stored as a slot in the pob, rather than as
   a prop.
 
-- [ ] The abilities to resolve props and methods are inherent to all
+- [X] The abilities to resolve props and methods are inherent to all
   pobs, so these procedures should be stored as slots in the pob,
   /required/ in every pob. These methods should be copied from the
   base pob when the pob is derived.

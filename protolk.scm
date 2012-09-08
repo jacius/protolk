@@ -118,10 +118,20 @@
 ;; STANDARD METHODS
 ;;
 
-(define (std-derive self #!key (props '()) (methods '()))
+(define (std-derive self
+                    #!key
+                    (props '())
+                    (methods '())
+                    resolve-prop
+                    resolve-method)
   (unless (pob? self)
     (raise 'type (sprintf "Not a pob: ~s" self)))
-  (make-pob base: self props: props methods: methods))
+  (make-pob
+   base:           self
+   props:          props
+   methods:        methods
+   resolve-prop:   (or resolve-prop   (%pob-resolve-prop self))
+   resolve-method: (or resolve-method (%pob-resolve-method self))))
 
 (define (std-ancestors self)
   (let ((base (%pob-base self)))

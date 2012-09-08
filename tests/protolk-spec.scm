@@ -218,16 +218,15 @@
           (some-prop-writer pob 'some-value 'foo))))))
 
 
-;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;
 ;; STD METHODS
 ;;
 
 (describe "std-derive"
   (define base-pob (make-pob))
   (define (fn pob) #t)
-
-  (it "returns a new pob based on the given pob"
-    (equal? (%pob-base (std-derive base-pob)) base-pob))
+  (define (resprop pob) (cons pob #t))
+  (define (resmeth pob) (cons pob fn))
 
   (it "fails when given #f as the base"
     (raises? (type)
@@ -237,25 +236,58 @@
     (raises? (type)
       (std-derive 'notapob)))
 
-  (it "fails when the pob argument is omitted"
+  (it "fails when given no args"
     (raises? (arity)
       (std-derive)))
 
-  (it "sets the specified props to the new pob"
-    (let ((new-pob (std-derive base-pob #:props '((a . 1)))))
-      (equal? (%prop new-pob 'a) 1)))
+  (it "returns a derived pob with the specified contents"
+    (let ((p (std-derive base-pob
+                         props: '((a . 1))
+                         methods: `((m . ,fn))
+                         resolve-prop: resprop
+                         resolve-method: resmeth)))
+      (and (pob? p)
+           (equal? (%pob-base p)           base-pob)
+           (equal? (%pob-props p)          '((a . 1)))
+           (equal? (%pob-methods p)        `((m . ,fn)))
+           (equal? (%pob-resolve-prop p)   resprop)
+           (equal? (%pob-resolve-method p) resmeth))))
 
-  (it "sets no props if #:props is omitted"
-    (let ((new-pob (std-derive base-pob)))
-      (equal? (%pob-props new-pob) `())))
+  (it "initializes props to the empty list if omitted"
+    (let* ((b (make-pob resolve-prop: resprop
+                        resolve-method: resmeth))
+           (p (std-derive b
+                          methods: `((m . ,fn))
+                          resolve-prop: resprop
+                          resolve-method: resmeth)))
+      (equal? (%pob-props p) '())))
 
-  (it "sets the specified methods to the new pob"
-    (let ((new-pob (std-derive base-pob #:methods `((m . ,fn)))))
-      (equal? (%method new-pob 'm) fn)))
+  (it "initializes methods to the empty list if omitted"
+    (let* ((b (make-pob resolve-prop: resprop
+                        resolve-method: resmeth))
+           (p (std-derive b
+                          props: '((a . 1))
+                          resolve-prop: resprop
+                          resolve-method: resmeth)))
+      (equal? (%pob-methods p) '())))
 
-  (it "sets no methods if #:methods is omitted"
-    (let ((new-pob (std-derive base-pob)))
-      (equal? (%pob-methods new-pob) '()))))
+  (it "initializes resolve-prop to the base's resolve-prop if omitted"
+    (let* ((b (make-pob resolve-prop: resprop
+                        resolve-method: resmeth))
+           (p (std-derive b
+                          props: '((a . 1))
+                          methods: `((m . ,fn))
+                          resolve-method: resmeth)))
+      (equal? (%pob-resolve-prop p) resprop)))
+
+  (it "initializes resolve-method to the base's resolve-method if omitted"
+    (let* ((b (make-pob resolve-prop: resprop
+                        resolve-method: resmeth))
+           (p (std-derive b
+                          props: '((a . 1))
+                          methods: `((m . ,fn))
+                          resolve-prop: resprop)))
+      (equal? (%pob-resolve-method p) resmeth))))
 
 
 (describe "std-ancestors"
