@@ -9,6 +9,45 @@
  (else))
 
 
+;;; Unhygienic because parts of the expansion will be displayed in
+;;; error messages, etc.
+(define-syntax describe-pob-slot
+  (er-macro-transformer
+   (lambda (exp rename compare)
+     (let* ((make-pob-exp '(%make-pob 0 1 2))
+            (slotnum  (list-ref exp 1))
+            (slotname (list-ref exp 2))
+            (getter   (list-ref exp 3))
+            (setter   (list-ref exp 4)))
+       `(begin
+          
+          (describe ,(sprintf "~a" getter)
+            (it ,(sprintf "returns the pob's ~a slot value" slotname)
+              (equal? (,getter ,make-pob-exp)
+                      ,slotnum))
+            (it "fails when given a non-pob"
+              (raises? ()
+                (,getter 'notapob)))
+            (it "fails when given no args"
+              (raises? ()
+                (,getter))))
+
+          (describe ,(sprintf "~a" setter)
+            (it ,(sprintf "modifies the pob's ~a slot value" slotname)
+              (let ((pob ,make-pob-exp))
+                (,setter pob 'new-slot-value)
+                (equal? (,getter pob) 'new-slot-value)))
+            (it "fails when given a non-pob"
+              (raises? ()
+                (,setter 'notapob 'new-slot-value)))
+            (it "fails when given no args"
+              (raises? ()
+                (,setter)))
+            (it "fails when given only one arg"
+              (let ((pob ,make-pob-exp))
+                (raises? ()
+                  (,setter pob))))))))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; POB PRITIMIVE RECORD TYPE
@@ -29,7 +68,7 @@
     (it "fails when given only two args"
       (raises? ()
         (%make-pob #f '())))
-    (it "fails when given four or more many args"
+    (it "fails when given four or more args"
       (raises? ()
         (%make-pob #f '() '() '()))))
 
@@ -44,91 +83,9 @@
         (pob?))))
 
 
-  (describe "%pob-base"
-    (it "returns the pob's base"
-      (let ((base-pob (%make-pob #f '() '())))
-        (equal? (%pob-base (%make-pob base-pob '() '()))
-                base-pob)))
-    (it "fails when given a non-pob"
-      (raises? ()
-        (%pob-base 'notapob)))
-    (it "fails when given no args"
-      (raises? ()
-        (%pob-base))))
-
-  (describe "%pob-set-base!"
-    (it "modifies the pob's base alist"
-      (let ((pob1 (%make-pob #f '() '()))
-            (pob2 (%make-pob #f '() '())))
-        (%pob-set-base! pob1 pob2)
-        (equal? (%pob-base pob1) pob2)))
-    (it "fails when given a non-pob"
-      (raises? ()
-        (%pob-set-base! 'notapob '((a . 1)))))
-    (it "fails when given no args"
-      (raises? ()
-        (%pob-set-base!)))
-    (it "fails when given only one arg"
-      (raises? ()
-        (%pob-set-base! (%make-pob '() '())))))
-
-
-  (describe "%pob-props"
-    (it "returns the pob's props alist"
-      (equal? (%pob-props (%make-pob #f '((a . 1)) '()))
-              '((a . 1))))
-    (it "fails when given a non-pob"
-      (raises? ()
-        (%pob-props 'notapob)))
-    (it "fails when given no args"
-      (raises? ()
-        (%pob-props))))
-
-  (describe "%pob-set-props!"
-    (it "modifies the pob's props alist"
-      (let ((pob (%make-pob #f '() '())))
-        (%pob-set-props! pob '((a . 1)))
-        (equal? (%pob-props pob)
-                '((a . 1)))))
-    (it "fails when given a non-pob"
-      (raises? ()
-        (%pob-set-props! 'notapob '((a . 1)))))
-    (it "fails when given no args"
-      (raises? ()
-        (%pob-set-props!)))
-    (it "fails when given only one arg"
-      (raises? ()
-        (%pob-set-props! (%make-pob #f '() '())))))
-
-
-  (define (fn pob) #t)
-
-  (describe "%pob-methods"
-    (it "returns the pob's methods alist"
-      (equal? (%pob-methods (%make-pob #f '() `((m . ,fn))))
-              `((m . ,fn))))
-    (it "fails when given a non-pob"
-      (raises? ()
-        (%pob-methods 'notapob)))
-    (it "fails when given no args"
-      (raises? ()
-        (%pob-methods))))
-
-  (describe "%pob-set-methods!"
-    (it "modifies the pob's methods alist"
-      (let ((pob (%make-pob #f '() '())))
-        (%pob-set-methods! pob `((m . ,fn)))
-        (equal? (%pob-methods pob)
-                `((m . ,fn)))))
-    (it "fails when given a non-pob"
-      (raises? ()
-        (%pob-set-methods! 'notapob `((m . ,fn)))))
-    (it "fails when given no args"
-      (raises? ()
-        (%pob-set-methods!)))
-    (it "fails when given only one arg"
-      (raises? ()
-        (%pob-set-methods! (%make-pob #f '() '()))))))
+  (describe-pob-slot 0 "base"    %pob-base    %pob-set-base!)
+  (describe-pob-slot 1 "props"   %pob-props   %pob-set-props!)
+  (describe-pob-slot 2 "methods" %pob-methods %pob-set-methods!))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

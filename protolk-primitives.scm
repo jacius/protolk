@@ -60,8 +60,8 @@
 (define-record-type pob
   (%make-pob base props methods)
   pob?
-  (base %pob-base %pob-set-base!)
-  (props %pob-props %pob-set-props!)
+  (base    %pob-base    %pob-set-base!)
+  (props   %pob-props   %pob-set-props!)
   (methods %pob-methods %pob-set-methods!))
 
 
