@@ -56,7 +56,8 @@
    %method       %resolve-method
    %set-method!  %unset-method!
 
-   %method-context)
+   %method-context
+   %self)
 
 
 (import scheme chicken)
@@ -163,9 +164,18 @@
                                  (%pob-methods pob))))
 
 
+
+;;;;;;;;;;;;;;;;;;;
+;; ENCAPSULATION
+;;
+
 ;;; Stores (pob 'method-name arg1 ...) list for the currently running
 ;;; method. Used as a stack via parameterize.
 (define %method-context (make-parameter #f))
+
+(define (%self)
+  (let ((mc (%method-context)))
+    (if mc (car mc) #f)))
 
 
 ) ;; end module protolk-primitives

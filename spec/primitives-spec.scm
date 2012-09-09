@@ -279,14 +279,38 @@
         (%unset-method! (%make-pob #f '() '() #f #f))))))
 
 
+
+;;;;;;;;;;;;;;;;;;;
+;; ESCAPSULATION
+;;
+
 (describe "%method-context"
-  (it "is a parameter used to store context for the currently running method"
+  (it "is a parameter used to store context for the current method"
     (let ((self (make-pob)) (arg1 1) (arg2 2) (arg3 3))
-      (parameterize ((%method-context (list self 'some-method arg1 arg2 arg3)))
+      (parameterize ((%method-context
+                      (list self 'some-method arg1 arg2 arg3)))
         (equal? (%method-context)
                 (list self 'some-method arg1 arg2 arg3))))))
 
 
+(describe "%self"
+  (it "returns the pob from the current method context"
+    (let ((pob (make-pob)))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (%self) pob))))
+
+  (it "returns #f if there is no current method context"
+    (equal? (%self) #f))
+
+  (it "is read-only"
+    (and
+     (raises? ()
+       (%self (make-pob)))
+     (raises? ()
+       (set! (%self) (make-pob))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand
  ((not protolk-all-tests)
