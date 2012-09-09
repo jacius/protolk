@@ -1,12 +1,8 @@
 
-(cond-expand
- ((not protolk-all-tests)
-  (load-relative "helpers")
-  (load-relative "../protolk-primitives")
-  (import protolk
-          protolk-primitives
-          protolk-internal))
- (else))
+(load-relative "helpers")
+(load-relative "../protolk-primitives")
+(import protolk-primitives
+        protolk-internal)
 
 
 ;;; Unhygienic because parts of the expansion will be displayed in

@@ -1,14 +1,9 @@
 
-
-(cond-expand
- ((not protolk-all-tests)
-  (load-relative "helpers")
-  (load-relative "../protolk")
-  (import protolk
-          protolk-primitives
-          protolk-internal))
- (else))
-
+(load-relative "helpers")
+(load-relative "../protolk")
+(import protolk
+        protolk-primitives
+        protolk-internal)
 
 (use extras)
 
