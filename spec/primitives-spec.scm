@@ -293,21 +293,21 @@
                 (list self 'some-method arg1 arg2 arg3))))))
 
 
-(describe "%self"
-  (it "returns the pob from the current method context"
+(describe "%active-pob"
+  (it "returns the active pob in the current context"
     (let ((pob (make-pob)))
       (parameterize ((%method-context (list pob 'some-method)))
-        (equal? (%self) pob))))
+        (equal? (%active-pob) pob))))
 
-  (it "returns #f if there is no current method context"
-    (equal? (%self) #f))
+  (it "returns #f if there is no active pob"
+    (equal? (%active-pob) #f))
 
   (it "is read-only"
     (and
      (raises? ()
-       (%self (make-pob)))
+       (%active-pob (make-pob)))
      (raises? ()
-       (set! (%self) (make-pob))))))
+       (set! (%active-pob) (make-pob))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

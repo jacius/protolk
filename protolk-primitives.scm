@@ -57,7 +57,7 @@
    %set-method!  %unset-method!
 
    %method-context
-   %self)
+   %active-pob)
 
 
 (import scheme chicken)
@@ -173,7 +173,7 @@
 ;;; method. Used as a stack via parameterize.
 (define %method-context (make-parameter #f))
 
-(define (%self)
+(define (%active-pob)
   (let ((mc (%method-context)))
     (if mc (car mc) #f)))
 

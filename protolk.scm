@@ -136,37 +136,37 @@
 ;;
 
 (define (set-own-prop! prop-name value)
-  (let ((self (%self)))
-    (if (pob? self)
-        (%set-prop! self prop-name value)
-        (raise 'context "No active self in the current context."
+  (let ((active-pob (%active-pob)))
+    (if (pob? active-pob)
+        (%set-prop! active-pob prop-name value)
+        (raise 'context "No active pob in the current context."
                'prop-name prop-name
                'value value))))
 
 (define own-prop
   (getter-with-setter
    (lambda (prop-name)
-     (let ((self (%self)))
-       (if (pob? self)
-           (%prop self prop-name)
-           (raise 'context "No active self in the current context."
+     (let ((active-pob (%active-pob)))
+       (if (pob? active-pob)
+           (%prop active-pob prop-name)
+           (raise 'context "No active pob in the current context."
                   'prop-name prop-name))))
    set-own-prop!))
 
 
 (define (assert-active-pob pob #!optional message)
   (cond
-   ((not (%self))
+   ((not (%active-pob))
     (raise 'context
            "There is no active pob in the current context."))
-   ((not (equal? pob (%self)))
+   ((not (equal? pob (%active-pob)))
     (raise 'context
            (or message
                (sprintf
                 "~s is not the active pob in the current context."
                 pob))
            'pob pob
-           'active-pob (%self)))
+           'active-pob (%active-pob)))
    (else
     #t)))
 
