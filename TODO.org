@@ -73,17 +73,17 @@ flexibility for its own sake.
 
 * Milestone 4: Methods and Encapsulation
 
-- [ ] =in-method= macro
-- [ ] =define-method= macro
-- [ ] =super= procedure
-
-- [ ] =%self= parameter primitive
-- [ ] =self= procedure (read-only interface to =%self=)
+- [ ] =%method-context= parameter primitive
+- [ ] =self= procedure (read-only equivalent to =(car (%method-context))=)
 - [ ] =own-prop= procedure and setter
 
-- [ ] =assert-self= procedure
-  (raise exception unless given pob is current-self)
+- [ ] =assert-self= procedure. Raises unless given pob is (self).
 - [ ] =define-private-method= macro
+
+- [ ] =in-method= macro
+- [ ] =define-method= macro
+
+- [ ] =super= procedure
 
 Demos:
 - [ ] Basics
@@ -103,9 +103,13 @@ Demos:
 
 * Milestone 6: Aliases and Multiple Inheritance
 
-- [ ] Method aliases in stdpob. If the value of a method is a symbol
-  (instead of a procedure), begin resolving that method instead,
-  beginning at the pob where the alias was found.
+- [ ] Update =std-method-resolver= to support method aliases. If the
+  value of a method is a symbol (instead of a procedure), begin
+  resolving the indicated method instead, beginning at the pob where
+  the alias was found. (But, the error from method-missing should
+  still indicate the originally requested method name.)
+- [ ] =define-alias= procedure
+
 - [ ] Multiple inheritance (multiple bases). Use a precedence list to
   determine inheritance and "super" calls.
 
