@@ -33,3 +33,14 @@
   '("protolk.so"
     "protolk.import.so")
   `((version ,VERSION)))
+
+
+;;; protolk-stdpob
+(compile -s -O2 -d1 -J protolk-stdpob.scm)
+(compile -s protolk-stdpob.import.scm -O2 -d0)
+
+(install-extension
+  'protolk-stdpob
+  '("protolk-stdpob.so"
+    "protolk-stdpob.import.so")
+  `((version ,VERSION)))
