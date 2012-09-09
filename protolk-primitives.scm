@@ -54,7 +54,9 @@
 
    %has-method?
    %method       %resolve-method
-   %set-method!  %unset-method!)
+   %set-method!  %unset-method!
+
+   %method-context)
 
 
 (import scheme chicken)
@@ -160,6 +162,10 @@
   (%pob-set-methods! pob (remove (car=? method-name)
                                  (%pob-methods pob))))
 
+
+;;; Stores (pob 'method-name arg1 ...) list for the currently running
+;;; method. Used as a stack via parameterize.
+(define %method-context (make-parameter #f))
 
 
 ) ;; end module protolk-primitives

@@ -73,7 +73,7 @@ flexibility for its own sake.
 
 * Milestone 4: Methods and Encapsulation
 
-- [ ] =%method-context= parameter primitive
+- [X] =%method-context= parameter primitive
 - [ ] =self= procedure (read-only equivalent to =(car (%method-context))=)
 - [ ] =own-prop= procedure and setter
 

@@ -279,6 +279,14 @@
         (%unset-method! (%make-pob #f '() '() #f #f))))))
 
 
+(describe "%method-context"
+  (it "is a parameter used to store context for the currently running method"
+    (let ((self (make-pob)) (arg1 1) (arg2 2) (arg3 3))
+      (parameterize ((%method-context (list self 'some-method arg1 arg2 arg3)))
+        (equal? (%method-context)
+                (list self 'some-method arg1 arg2 arg3))))))
+
+
 
 (cond-expand
  ((not protolk-all-tests)
