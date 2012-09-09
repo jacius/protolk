@@ -43,18 +43,11 @@
    send
    prop-reader
    prop-writer
-
-   std-derive
-   std-ancestors
-   std-has-ancestor?
    std-resolve-prop
    std-resolve-method
-   std-_method-missing
    std-_receive
-   std-responds-to?
-   std-_display
-
-   stdpob)
+   std-_method-missing
+   std-_display)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -69,6 +62,10 @@
   (lambda (pob out)
     ((cdr (%resolve-method pob '_display std-_display))
      pob out)))
+
+(define (std-_display self #!optional (port (current-output-port)))
+  (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))
+  (display "#<pob>" port))
 
 
 ;;;;;;;;;;;;;;
@@ -97,40 +94,6 @@
     (%set-prop! self prop-name value)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;
-;; STANDARD METHODS
-;;
-
-(define (std-derive self
-                    #!key
-                    (props          '())
-                    (methods        '())
-                    (resolve-prop   (%pob-resolve-prop self))
-                    (resolve-method (%pob-resolve-method self)))
-  (unless (pob? self)
-    (raise 'type (sprintf "Not a pob: ~s" self)))
-  (make-pob
-   base:           self
-   props:          props
-   methods:        methods
-   resolve-prop:   resolve-prop   
-   resolve-method: resolve-method))
-
-(define (std-ancestors self)
-  (let ((base (%pob-base self)))
-    (if (pob? base)
-        (cons base (send base 'ancestors))
-        '())))
-
-(define (std-has-ancestor? self other)
-  (let ((base (%pob-base self)))
-    (cond ((not (pob? base))
-           #f)
-          ((eq? base other)
-           #t)
-          (else
-           (send base 'has-ancestor? other)))))
-
 (define (std-resolve-prop self prop-name
                            #!optional (default (void)))
   (if (%has-prop? self prop-name)
@@ -149,6 +112,7 @@
             (%resolve-method base method-name default)
             (cons #f default)))))
 
+
 (define (std-_method-missing self method-name args)
   (raise 'no-method
          (sprintf "undefined method '~s for ~s" method-name self)
@@ -163,30 +127,5 @@
         ((cdr (%resolve-method self '_method-missing std-_method-missing))
          self message args))))
 
-(define (std-responds-to? self message . args)
-  (or (not (void? (%method self message)))
-      (let ((base (%pob-base self)))
-        (and (pob? base)
-             (apply send base 'responds-to? message args)))))
-
-(define (std-_display self #!optional (port (current-output-port)))
-  (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))
-  (display "#<pob>" port))
-
-
-;;;;;;;;;;;;
-;; STDPOB
-;;
-
-(define stdpob
-  (make-pob
-   base: #f
-   methods: `((derive          . ,std-derive)
-              (ancestors       . ,std-ancestors)
-              (has-ancestor?   . ,std-has-ancestor?)
-              (_method-missing . ,std-_method-missing)
-              (_receive        . ,std-_receive)
-              (responds-to?    . ,std-responds-to?)
-              (_display        . ,std-_display))))
 
 ) ;; end module protolk
