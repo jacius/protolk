@@ -51,7 +51,7 @@ Misc:
   - [X] tests/run.scm
   - [X] documentation page
 
-* Milestone 3: Simplification
+* Milestone 3: Simplification and Refactoring
 
 The API of Milestone 2 is overly flexible, and the internals overly
 complex. The goal of this milestone is to simplify the system,
@@ -64,8 +64,12 @@ flexibility for its own sake.
 
 - [X] The abilities to resolve props and methods are inherent to all
   pobs, so these procedures should be stored as slots in the pob,
-  /required/ in every pob. These methods should be copied from the
+  /required/ in every pob.
+
+- [X] Prop and method resolver procedures should be copied from the
   base pob when the pob is derived.
+
+- [X] Extensive refactoring and cleanup.
 
 * Milestone 4: Methods and Encapsulation
 
