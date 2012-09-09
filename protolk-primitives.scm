@@ -45,8 +45,8 @@
    %pob-props    %pob-set-props!
    %pob-methods  %pob-set-methods!
 
-   %pob-resolve-prop    %pob-set-resolve-prop!
-   %pob-resolve-method  %pob-set-resolve-method!
+   %pob-prop-resolver    %pob-set-prop-resolver!
+   %pob-method-resolver  %pob-set-method-resolver!
 
    %has-prop?
    %prop         %resolve-prop
@@ -67,15 +67,15 @@
 ;;
 
 (define-record-type pob
-  (%make-pob base props methods resolve-prop resolve-method)
+  (%make-pob base props methods prop-resolver method-resolver)
   pob?
   (base            %pob-base            %pob-set-base!)
   (props           %pob-props           %pob-set-props!)
   (methods         %pob-methods         %pob-set-methods!)
-  (resolve-prop    %pob-resolve-prop    %pob-set-resolve-prop!)
-  (resolve-method  %pob-resolve-method  %pob-set-resolve-method!))
+  (prop-resolver    %pob-prop-resolver    %pob-set-prop-resolver!)
+  (method-resolver  %pob-method-resolver  %pob-set-method-resolver!))
 
-;;; resolve-prop and resolve-methods are procedures used to resolve a
+;;; prop-resolver and method-resolvers are procedures used to resolve a
 ;;; prop/method via recursive inheritance from the base. The
 ;;; procedures must accept two required args and one optional arg:
 ;;;
@@ -89,7 +89,7 @@
 ;;;
 ;;; If the prop/method is not found in the target pob, and the target
 ;;; pob has a base pob, the procedure should invoke the base pob's
-;;; resolve-prop/resolve-method procedure on the base pob, to
+;;; prop-resolver/method-resolver procedure on the base pob, to
 ;;; recursively resolve.
 ;;;
 ;;; The procedures must return a cons containing:
@@ -101,12 +101,12 @@
 ;;;    pob has no base pob), the default value specified as the third
 ;;;    (optional) arg to the procedure.
 ;;;
-;;; See std-resolve-prop and std-resolve-method in protolk.scm for
+;;; See std-prop-resolver and std-method-resolver in protolk.scm for
 ;;; sample implementations.
 ;;;
 ;;; These procedures are required to be set in a pob. When a pob is
-;;; derived to create another pob, the original pob's resolve-prop and
-;;; resolve-method procedures should be copied into the derived pob at
+;;; derived to create another pob, the original pob's prop-resolver and
+;;; method-resolver procedures should be copied into the derived pob at
 ;;; the time of derivation, unless replacement procedures are
 ;;; specified at the time of derivation.
 
@@ -125,7 +125,7 @@
         default)))
 
 (define (%resolve-prop pob prop-name #!optional (default (void)))
-  ((%pob-resolve-prop pob) pob prop-name default))
+  ((%pob-prop-resolver pob) pob prop-name default))
 
 (define (%set-prop! pob prop-name value)
   (%pob-set-props! pob (cons (cons prop-name value)
@@ -150,7 +150,7 @@
         default)))
 
 (define (%resolve-method pob method-name #!optional (default (void)))
-  ((%pob-resolve-method pob) pob method-name default))
+  ((%pob-method-resolver pob) pob method-name default))
 
 (define (%set-method! pob method-name value)
   (%pob-set-methods! pob (cons (cons method-name value)

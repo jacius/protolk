@@ -52,7 +52,7 @@
 (describe "pob pritimive record type"
 
   (describe "%make-pob"
-    (it "succeeds when given a base, props, methods, resolve-prop, and resolve-method"
+    (it "succeeds when given a base, props, methods, prop-resolver, and method-resolver"
       (not (raises? ()
              (%make-pob #f '() '() #f #f))))
     (it "fails when given no args"
@@ -88,12 +88,12 @@
   (describe-pob-slot 0 "base"    %pob-base    %pob-set-base!)
   (describe-pob-slot 1 "props"   %pob-props   %pob-set-props!)
   (describe-pob-slot 2 "methods" %pob-methods %pob-set-methods!)
-  (describe-pob-slot 3 "resolve-prop"
-                     %pob-resolve-prop
-                     %pob-set-resolve-prop!)
-  (describe-pob-slot 4 "resolve-method"
-                     %pob-resolve-method
-                     %pob-set-resolve-method!))
+  (describe-pob-slot 3 "prop-resolver"
+                     %pob-prop-resolver
+                     %pob-set-prop-resolver!)
+  (describe-pob-slot 4 "method-resolver"
+                     %pob-method-resolver
+                     %pob-set-method-resolver!))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -132,9 +132,9 @@
         (%prop (%make-pob #f '((a . 1)) '() #f #f)))))
 
   (describe "%resolve-prop"
-    (it "calls the pob's resolve-prop procedure with the given args"
+    (it "calls the pob's prop-resolver with the given args"
       (let ((p (%make-pob #f '() '() #f #f)))
-        (%pob-set-resolve-prop!
+        (%pob-set-prop-resolver!
          p
          (lambda (pob prop-name default)
            (if (and (equal? pob p)
@@ -225,9 +225,9 @@
         (%method (%make-pob #f '() `((m . ,fn)) #f #f)))))
 
   (describe "%resolve-method"
-    (it "calls the pob's resolve-method procedure with the given args"
+    (it "calls the pob's method-resolver with the given args"
       (let ((p (%make-pob #f '() '() #f #f)))
-        (%pob-set-resolve-method!
+        (%pob-set-method-resolver!
          p
          (lambda (pob method-name default)
            (if (and (equal? pob p)

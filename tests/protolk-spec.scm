@@ -45,26 +45,26 @@
   (define (resprop pob) (cons pob #t))
   (define (resmeth pob) (cons pob fn))
 
-  (it "accepts base, props, methods, resolve-prop, and resolve-method keyword args"
+  (it "accepts base, props, methods, prop-resolver, and method-resolver keyword args"
     (not (raises? ()
            (make-pob base: #f
                      props: '((a . 1))
                      methods: `((m . ,fn))
-                     resolve-prop: resprop
-                     resolve-method: resmeth))))
+                     prop-resolver: resprop
+                     method-resolver: resmeth))))
 
   (it "returns a pob with the specified contents"
     (let ((p (make-pob base: #f
                        props: '((a . 1))
                        methods: `((m . ,fn))
-                       resolve-prop: resprop
-                       resolve-method: resmeth)))
+                       prop-resolver: resprop
+                       method-resolver: resmeth)))
       (and (pob? p)
            (equal? (%pob-base p)           #f)
            (equal? (%pob-props p)          '((a . 1)))
            (equal? (%pob-methods p)        `((m . ,fn)))
-           (equal? (%pob-resolve-prop p)   resprop)
-           (equal? (%pob-resolve-method p) resmeth))))
+           (equal? (%pob-prop-resolver p)   resprop)
+           (equal? (%pob-method-resolver p) resmeth))))
 
   (it "allows all arguments to be omitted"
     (not (raises? ()
@@ -74,54 +74,52 @@
     (equal? #f
             (%pob-base (make-pob props: '((a . 1))
                                  methods: `((m . ,fn))
-                                 resolve-prop: resprop
-                                 resolve-method: resmeth))))
+                                 prop-resolver: resprop
+                                 method-resolver: resmeth))))
 
   (it "initializes props to the empty list if omitted"
     (equal? '()
             (%pob-props (make-pob base: #f
                                   methods: `((m . ,fn))
-                                  resolve-prop: resprop
-                                  resolve-method: resmeth))))
+                                  prop-resolver: resprop
+                                  method-resolver: resmeth))))
 
   (it "initializes methods to the empty list if omitted"
     (equal? '()
             (%pob-methods (make-pob base: #f
                                     props: '((a . 1))
-                                    resolve-prop: resprop
-                                    resolve-method: resmeth))))
+                                    prop-resolver: resprop
+                                    method-resolver: resmeth))))
 
-  (it "initializes resolve-prop to std-resolve-prop if omitted"
-    (equal? std-resolve-prop
-            (%pob-resolve-prop (make-pob base: #f
+  (it "initializes prop-resolver to std-prop-resolver if omitted"
+    (equal? std-prop-resolver
+            (%pob-prop-resolver (make-pob base: #f
                                          props: '((a . 1))
                                          methods: `((m . ,fn))
-                                         resolve-method: resmeth))))
+                                         method-resolver: resmeth))))
 
-  (it "initializes resolve-method to std-resolve-method if omitted"
-    (equal? std-resolve-method
-            (%pob-resolve-method (make-pob base: #f
+  (it "initializes method-resolver to std-method-resolver if omitted"
+    (equal? std-method-resolver
+            (%pob-method-resolver (make-pob base: #f
                                            props: '((a . 1))
                                            methods: `((m . ,fn))
-                                           resolve-prop: resprop)))))
+                                           prop-resolver: resprop)))))
 
 
 (describe "send"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_resolve-method . ,std-resolve-method)
-                         (_resolve-prop   . ,std-resolve-prop)
-                         (_method-missing . ,noop))))
+    (make-pob methods: `((_method-missing . ,noop))))
   
-  ;; it "uses the pob's resolve-method to find its _receive method"
+  ;; it "uses the pob's method-resolver to find its _receive method"
   (let* ((pob (make-pob base: base-pob))
          (stub-resolve
           (lambda (self method-name #!optional default)
             (if (eq? method-name '_receive)
                 (raise 'success "Success!")
                 (%resolve-method self method-name default)))))
-    (%pob-set-resolve-method! pob stub-resolve)
-    (it "uses the pob's resolve-method to find its _receive method"
+    (%pob-set-method-resolver! pob stub-resolve)
+    (it "uses the pob's method-resolver to find its _receive method"
       (raises? (success)
         (send pob 'amethod 1 2 3))))
 
@@ -217,55 +215,55 @@
 ;; STD METHODS
 ;;
 
-(describe "std-resolve-prop"
+(describe "std-prop-resolver"
   (define pob1 (make-pob props: '((a . 1) (b . 2) (c . 3) (d . 4))))
   (define pob2 (make-pob base: pob1 props: `((a . 11) (c . ,(void)))))
   (define pob3 (make-pob base: pob2 props: '((b . 22))))
 
   (it "returns a list with self and the prop value, if self defines the prop"
-    (equal? (std-resolve-prop pob3 'b) (cons pob3 22)))
+    (equal? (std-prop-resolver pob3 'b) (cons pob3 22)))
 
   (it "returns a cons with the nearest ancestor that defines the prop, and the prop value"
-    (equal? (std-resolve-prop pob3 'a) (cons pob2 11)))
+    (equal? (std-prop-resolver pob3 'a) (cons pob2 11)))
 
   (it "searches ancestors recursively to find the prop value"
-    (equal? (std-resolve-prop pob3 'd) (cons pob1 4)))
+    (equal? (std-prop-resolver pob3 'd) (cons pob1 4)))
  
   (it "returns #f and the default value if the prop is not found"
-    (equal? (std-resolve-prop pob3 'z 'default) (cons #f 'default)))
+    (equal? (std-prop-resolver pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
-    (equal? (std-resolve-prop pob3 'z) (cons #f (void))))
+    (equal? (std-prop-resolver pob3 'z) (cons #f (void))))
 
   (it "stops searching if it ever finds the prop defined as #<unspecified>"
-    (equal? (std-resolve-prop pob3 'c) (cons pob2 (void))))
+    (equal? (std-prop-resolver pob3 'c) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises? (arity)
-      (std-resolve-prop)))
+      (std-prop-resolver)))
 
   (it "fails if the prop name is omitted"
     (raises? (arity)
-      (std-resolve-prop pob3)))
+      (std-prop-resolver pob3)))
 
   (it "does not fail if given the pob and prop name"
     (not (raises? ()
-           (std-resolve-prop pob3 'a))))
+           (std-prop-resolver pob3 'a))))
 
   (it "does not fail if given the pob, prop name, and default value"
     (not (raises? ()
-           (std-resolve-prop pob3 'a 'default))))
+           (std-prop-resolver pob3 'a 'default))))
   
   (it "fails if given too many args"
     (raises? ()
-      (std-resolve-prop pob3 'a 'b 'c)))
+      (std-prop-resolver pob3 'a 'b 'c)))
 
   (it "fails if given a non-pob for the first arg"
     (raises? (type)
-      (std-resolve-prop 'foo 'a))))
+      (std-prop-resolver 'foo 'a))))
 
 
-(describe "std-resolve-method"
+(describe "std-method-resolver"
   (define (fn1 self) 1)
   (define (fn2 self) 2)
   (define (fn3 self) 3)
@@ -281,59 +279,57 @@
     (make-pob base: pob2 methods: `((n . ,fn6))))
 
   (it "returns a pair with self and the definition if self defines it"
-    (equal? (std-resolve-method pob3 'n) (cons pob3 fn6)))
+    (equal? (std-method-resolver pob3 'n) (cons pob3 fn6)))
 
   (it "returns a pair with the nearest ancestor that defines the method, and the definition"
-    (equal? (std-resolve-method pob3 'm) (cons pob2 fn5)))
+    (equal? (std-method-resolver pob3 'm) (cons pob2 fn5)))
 
   (it "searches ancestors recursively to find the definition"
-    (equal? (std-resolve-method pob3 'p) (cons pob1 fn4)))
+    (equal? (std-method-resolver pob3 'p) (cons pob1 fn4)))
  
   (it "returns #f and the default value if the method is not found"
-    (equal? (std-resolve-method pob3 'z 'default) (cons #f 'default)))
+    (equal? (std-method-resolver pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
-    (equal? (std-resolve-method pob3 'z) (cons #f (void))))
+    (equal? (std-method-resolver pob3 'z) (cons #f (void))))
   
   (it "stops searching if it ever finds the method defined as #<unspecified>"
-    (equal? (std-resolve-method pob3 'o) (cons pob2 (void))))
+    (equal? (std-method-resolver pob3 'o) (cons pob2 (void))))
 
   (it "fails if given no args"
     (raises? (arity)
-      (std-resolve-method)))
+      (std-method-resolver)))
 
   (it "fails if the method name is omitted"
     (raises? (arity)
-      (std-resolve-method pob3)))
+      (std-method-resolver pob3)))
 
   (it "does not fail if given the pob and method name"
     (not (raises? ()
-           (std-resolve-method pob3 'm))))
+           (std-method-resolver pob3 'm))))
 
   (it "does not fail if given the pob, method name, and default value"
     (not (raises? ()
-           (std-resolve-method pob3 'm 'default))))
+           (std-method-resolver pob3 'm 'default))))
   
   (it "fails if given too many args"
     (raises? ()
-      (std-resolve-method pob3 'm 'default 'o)))
+      (std-method-resolver pob3 'm 'default 'o)))
 
   (it "fails if given a non-pob for the first arg"
     (raises? (type)
-      (std-resolve-method 'foo 'm))))
+      (std-method-resolver 'foo 'm))))
 
 
 (describe "std-_receive"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_resolve-method . ,std-resolve-method)
-                         (_resolve-prop   . ,std-resolve-prop)
-                         (_method-missing . ,std-_method-missing))))
+    (make-pob methods: `((_method-missing . ,std-_method-missing))))
 
-  (it "uses the pob's resolve-method to find a matching method"
+  (it "uses the pob's method-resolver to find a matching method"
     (let* ((stub-resolve (lambda args (raise 'success "Success!")))
            (pob (make-pob base: base-pob
-                 resolve-method: stub-resolve)))
+                 method-resolver: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
@@ -341,7 +337,7 @@
     (let* ((stub-method (lambda args (raise 'success "Success!")))
            (stub-resolve (lambda args (cons 'some-pob stub-method)))
            (pob (make-pob base: base-pob
-                 resolve-method: stub-resolve)))
+                 method-resolver: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
@@ -352,7 +348,7 @@
                              ((_method-missing)
                               (raise 'success "Success!")))))
            (pob (make-pob base: base-pob
-                 resolve-method: stub-resolve)))
+                 method-resolver: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 
@@ -363,7 +359,7 @@
                              ((amethod) (cons #f default))
                              ((_method-missing) (cons 'some-pob stub-mm)))))
            (pob (make-pob base: base-pob
-                 resolve-method: stub-resolve)))
+                 method-resolver: stub-resolve)))
       (raises? (success)
         (std-_receive pob 'amethod '(1 2 3)))))
 

@@ -60,16 +60,16 @@
                        #!key
                        (props          '())
                        (methods        '())
-                       (resolve-prop   (%pob-resolve-prop self))
-                       (resolve-method (%pob-resolve-method self)))
+                       (prop-resolver   (%pob-prop-resolver self))
+                       (method-resolver (%pob-method-resolver self)))
   (unless (pob? self)
     (raise 'type (sprintf "Not a pob: ~s" self)))
   (make-pob
-   base:           self
-   props:          props
-   methods:        methods
-   resolve-prop:   resolve-prop   
-   resolve-method: resolve-method))
+   base:            self
+   props:           props
+   methods:         methods
+   prop-resolver:   prop-resolver   
+   method-resolver: method-resolver))
 
 (define (stdpob-ancestors self)
   (let ((base (%pob-base self)))

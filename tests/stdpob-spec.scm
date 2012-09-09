@@ -37,50 +37,50 @@
     (let ((p (stdpob-derive base-pob
                          props: '((a . 1))
                          methods: `((m . ,fn))
-                         resolve-prop: resprop
-                         resolve-method: resmeth)))
+                         prop-resolver: resprop
+                         method-resolver: resmeth)))
       (and (pob? p)
            (equal? (%pob-base p)           base-pob)
            (equal? (%pob-props p)          '((a . 1)))
            (equal? (%pob-methods p)        `((m . ,fn)))
-           (equal? (%pob-resolve-prop p)   resprop)
-           (equal? (%pob-resolve-method p) resmeth))))
+           (equal? (%pob-prop-resolver p)   resprop)
+           (equal? (%pob-method-resolver p) resmeth))))
 
   (it "initializes props to the empty list if omitted"
-    (let* ((b (make-pob resolve-prop: resprop
-                        resolve-method: resmeth))
+    (let* ((b (make-pob prop-resolver: resprop
+                        method-resolver: resmeth))
            (p (stdpob-derive b
                           methods: `((m . ,fn))
-                          resolve-prop: resprop
-                          resolve-method: resmeth)))
+                          prop-resolver: resprop
+                          method-resolver: resmeth)))
       (equal? (%pob-props p) '())))
 
   (it "initializes methods to the empty list if omitted"
-    (let* ((b (make-pob resolve-prop: resprop
-                        resolve-method: resmeth))
+    (let* ((b (make-pob prop-resolver: resprop
+                        method-resolver: resmeth))
            (p (stdpob-derive b
                           props: '((a . 1))
-                          resolve-prop: resprop
-                          resolve-method: resmeth)))
+                          prop-resolver: resprop
+                          method-resolver: resmeth)))
       (equal? (%pob-methods p) '())))
 
-  (it "initializes resolve-prop to the base's resolve-prop if omitted"
-    (let* ((b (make-pob resolve-prop: resprop
-                        resolve-method: resmeth))
+  (it "initializes prop-resolver to the base's prop-resolver if omitted"
+    (let* ((b (make-pob prop-resolver: resprop
+                        method-resolver: resmeth))
            (p (stdpob-derive b
                           props: '((a . 1))
                           methods: `((m . ,fn))
-                          resolve-method: resmeth)))
-      (equal? (%pob-resolve-prop p) resprop)))
+                          method-resolver: resmeth)))
+      (equal? (%pob-prop-resolver p) resprop)))
 
-  (it "initializes resolve-method to the base's resolve-method if omitted"
-    (let* ((b (make-pob resolve-prop: resprop
-                        resolve-method: resmeth))
+  (it "initializes method-resolver to the base's method-resolver if omitted"
+    (let* ((b (make-pob prop-resolver: resprop
+                        method-resolver: resmeth))
            (p (stdpob-derive b
                           props: '((a . 1))
                           methods: `((m . ,fn))
-                          resolve-prop: resprop)))
-      (equal? (%pob-resolve-method p) resmeth))))
+                          prop-resolver: resprop)))
+      (equal? (%pob-method-resolver p) resmeth))))
 
 
 (describe "stdpob-ancestors"
@@ -235,11 +235,11 @@
   (it "has base set to #f"
     (equal? (%pob-base stdpob) #f))
 
-  (it "has resolve-prop sot to std-resolve-prop"
-    (equal? (%pob-resolve-prop stdpob) std-resolve-prop))
+  (it "has prop-resolver sot to std-prop-resolver"
+    (equal? (%pob-prop-resolver stdpob) std-prop-resolver))
 
-  (it "has resolve-method set to std-resolve-method"
-    (equal? (%pob-resolve-method stdpob) std-resolve-method))
+  (it "has method-resolver set to std-method-resolver"
+    (equal? (%pob-method-resolver stdpob) std-method-resolver))
   
   (it "has a '_display method set to std-_display?"
     (equal? (%method stdpob '_display) std-_display))

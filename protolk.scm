@@ -43,8 +43,8 @@
    send
    prop-reader
    prop-writer
-   std-resolve-prop
-   std-resolve-method
+   std-prop-resolver
+   std-method-resolver
    std-_receive
    std-_method-missing
    std-_display)
@@ -76,9 +76,9 @@
                   (base    #f)
                   (props   '())
                   (methods '())
-                  (resolve-prop   std-resolve-prop)
-                  (resolve-method std-resolve-method))
-  (%make-pob base props methods resolve-prop resolve-method))
+                  (prop-resolver   std-prop-resolver)
+                  (method-resolver std-method-resolver))
+  (%make-pob base props methods prop-resolver method-resolver))
 
 
 (define (send pob message . args)
@@ -94,7 +94,7 @@
     (%set-prop! self prop-name value)))
 
 
-(define (std-resolve-prop self prop-name
+(define (std-prop-resolver self prop-name
                            #!optional (default (void)))
   (if (%has-prop? self prop-name)
       (cons self (%prop self prop-name))
@@ -103,7 +103,7 @@
             (%resolve-prop base prop-name default)
             (cons #f default)))))
 
-(define (std-resolve-method self method-name
+(define (std-method-resolver self method-name
                              #!optional (default (void)))
   (if (%has-method? self method-name)
       (cons self (%method self method-name))
