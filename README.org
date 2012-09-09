@@ -3,9 +3,9 @@
 
 Flexible Scheme objects with message passing and prototypes
 
-- Version :: 0.2
-- Date :: August 29, 2012
-- Author :: John Croisant <john@croisant.net>
+- Version :: 0.3
+- Date :: September 8, 2012
+- Author :: John Croisant <john+protolk@croisant.net>
 - Project :: [[http://github.com/jacius/protolk/]]
 - License :: [[http://opensource.org/licenses/BSD-2-Clause][BSD 2-Clause]]
 

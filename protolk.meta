@@ -1,7 +1,7 @@
 ;;;; -*- Scheme -*-
 
 ((egg "protolk.egg")
- (author "John Croisant <protolk@croisant.net>")
+ (author "John Croisant <john+protolk@croisant.net>")
  (synopsis "Flexible Scheme objects with message passing and prototypes")
  (category oop)
  (license "BSD")
