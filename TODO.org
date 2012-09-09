@@ -77,7 +77,8 @@ flexibility for its own sake.
 - [X] =%self= procedure (read-only equivalent to =(car (%method-context))=)
 - [X] =own-prop= procedure and setter
 
-- [ ] =assert-self= procedure. Raises unless given pob is (self).
+- [X] =assert-active-pob= procedure.
+  Raises unless the given pob is equal to (%self).
 - [ ] =define-private-method= macro
 
 - [ ] =in-method= macro

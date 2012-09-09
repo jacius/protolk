@@ -49,7 +49,8 @@
    std-_method-missing
    std-_display
 
-   own-prop  set-own-prop!)
+   own-prop  set-own-prop!
+   assert-active-pob)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -151,6 +152,23 @@
            (raise 'context "No active self in the current context."
                   'prop-name prop-name))))
    set-own-prop!))
+
+
+(define (assert-active-pob pob #!optional message)
+  (cond
+   ((not (%self))
+    (raise 'context
+           "There is no active pob in the current context."))
+   ((not (equal? pob (%self)))
+    (raise 'context
+           (or message
+               (sprintf
+                "~s is not the active pob in the current context."
+                pob))
+           'pob pob
+           'active-pob (%self)))
+   (else
+    #t)))
 
 
 ) ;; end module protolk

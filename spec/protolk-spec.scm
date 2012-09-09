@@ -479,6 +479,21 @@
       (set-own-prop! 'a 2))))
 
 
+(describe "assert-active-pob"
+  (it "returns #t if the pob is the active pob"
+    (let ((pob (make-pob props: '((a . 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (assert-active-pob pob) #t))))
+
+  (it "raises a 'context error if the pob is not the active pob"
+    (raises? (context)
+      (assert-active-pob (make-pob))))
+
+  (it "raises a 'context error if given #f when there is no active pob"
+    (raises? (context)
+      (assert-active-pob #f))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
