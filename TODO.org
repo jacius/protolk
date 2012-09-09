@@ -75,7 +75,7 @@ flexibility for its own sake.
 
 - [X] =%method-context= parameter primitive
 - [X] =%self= procedure (read-only equivalent to =(car (%method-context))=)
-- [ ] =own-prop= procedure and setter
+- [X] =own-prop= procedure and setter
 
 - [ ] =assert-self= procedure. Raises unless given pob is (self).
 - [ ] =define-private-method= macro

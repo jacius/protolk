@@ -440,6 +440,48 @@
       (std-_display pob 'foo))))
 
 
+
+;;;;;;;;;;;;;;;;;;;
+;; ESCAPSULATION
+;;
+
+(describe "own-prop"
+  (it "returns the prop value from the active self"
+    (let ((pob (make-pob props: '((a . 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (own-prop 'a) 1))))
+
+  (it "raises a 'context error if there is no active self"
+    (raises? (context)
+      (own-prop 'a)))
+
+  (it "is settable with set!"
+    (let ((pob (make-pob props: '((a . 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (set! (own-prop 'a) 2)
+        (equal? (own-prop 'a) 2)))))
+
+
+(describe "set-own-prop!"
+  (it "modifies the prop value in the active self"
+    (let ((pob (make-pob props: '((a . 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (set-own-prop! 'a 2)
+        (equal? (own-prop 'a) 2))))
+
+  (it "returns #<unspecified> on success"
+    (let ((pob (make-pob props: '((a . 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (set-own-prop! 'a 2) (void)))))
+
+  (it "raises a 'context error if there is no active self"
+    (raises? (context)
+      (set-own-prop! 'a 2))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (cond-expand
  ((not protolk-all-tests)
   (test-exit))

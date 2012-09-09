@@ -47,7 +47,9 @@
    std-method-resolver
    std-_receive
    std-_method-missing
-   std-_display)
+   std-_display
+
+   own-prop  set-own-prop!)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -126,6 +128,29 @@
         (apply method self args)
         ((cdr (%resolve-method self '_method-missing std-_method-missing))
          self message args))))
+
+
+;;;;;;;;;;;;;;;;;;;
+;; ENCAPSULATION
+;;
+
+(define (set-own-prop! prop-name value)
+  (let ((self (%self)))
+    (if (pob? self)
+        (%set-prop! self prop-name value)
+        (raise 'context "No active self in the current context."
+               'prop-name prop-name
+               'value value))))
+
+(define own-prop
+  (getter-with-setter
+   (lambda (prop-name)
+     (let ((self (%self)))
+       (if (pob? self)
+           (%prop self prop-name)
+           (raise 'context "No active self in the current context."
+                  'prop-name prop-name))))
+   set-own-prop!))
 
 
 ) ;; end module protolk
