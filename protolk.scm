@@ -156,10 +156,11 @@
 
 (define (assert-active-pob pob #!optional message)
   (cond
-   ((not (%active-pob))
+   ((not (pob? (%active-pob)))
     (raise 'context
-           "There is no active pob in the current context."))
-   ((not (equal? pob (%active-pob)))
+           (or message
+               "There is no active pob in the current context.")))
+   ((not (eq? pob (%active-pob)))
     (raise 'context
            (or message
                (sprintf

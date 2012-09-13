@@ -485,13 +485,40 @@
       (parameterize ((%method-context (list pob 'some-method)))
         (equal? (assert-active-pob pob) #t))))
 
-  (it "raises a 'context error if the pob is not the active pob"
-    (raises? (context)
-      (assert-active-pob (make-pob))))
+  (it "raises a 'context error if the given pob is not the active pob"
+    (let ((pob (make-pob)))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (raises? (context)
+          (assert-active-pob (make-pob))))))
 
   (it "raises a 'context error if given #f when there is no active pob"
     (raises? (context)
-      (assert-active-pob #f))))
+      (assert-active-pob #f)))
+
+  (it "accepts an optional error message to use on failure"
+    (let ((pob (make-pob))
+          (pob2 (make-pob))
+          (message "Fail!"))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (let ((exn (raises? (context)
+                     (assert-active-pob pob2 message))))
+          (eq?
+           (get-condition-property exn 'context 'message)
+           message)))))
+
+  (it "also uses the custom error message when there is no active pob"
+    (let ((message "Fail!"))
+      (parameterize ((%method-context #f))
+        (let ((exn (raises? (context)
+                     (assert-active-pob (make-pob) message))))
+          (eq?
+           (get-condition-property exn 'context 'message)
+           message)))))
+  
+  (it "fails if given no args"
+    (raises? (arity)
+      (assert-active-pob))))
+
 
 
 
