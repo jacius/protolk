@@ -50,7 +50,8 @@
    std-_display
 
    own-prop  set-own-prop!
-   assert-active-pob)
+   assert-active-pob
+   in-method)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -170,6 +171,22 @@
            'active-pob (%active-pob)))
    (else
     #t)))
+
+
+(define-syntax in-method
+  (er-macro-transformer
+   (lambda (exp rename compare)
+     (let* ((context (cadr exp))
+            (body (cddr exp))
+            (pob (car context))
+            (method-name (cadr context))
+            (args (cddr context)))
+       `(,(rename 'parameterize)
+         ((,(rename '%method-context) (,(rename 'list)
+                                       ,pob
+                                       ',method-name
+                                       ,@args)))
+         ,@body)))))
 
 
 ) ;; end module protolk

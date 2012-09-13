@@ -4,6 +4,7 @@
 (import protolk
         protolk-primitives
         protolk-internal)
+(import-for-syntax protolk)
 
 (use extras)
 
@@ -518,6 +519,20 @@
   (it "fails if given no args"
     (raises? (arity)
       (assert-active-pob))))
+
+
+(describe "in-method"
+  (it "is a macro that sets the method context"
+    (let ((pob (make-pob)))
+      (equal? (list pob 'some-method 1 2 3)
+              (in-method (pob some-method 1 2 3)
+                (%method-context)))))
+
+  (it "only sets the method context within the scope of its body"
+    (let ((pob (make-pob)))
+      (in-method (pob some-method 1 2 3)
+        'noop)
+      (equal? #f (%method-context)))))
 
 
 
