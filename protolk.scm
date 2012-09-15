@@ -55,7 +55,7 @@
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
-(use extras)
+(use extras srfi-1)
 
 
 ;;;;;;;;;;;;;
@@ -174,19 +174,11 @@
 
 
 (define-syntax in-method
-  (er-macro-transformer
-   (lambda (exp rename compare)
-     (let* ((context (cadr exp))
-            (body (cddr exp))
-            (pob (car context))
-            (method-name (cadr context))
-            (args (cddr context)))
-       `(,(rename 'parameterize)
-         ((,(rename '%method-context) (,(rename 'list)
-                                       ,pob
-                                       ',method-name
-                                       ,@args)))
-         ,@body)))))
+  (syntax-rules ()
+    ((in-method (pob method-name . args) . body)
+     (parameterize ((%method-context
+                     (list pob 'method-name . args)))
+       . body))))
 
 
 ) ;; end module protolk
