@@ -186,6 +186,48 @@
        . body))))
 
 
+
+(define-for-syntax (rewrite-method-args args arg-type)
+  (if (null? args)
+      (list)
+
+      (case (car args)
+        ((#!optional)
+         (rewrite-method-args (cdr args) 'optional))
+        ((#!rest)
+         ;; #!rest eats all following, so no more recursion needed.
+         (cadr args))
+        ((#!key)
+         (rewrite-method-args (cdr args) 'key))
+
+        (else
+         (case arg-type
+           ((required)
+            ;; Nothing fancy, just the arg name.
+            (cons (car args)
+                  (rewrite-method-args (cdr args) 'required)))
+
+           ((optional)
+            ;; Omit the default value, if there is any.
+            (cons (if (list? (car args))
+                      (caar args)
+                      (car args))
+                  (rewrite-method-args (cdr args) 'optional)))
+
+           ((key)
+            ;; Omit the default value, if there is any, but add a
+            ;; keyword version of the arg name before the arg name.
+            (let ((arg-name (if (list? (car args))
+                                (caar args)
+                                (car args))))
+              (cons* (string->keyword (symbol->string arg-name))
+                     arg-name
+                     (rewrite-method-args (cdr args) 'key))))
+
+           (else
+            (error (sprintf "unexpected arg-type: ~s" arg-type))))))))
+
+
 (define-syntax define-method
   (er-macro-transformer
    (lambda (exp rename compare)
@@ -193,10 +235,23 @@
             (body (cddr exp))
             (pob (car signature))
             (method-name (cadr signature))
-            (args (cddr signature)))
+            (args (cddr signature))
+            (rewritten-args (rewrite-method-args args 'required)))
        `(,(rename '%set-method!) ,pob ',method-name
          (,(rename 'lambda) (pob ,@args)
-          (,(rename 'in-method) (,pob ,method-name ,@args)
+          (,(rename 'parameterize)
+           ((,(rename '%method-context)
+             ,(if (list? (cdr (last-pair rewritten-args)))
+                  `(,(rename 'list)
+                    ,pob
+                    ',method-name
+                    ,@rewritten-args)
+                  `(,(rename 'cons*)
+                    ,pob
+                    ',method-name
+                    ,@(drop-right rewritten-args 1)
+                    ,(car (last-pair rewritten-args))
+                    ,(cdr (last-pair rewritten-args))))))
            ,@body)))))))
 
 

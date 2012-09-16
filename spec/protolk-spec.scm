@@ -544,7 +544,7 @@
   (it "is a macro that defines a method in a pob"
     (let ((pob (make-pob)))
       (define-method (pob some-method arg1 arg2 arg3)
-        (+ arg1 arg2 arg3))i
+        (+ arg1 arg2 arg3))
       (equal? (send pob 'some-method 1 2 3) 6)))
 
   (it "replaces any existing method with the same name in that pob"
@@ -562,39 +562,68 @@
       (equal? (send pob 'some-method 1 2 3)
               (list pob 'some-method 1 2 3))))
 
- ;; (it "sets the method context appropriately for rest args"
- ;;    (let ((pob (make-pob)))
- ;;      (define-method (pob some-method arg1 #!rest more-args)
- ;;        (%method-context))
- ;;      (equal? (send pob 'some-method 1 2 3 4)
- ;;              (list pob 'some-method 1 2 3 4))))
+ (it "sets the method context appropriately for rest args"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method arg1 #!rest more-args)
+        (%method-context))
+      (equal? (send pob 'some-method 1 2 3 4)
+              (list pob 'some-method 1 2 3 4))))
 
- ;; (it "sets the method context appropriately for optional args"
- ;;   (let ((pob (make-pob)))
- ;;     (define-method (pob some-method arg1 #!optional arg2 (arg3 6) arg4)
- ;;       (%method-context))
- ;;     (equal? (send pob 'some-method 1 2)
- ;;             (list pob 'some-method 1 2 6 #f))))
+ (it "sets the method context appropriately for optional args"
+   (let ((pob (make-pob)))
+     (define-method (pob some-method arg1 #!optional arg2 (arg3 6) arg4)
+       (%method-context))
+     (equal? (send pob 'some-method 1 2)
+             (list pob 'some-method 1 2 6 #f))))
 
- ;;  (it "sets the method context appropriately for keyword args"
- ;;    (let ((pob (make-pob)))
- ;;      (define-method (pob some-method #!key arg1 (arg2 4) arg3)
- ;;        (%method-context))
- ;;      (equal? (send pob 'some-method arg3: 3)
- ;;              (list pob 'some-method #:arg1 #f #:arg2 4 #:arg3 3))))
+  (it "sets the method context appropriately for keyword args"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method #!key arg1 (arg2 4) arg3)
+        (%method-context))
+      (equal? (send pob 'some-method arg3: 3)
+              (list pob 'some-method #:arg1 #f #:arg2 4 #:arg3 3))))
  
- ;;  (it "sets the method context for optional and keyword args together"
- ;;    (let ((pob (make-pob)))
- ;;      (define-method (pob some-method #!optional arg1 #!key (arg2 4) arg3)
- ;;        (%method-context))
- ;;      (and
- ;;       (equal? (send pob 'some-method 1 arg3: 3)
- ;;               (list pob 'some-method 1 #:arg2 4 #:arg3 3))
- ;;       (equal? (send pob 'some-method arg3: 3)
- ;;               ;; The usual quirky behavior for using optional and
- ;;               ;; keyword args together:
- ;;               (list pob 'some-method #:arg3 #:arg2 4 #:arg3 #f)))))
-  )
+ (it "sets the method context for rest and keyword args together"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method arg1 #!rest more-args #!key (arg2 4) arg3)
+        (%method-context))
+      ;; The rest arg consumes all remaining args, including the keywords.
+      (and
+       (equal? (send pob 'some-method 1)
+               (list pob 'some-method 1))
+       (equal? (send pob 'some-method 1 2 arg2: 3 4)
+               (list pob 'some-method 1 2 arg2: 3 4)))))
+
+  (it "sets the method context for optional and keyword args together"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method #!optional arg1 #!key (arg2 4) arg3)
+        (%method-context))
+      (and
+       (equal? (send pob 'some-method 1 arg3: 3)
+               (list pob 'some-method 1 #:arg2 4 #:arg3 3))
+       (equal? (send pob 'some-method arg3: 3)
+               ;; The usual quirky behavior for using optional and
+               ;; keyword args together:
+               (list pob 'some-method #:arg3 #:arg2 4 #:arg3 #f)))))
+
+ (it "sets the method context for optional, rest, and keyword args together"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method arg1
+                          #!optional (arg2 2) arg3
+                          #!rest more-args
+                          #!key (arg4 4) arg5)
+        (%method-context))
+      (and
+       (equal? (send pob 'some-method 1)
+               (list pob 'some-method 1 2 #f))
+       (equal? (send pob 'some-method 1 2 3 4)
+               (list pob 'some-method 1 2 3 4))
+       (equal? (send pob 'some-method 1 2 3 arg4: 44 4)
+               (list pob 'some-method 1 2 3 arg4: 44 4))
+       (equal? (send pob 'some-method 1 2 3 arg4: 44 arg5: 55)
+               (list pob 'some-method 1 2 3 arg4: 44 arg5: 55))
+       (equal? (send pob 'some-method 1 2 3 4 5 6 7 8 9 10)
+               (list pob 'some-method 1 2 3 4 5 6 7 8 9 10))))))
 
 
 
