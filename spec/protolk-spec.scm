@@ -521,6 +521,11 @@
       (assert-active-pob))))
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; DEFINING METHODS
+;;
+
 (describe "in-method"
   (it "is a macro that sets the method context"
     (let ((pob (make-pob)))
@@ -533,6 +538,63 @@
       (in-method (pob some-method 1 2 3)
         'noop)
       (equal? #f (%method-context)))))
+
+
+(describe "define-method"
+  (it "is a macro that defines a method in a pob"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method arg1 arg2 arg3)
+        (+ arg1 arg2 arg3))i
+      (equal? (send pob 'some-method 1 2 3) 6)))
+
+  (it "replaces any existing method with the same name in that pob"
+    (let ((pob (make-pob methods: `((some-method
+                                     ,(lambda (pob arg1 arg2 arg3)
+                                        (+ arg1 arg2 arg3)))))))
+      (define-method (pob some-method arg1 arg2 arg3)
+        (- arg1 arg2 arg3))
+      (equal? (send pob 'some-method 1 2 3) -4)))
+
+  (it "sets the method context within the scope of the method body"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method arg1 arg2 arg3)
+        (%method-context))
+      (equal? (send pob 'some-method 1 2 3)
+              (list pob 'some-method 1 2 3))))
+
+ ;; (it "sets the method context appropriately for rest args"
+ ;;    (let ((pob (make-pob)))
+ ;;      (define-method (pob some-method arg1 #!rest more-args)
+ ;;        (%method-context))
+ ;;      (equal? (send pob 'some-method 1 2 3 4)
+ ;;              (list pob 'some-method 1 2 3 4))))
+
+ ;; (it "sets the method context appropriately for optional args"
+ ;;   (let ((pob (make-pob)))
+ ;;     (define-method (pob some-method arg1 #!optional arg2 (arg3 6) arg4)
+ ;;       (%method-context))
+ ;;     (equal? (send pob 'some-method 1 2)
+ ;;             (list pob 'some-method 1 2 6 #f))))
+
+ ;;  (it "sets the method context appropriately for keyword args"
+ ;;    (let ((pob (make-pob)))
+ ;;      (define-method (pob some-method #!key arg1 (arg2 4) arg3)
+ ;;        (%method-context))
+ ;;      (equal? (send pob 'some-method arg3: 3)
+ ;;              (list pob 'some-method #:arg1 #f #:arg2 4 #:arg3 3))))
+ 
+ ;;  (it "sets the method context for optional and keyword args together"
+ ;;    (let ((pob (make-pob)))
+ ;;      (define-method (pob some-method #!optional arg1 #!key (arg2 4) arg3)
+ ;;        (%method-context))
+ ;;      (and
+ ;;       (equal? (send pob 'some-method 1 arg3: 3)
+ ;;               (list pob 'some-method 1 #:arg2 4 #:arg3 3))
+ ;;       (equal? (send pob 'some-method arg3: 3)
+ ;;               ;; The usual quirky behavior for using optional and
+ ;;               ;; keyword args together:
+ ;;               (list pob 'some-method #:arg3 #:arg2 4 #:arg3 #f)))))
+  )
 
 
 

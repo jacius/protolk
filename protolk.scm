@@ -51,7 +51,8 @@
 
    own-prop  set-own-prop!
    assert-active-pob
-   in-method)
+   in-method
+   define-method)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -173,12 +174,31 @@
     #t)))
 
 
+;;;;;;;;;;;;;;;;;;;;;;
+;; DEFINING METHODS
+;;
+
 (define-syntax in-method
   (syntax-rules ()
     ((in-method (pob method-name . args) . body)
      (parameterize ((%method-context
                      (list pob 'method-name . args)))
        . body))))
+
+
+(define-syntax define-method
+  (er-macro-transformer
+   (lambda (exp rename compare)
+     (let* ((signature (cadr exp))
+            (body (cddr exp))
+            (pob (car signature))
+            (method-name (cadr signature))
+            (args (cddr signature)))
+       `(,(rename '%set-method!) ,pob ',method-name
+         (,(rename 'lambda) (pob ,@args)
+          (,(rename 'in-method) (,pob ,method-name ,@args)
+           ,@body)))))))
+
 
 
 ) ;; end module protolk
