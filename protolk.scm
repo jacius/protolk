@@ -52,7 +52,8 @@
    own-prop  set-own-prop!
    assert-active-pob
    in-method
-   define-method)
+   define-method
+   define-private-method)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -260,6 +261,37 @@
              ,(process-method-args
                pob method-name rewritten-args rename)))
            ,@body)))))))
+
+
+(define-syntax define-private-method
+  (er-macro-transformer
+   (lambda (exp rename compare)
+     (let* ((signature (cadr exp))
+            (body (cddr exp))
+            (pob (car signature))
+            (method-name (cadr signature))
+            (args (cddr signature))
+            (rewritten-args (rewrite-method-args args 'required))
+            (processed-args (process-method-args
+                             pob
+                             method-name
+                             rewritten-args
+                             rename)))
+       `(,(rename '%set-method!) ,pob ',method-name
+         (,(rename 'lambda) (pob ,@args)
+          (,(rename 'if) (,(rename 'eq?)
+                          (,(rename '%active-pob))
+                          pob)
+           (,(rename 'parameterize)
+            ((,(rename '%method-context) ,processed-args))
+            ,@body)
+           (,(rename 'raise) 'private-method
+            (,(rename 'sprintf)
+             "private method '~s called for ~s" ',method-name ,pob)
+            'pob ,pob
+            'method-name ',method-name
+            'args ,(cons (car processed-args)
+                         (cdddr processed-args))))))))))
 
 
 

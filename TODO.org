@@ -80,7 +80,7 @@ flexibility for its own sake.
 
 - [X] =assert-active-pob= procedure.
   Raises unless the given pob is equal to (%active-pob).
-- [ ] =define-private-method= macro
+- [X] =define-private-method= macro
 
 - [X] =in-method= macro
 - [X] =define-method= macro
