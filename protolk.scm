@@ -230,7 +230,8 @@
 
 (define-for-syntax (process-method-args
                     pob method-name rewritten-args rename)
-  (if (list? (cdr (last-pair rewritten-args)))
+  (if (or (null? rewritten-args)
+          (list? (cdr (last-pair rewritten-args))))
       `(,(rename 'list)
         ,pob
         ',method-name

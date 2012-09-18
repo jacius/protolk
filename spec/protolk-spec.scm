@@ -562,7 +562,14 @@
       (equal? (send pob 'some-method 1 2 3)
               (list pob 'some-method 1 2 3))))
 
- (it "sets the method context appropriately for rest args"
+  (it "sets the method context appropriately for no args"
+    (let ((pob (make-pob)))
+      (define-method (pob some-method)
+        (%method-context))
+      (equal? (send pob 'some-method)
+              (list pob 'some-method))))
+  
+  (it "sets the method context appropriately for rest args"
     (let ((pob (make-pob)))
       (define-method (pob some-method arg1 #!rest more-args)
         (%method-context))
