@@ -228,6 +228,21 @@
             (error (sprintf "unexpected arg-type: ~s" arg-type))))))))
 
 
+(define-for-syntax (process-method-args
+                    pob method-name rewritten-args rename)
+  (if (list? (cdr (last-pair rewritten-args)))
+      `(,(rename 'list)
+        ,pob
+        ',method-name
+        ,@rewritten-args)
+      `(,(rename 'cons*)
+        ,pob
+        ',method-name
+        ,@(drop-right rewritten-args 1)
+        ,(car (last-pair rewritten-args))
+        ,(cdr (last-pair rewritten-args)))))
+
+
 (define-syntax define-method
   (er-macro-transformer
    (lambda (exp rename compare)
@@ -241,17 +256,8 @@
          (,(rename 'lambda) (pob ,@args)
           (,(rename 'parameterize)
            ((,(rename '%method-context)
-             ,(if (list? (cdr (last-pair rewritten-args)))
-                  `(,(rename 'list)
-                    ,pob
-                    ',method-name
-                    ,@rewritten-args)
-                  `(,(rename 'cons*)
-                    ,pob
-                    ',method-name
-                    ,@(drop-right rewritten-args 1)
-                    ,(car (last-pair rewritten-args))
-                    ,(cdr (last-pair rewritten-args))))))
+             ,(process-method-args
+               pob method-name rewritten-args rename)))
            ,@body)))))))
 
 
