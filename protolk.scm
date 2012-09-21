@@ -51,7 +51,7 @@
 
    own-prop  set-own-prop!
    assert-active-pob
-   in-method
+   with-method-context
    define-method
    define-private-method)
 
@@ -179,11 +179,10 @@
 ;; DEFINING METHODS
 ;;
 
-(define-syntax in-method
+(define-syntax with-method-context
   (syntax-rules ()
-    ((in-method (pob method-name . args) . body)
-     (parameterize ((%method-context
-                     (list pob 'method-name . args)))
+    ((with-method-context context . body)
+     (parameterize ((%method-context context))
        . body))))
 
 
@@ -256,10 +255,9 @@
             (rewritten-args (rewrite-method-args args 'required)))
        `(,(rename '%set-method!) ,pob ',method-name
          (,(rename 'lambda) (pob ,@args)
-          (,(rename 'parameterize)
-           ((,(rename '%method-context)
-             ,(process-method-args
-               pob method-name rewritten-args rename)))
+          (,(rename 'with-method-context)
+           ,(process-method-args
+             pob method-name rewritten-args rename)
            ,@body)))))))
 
 
@@ -282,8 +280,7 @@
           (,(rename 'if) (,(rename 'eq?)
                           (,(rename '%active-pob))
                           pob)
-           (,(rename 'parameterize)
-            ((,(rename '%method-context) ,processed-args))
+           (,(rename 'with-method-context) ,processed-args
             ,@body)
            (,(rename 'raise) 'private-method
             (,(rename 'sprintf)

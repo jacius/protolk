@@ -526,16 +526,16 @@
 ;; DEFINING METHODS
 ;;
 
-(describe "in-method"
+(describe "with-method-context"
   (it "is a macro that sets the method context"
     (let ((pob (make-pob)))
       (equal? (list pob 'some-method 1 2 3)
-              (in-method (pob some-method 1 2 3)
+              (with-method-context (list pob 'some-method 1 2 3)
                 (%method-context)))))
 
   (it "only sets the method context within the scope of its body"
     (let ((pob (make-pob)))
-      (in-method (pob some-method 1 2 3)
+      (with-method-context (list pob 'some-method 1 2 3)
         'noop)
       (equal? #f (%method-context)))))
 
