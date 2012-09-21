@@ -86,6 +86,8 @@ flexibility for its own sake.
 - [X] =define-method= macro
 
 - [ ] =super= procedure
+- [ ] =super*= procedure.
+  Like super, but passes the same args the current method received.
 
 Demos:
 - [ ] Basics
