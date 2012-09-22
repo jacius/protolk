@@ -223,16 +223,16 @@
 
 (define-syntax define-method
   (ir-macro-transformer
-   (lambda (exp rename compare)
+   (lambda (exp inject compare)
      (let* ((signature (cadr exp))
             (body (cddr exp))
             (pob (car signature))
             (method-name (cadr signature))
             (args (cddr signature)))
        `(%set-method! ,pob ',method-name
-          (lambda (,pob ,@args)
+          (lambda (,(inject 'self) ,@args)
             (with-method-context
-             (cons* ,pob ',method-name
+             (cons* ,(inject 'self) ',method-name
                     (%rewrite-args ~required ,@args))
              ,@body)))))))
 
@@ -246,17 +246,17 @@
             (method-name (cadr signature))
             (args (cddr signature)))
        `(%set-method! ,pob ',method-name
-          (lambda (,pob ,@args)
-            (if (eq? (%active-pob) ,pob)
+          (lambda (,(inject 'self) ,@args)
+            (if (eq? (%active-pob) ,(inject 'self))
              (with-method-context
-              (cons* ,pob ',method-name
+              (cons* ,(inject 'self) ',method-name
                      (%rewrite-args ~required ,@args))
               ,@body)
              (raise ',(inject 'private-method)
               (sprintf
                "private method '~s called for ~s"
-               ',method-name ,pob)
-              ',(inject 'pob) ,pob
+               ',method-name ,(inject 'self))
+              ',(inject 'pob) ,(inject 'self)
               ',(inject 'method-name) ',method-name
               ',(inject 'args) (%rewrite-args
                                 ~required ,@args)))))))))

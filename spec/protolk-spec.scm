@@ -553,7 +553,7 @@
       (let* ((pob (make-pob props: '((foo . 1))))
              (pob2 (make-pob base: pob props: '((foo . 2)))))
         (define-method (pob get-foo)
-          (%prop pob 'foo))
+          (%prop self 'foo))
         (equal? 2 (send pob2 'get-foo)))))
 
   (it "replaces any existing method with the same name in that pob"
@@ -663,7 +663,7 @@
       (let* ((pob (make-pob props: '((foo . 1))))
              (pob2 (make-pob base: pob props: '((foo . 2)))))
         (define-private-method (pob get-foo)
-          (%prop pob 'foo))
+          (%prop self 'foo))
         (parameterize
             ((%method-context (list pob2 'get-foo)))
           (equal? 2 (send pob2 'get-foo))))))
