@@ -310,6 +310,23 @@
        (set! (%active-pob) (make-pob))))))
 
 
+(describe "%active-method-name"
+  (it "returns the active method name in the current context"
+    (let ((pob (make-pob)))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (%active-method-name) 'some-method))))
+
+  (it "returns #f if there is no active method"
+    (equal? (%active-method-name) #f))
+
+  (it "is read-only"
+    (and
+     (raises? ()
+       (%active-method-name 'some-method))
+     (raises? ()
+       (set! (%active-method-name) 'some-method)))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand

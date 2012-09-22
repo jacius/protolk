@@ -57,7 +57,8 @@
    %set-method!  %unset-method!
 
    %method-context
-   %active-pob)
+   %active-pob
+   %active-method-name)
 
 
 (import scheme chicken)
@@ -176,6 +177,10 @@
 (define (%active-pob)
   (let ((mc (%method-context)))
     (if mc (car mc) #f)))
+
+(define (%active-method-name)
+  (let ((mc (%method-context)))
+    (if mc (cadr mc) #f)))
 
 
 ) ;; end module protolk-primitives
