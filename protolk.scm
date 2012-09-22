@@ -222,43 +222,44 @@
 
 
 (define-syntax define-method
-  (er-macro-transformer
+  (ir-macro-transformer
    (lambda (exp rename compare)
      (let* ((signature (cadr exp))
             (body (cddr exp))
             (pob (car signature))
             (method-name (cadr signature))
             (args (cddr signature)))
-       `(,(rename '%set-method!) ,pob ',method-name
-         (,(rename 'lambda) (pob ,@args)
-          (,(rename 'with-method-context)
-           (,(rename 'cons*) pob ',method-name
-            (,(rename '%rewrite-args) ~required ,@args))
-           ,@body)))))))
+       `(%set-method! ,pob ',method-name
+          (lambda (pob ,@args)
+            (with-method-context
+             (cons* pob ',method-name
+                    (%rewrite-args ~required ,@args))
+             ,@body)))))))
 
 
 (define-syntax define-private-method
-  (er-macro-transformer
-   (lambda (exp rename compare)
+  (ir-macro-transformer
+   (lambda (exp inject compare)
      (let* ((signature (cadr exp))
             (body (cddr exp))
             (pob (car signature))
             (method-name (cadr signature))
             (args (cddr signature)))
-       `(,(rename '%set-method!) ,pob ',method-name
-         (,(rename 'lambda) (pob ,@args)
-          (,(rename 'if)
-           (,(rename 'eq?) (,(rename '%active-pob)) pob)
-           (,(rename 'with-method-context)
-            (,(rename 'cons*) pob ',method-name
-             (,(rename '%rewrite-args) ~required ,@args))
-            ,@body)
-           (,(rename 'raise) 'private-method
-            (,(rename 'sprintf)
-             "private method '~s called for ~s" ',method-name ,pob)
-            'pob ,pob
-            'method-name ',method-name
-            'args (,(rename '%rewrite-args) ~required ,@args)))))))))
+       `(%set-method! ,pob ',method-name
+          (lambda (pob ,@args)
+            (if (eq? (%active-pob) pob)
+             (with-method-context
+              (cons* pob ',method-name
+                     (%rewrite-args ~required ,@args))
+              ,@body)
+             (raise ',(inject 'private-method)
+              (sprintf
+               "private method '~s called for ~s"
+               ',method-name pob)
+              ',(inject 'pob) pob
+              ',(inject 'method-name) ',method-name
+              ',(inject 'args) (%rewrite-args
+                                ~required ,@args)))))))))
 
 
 
