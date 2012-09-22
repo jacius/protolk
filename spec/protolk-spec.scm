@@ -548,6 +548,14 @@
         (+ arg1 arg2 arg3))
       (equal? (send pob 'some-method 1 2 3) 6)))
 
+  (describe "the defined method"
+    (it "applies to the given pob even when the method is inherited"
+      (let* ((pob (make-pob props: '((foo . 1))))
+             (pob2 (make-pob base: pob props: '((foo . 2)))))
+        (define-method (pob get-foo)
+          (%prop pob 'foo))
+        (equal? 2 (send pob2 'get-foo)))))
+
   (it "replaces any existing method with the same name in that pob"
     (let ((pob (make-pob methods: `((some-method
                                      ,(lambda (pob arg1 arg2 arg3)
@@ -644,14 +652,23 @@
         (not (raises? ()
                (parameterize ((%method-context (list pob 'a-method)))
                  (send pob 'some-method))))))
-    
+
     (it "raises an error if the receiver is not the active pob"
       (let ((pob (make-pob)))
         (define-private-method (pob some-method) 'noop)
         (raises? ()
-          (send pob 'some-method)))))
+          (send pob 'some-method))))
 
-  (describe "the error it raises"
+    (it "applies to the given pob even when the method is inherited"
+      (let* ((pob (make-pob props: '((foo . 1))))
+             (pob2 (make-pob base: pob props: '((foo . 2)))))
+        (define-private-method (pob get-foo)
+          (%prop pob 'foo))
+        (parameterize
+            ((%method-context (list pob2 'get-foo)))
+          (equal? 2 (send pob2 'get-foo))))))
+
+  (describe "the error the method raises"
     (it "is a 'private-method exception"
       (let ((pob (make-pob)))
         (define-private-method (pob some-method) 'noop)
