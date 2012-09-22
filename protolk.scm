@@ -53,7 +53,8 @@
    assert-active-pob
    with-method-context
    define-method
-   define-private-method)
+   define-private-method
+   %rewrite-args)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -186,62 +187,38 @@
        . body))))
 
 
+(define-syntax %rewrite-args
+  (syntax-rules (~required ~optional ~key #!optional #!key #!rest)
+    ;; Recursion end case
+    ((_ arg-type)
+     (list))
 
-(define-for-syntax (rewrite-method-args args arg-type)
-  (if (null? args)
-      (list)
+    ;; Switching argument modes
+    ((_ arg-type #!optional . more-args)
+     (%rewrite-args ~optional . more-args))
+    ((_ arg-type #!key . more-args)
+     (%rewrite-args ~key . more-args))
 
-      (case (car args)
-        ((#!optional)
-         (rewrite-method-args (cdr args) 'optional))
-        ((#!rest)
-         ;; #!rest eats all following, so no more recursion needed.
-         (cadr args))
-        ((#!key)
-         (rewrite-method-args (cdr args) 'key))
+    ;; #!rest just gobbles up all the remaining args
+    ((_ arg-type #!rest arg . more-args)
+     arg)
 
-        (else
-         (case arg-type
-           ((required)
-            ;; Nothing fancy, just the arg name.
-            (cons (car args)
-                  (rewrite-method-args (cdr args) 'required)))
+    ((_ ~required arg . more-args)
+     (cons arg (%rewrite-args ~required . more-args)))
 
-           ((optional)
-            ;; Omit the default value, if there is any.
-            (cons (if (list? (car args))
-                      (caar args)
-                      (car args))
-                  (rewrite-method-args (cdr args) 'optional)))
+    ;; Optional arg with and without default value.
+    ((_ ~optional (arg value) . more-args)
+     (cons arg (%rewrite-args ~optional . more-args)))
+    ((_ ~optional arg . more-args)
+     (cons arg (%rewrite-args ~optional . more-args)))
 
-           ((key)
-            ;; Omit the default value, if there is any, but add a
-            ;; keyword version of the arg name before the arg name.
-            (let ((arg-name (if (list? (car args))
-                                (caar args)
-                                (car args))))
-              (cons* (string->keyword (symbol->string arg-name))
-                     arg-name
-                     (rewrite-method-args (cdr args) 'key))))
-
-           (else
-            (error (sprintf "unexpected arg-type: ~s" arg-type))))))))
-
-
-(define-for-syntax (process-method-args
-                    pob method-name rewritten-args rename)
-  (if (or (null? rewritten-args)
-          (list? (cdr (last-pair rewritten-args))))
-      `(,(rename 'list)
-        ,pob
-        ',method-name
-        ,@rewritten-args)
-      `(,(rename 'cons*)
-        ,pob
-        ',method-name
-        ,@(drop-right rewritten-args 1)
-        ,(car (last-pair rewritten-args))
-        ,(cdr (last-pair rewritten-args)))))
+    ;; Keyword arg with and without default value.
+    ((_ ~key (arg value) . more-args)
+     (cons* (string->keyword (symbol->string 'arg)) arg
+            (%rewrite-args ~key . more-args)))
+    ((_ ~key arg . more-args)
+     (cons* (string->keyword (symbol->string 'arg)) arg
+            (%rewrite-args ~key . more-args)))))
 
 
 (define-syntax define-method
@@ -251,13 +228,12 @@
             (body (cddr exp))
             (pob (car signature))
             (method-name (cadr signature))
-            (args (cddr signature))
-            (rewritten-args (rewrite-method-args args 'required)))
+            (args (cddr signature)))
        `(,(rename '%set-method!) ,pob ',method-name
          (,(rename 'lambda) (pob ,@args)
           (,(rename 'with-method-context)
-           ,(process-method-args
-             pob method-name rewritten-args rename)
+           (,(rename 'cons*) pob ',method-name
+            (,(rename '%rewrite-args) ~required ,@args))
            ,@body)))))))
 
 
@@ -268,27 +244,21 @@
             (body (cddr exp))
             (pob (car signature))
             (method-name (cadr signature))
-            (args (cddr signature))
-            (rewritten-args (rewrite-method-args args 'required))
-            (processed-args (process-method-args
-                             pob
-                             method-name
-                             rewritten-args
-                             rename)))
+            (args (cddr signature)))
        `(,(rename '%set-method!) ,pob ',method-name
          (,(rename 'lambda) (pob ,@args)
-          (,(rename 'if) (,(rename 'eq?)
-                          (,(rename '%active-pob))
-                          pob)
-           (,(rename 'with-method-context) ,processed-args
+          (,(rename 'if)
+           (,(rename 'eq?) (,(rename '%active-pob)) pob)
+           (,(rename 'with-method-context)
+            (,(rename 'cons*) pob ',method-name
+             (,(rename '%rewrite-args) ~required ,@args))
             ,@body)
            (,(rename 'raise) 'private-method
             (,(rename 'sprintf)
              "private method '~s called for ~s" ',method-name ,pob)
             'pob ,pob
             'method-name ',method-name
-            'args ,(cons (car processed-args)
-                         (cdddr processed-args))))))))))
+            'args (,(rename '%rewrite-args) ~required ,@args)))))))))
 
 
 
