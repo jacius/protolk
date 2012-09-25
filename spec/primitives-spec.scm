@@ -370,6 +370,20 @@
       (not (%same-super-context? pob 'other-method)))))
 
 
+(describe "%super-invoked-procs"
+  (define (m1 pob) 1)
+  (define (m2 pob) 2)
+
+  (it "is a parameter that stores a list of already-invoked procedures"
+    (parameterize
+        ((%super-invoked-procs (list m1 m2)))
+      (equal? (%super-invoked-procs)
+              (list m1 m2))))
+
+  (it "is #f by default"
+    (eq? (%super-invoked-procs) #f)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand
