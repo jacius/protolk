@@ -332,6 +332,24 @@
        (set! (%active-method-name) 'some-method)))))
 
 
+;;;;;;;;;;;
+;; SUPER
+;;
+
+(describe "%super-context"
+  (define pob (%make-pob #f '() '() #f #f))
+
+  (it "is a parameter that stores the super pob, method name, and args"
+    (parameterize
+        ((%super-context (list pob 'some-method 1 2)))
+      (equal? (%super-context)
+              (list pob 'some-method 1 2))))
+
+  (it "is #f by default"
+    (eq? (%super-context) #f)))
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand
