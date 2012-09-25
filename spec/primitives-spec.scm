@@ -285,19 +285,23 @@
 ;;
 
 (describe "%method-context"
+  (define pob (%make-pob #f '() '() #f #f))
+
   (it "is a parameter used to store context for the current method"
-    (let ((self (make-pob)) (arg1 1) (arg2 2) (arg3 3))
+    (let ((arg1 1) (arg2 2) (arg3 3))
       (parameterize ((%method-context
-                      (list self 'some-method arg1 arg2 arg3)))
+                      (list pob 'some-method arg1 arg2 arg3)))
         (equal? (%method-context)
-                (list self 'some-method arg1 arg2 arg3))))))
+                (list pob 'some-method arg1 arg2 arg3))))))
 
 
 (describe "%active-pob"
+  (define pob (%make-pob #f '() '() #f #f))
+
   (it "returns the active pob in the current context"
-    (let ((pob (make-pob)))
-      (parameterize ((%method-context (list pob 'some-method)))
-        (equal? (%active-pob) pob))))
+    (parameterize ((%method-context
+                    (list pob 'some-method)))
+      (equal? (%active-pob) pob)))
 
   (it "returns #f if there is no active pob"
     (equal? (%active-pob) #f))
@@ -305,16 +309,17 @@
   (it "is read-only"
     (and
      (raises? ()
-       (%active-pob (make-pob)))
+       (%active-pob pob))
      (raises? ()
-       (set! (%active-pob) (make-pob))))))
+       (set! (%active-pob) pob)))))
 
 
 (describe "%active-method-name"
+  (define pob (%make-pob #f '() '() #f #f))
+
   (it "returns the active method name in the current context"
-    (let ((pob (make-pob)))
-      (parameterize ((%method-context (list pob 'some-method)))
-        (equal? (%active-method-name) 'some-method))))
+    (parameterize ((%method-context (list pob 'some-method)))
+      (equal? (%active-method-name) 'some-method)))
 
   (it "returns #f if there is no active method"
     (equal? (%active-method-name) #f))
