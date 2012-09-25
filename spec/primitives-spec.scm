@@ -349,6 +349,26 @@
     (eq? (%super-context) #f)))
 
 
+(describe "%same-super-context?"
+  (define pob (%make-pob #f '((a . 1)) '() #f #f))
+  (define pob2 (%make-pob #f '((a . 2)) '() #f #f))
+  
+  (it "is true if the pob and method name match the super context"
+    (parameterize ((%super-context (list pob 'some-method 1 2)))
+      (%same-super-context? pob 'some-method)))
+
+  (it "is false if the pob does not match the super context"
+    (parameterize ((%super-context (list pob 'some-method 1 2)))
+      (not (%same-super-context? pob2 'some-method))))
+
+  (it "is false if the pob does not match the super context"
+    (parameterize ((%super-context (list pob 'some-method 1 2)))
+      (not (%same-super-context? pob 'other-method))))
+
+  (it "is false if there is no super context"
+    (parameterize ((%super-context #f))
+      (not (%same-super-context? pob 'other-method)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -60,7 +60,8 @@
    %active-pob
    %active-method-name
 
-   %super-context)
+   %super-context
+   %same-super-context?)
 
 
 (import scheme chicken)
@@ -191,6 +192,12 @@
 ;;
 
 (define %super-context (make-parameter #f))
+
+(define (%same-super-context? pob method-name)
+  (let ((context (%super-context)))
+    (and context
+         (eq? pob (car context))
+         (equal? method-name (cadr context)))))
 
 
 ) ;; end module protolk-primitives
