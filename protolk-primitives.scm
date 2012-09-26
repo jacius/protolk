@@ -62,7 +62,9 @@
 
    %super-context
    %same-super-context?
-   %super-invoked-procs)
+   %super-invoked-procs
+   %super-resolve-next-method
+   )
 
 
 (import scheme chicken)
@@ -202,6 +204,21 @@
 
 
 (define %super-invoked-procs (make-parameter #f))
+
+(define (%super-resolve-next-method pob method-name invoked-procs)
+  (let* ((result (%resolve-method pob method-name #f))
+         (found-pob (car result))
+         (found-proc (cdr result))
+         (base-pob (and found-pob (%pob-base found-pob))))
+    (cond ((not (and found-pob found-proc))
+           #f)
+          ((not (member found-proc invoked-procs))
+           found-proc)
+          ((not base-pob)
+           #f)
+          (else
+           (%super-resolve-next-method
+            base-pob method-name invoked-procs)))))
 
 
 ) ;; end module protolk-primitives

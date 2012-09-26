@@ -384,6 +384,47 @@
     (eq? (%super-invoked-procs) #f)))
 
 
+(describe "%super-resolve-next-method"
+  (define (m1 pob) 1)
+  (define (m2 pob) 2)
+
+  ;; A simple mock method resolver that resolves the 'm method to the
+  ;; given value of m, and fails to resolve any other method.
+  (define (mock-mresolver m)
+    (lambda (pob method-name #!optional default)
+      (if (eq? 'm method-name)
+          (cons pob m)
+          (cons #f default))))
+
+  (define pob1
+    (%make-pob #f '() '()
+               #f (mock-mresolver m1)))
+  (define pob2
+    (%make-pob pob1 '() '()
+               #f (mock-mresolver m1)))
+  (define pob3
+    (%make-pob pob2 '() '()
+               #f (mock-mresolver m2)))
+
+  (it "returns the pob's method if there are no invoked procs"
+    (eq? m2 (%super-resolve-next-method pob3 'm (list))))
+
+  (it "returns the next inherited proc not in the list"
+    (eq? m1 (%super-resolve-next-method pob3 'm (list m2))))
+
+  (it "returns #f if there are no inherited procs not in the list"
+    (eq? #f (%super-resolve-next-method pob3 'm (list m2 m1))))
+
+  (it "does not care about the order of the already invoked procs"
+    (eq? #f (%super-resolve-next-method pob3 'm (list m1 m2))))
+
+  (it "returns #f if pob neither contains nor inherits the method"
+    (eq? #f (%super-resolve-next-method pob3 'foo (list))))
+
+  (it "returns #f if pob has no base and no method"
+    (eq? #f (%super-resolve-next-method pob1 'foo (list)))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand
