@@ -425,6 +425,54 @@
     (eq? #f (%super-resolve-next-method pob1 'foo (list)))))
 
 
+(describe "%start-super"
+  (it "takes a pob, method name, and list of args"
+    (with-replacements ((%continue-super (lambda x 'noop)))
+      (not (raises? () (%start-super 'pob 'method (list 1 2))))))
+  
+  (it "should set up a new super context then call %continue-super"
+    (with-replacements ((%continue-super
+                         (lambda x (list (%super-context)
+                                         (%super-invoked-procs)))))
+      (equal? (list (list 'pob 'method (list 1 2)) (list))
+              (%start-super 'pob 'method (list 1 2))))))
+
+
+(describe "%continue-super"
+  (it "calls the proc returned by %super-resolve-next-method"
+    (with-replacements ((%super-resolve-next-method
+                         (lambda x (lambda v v))))
+      (equal? (%continue-super 'some-pob 'some-method (list 1 2))
+              (list 'some-pob 1 2))))
+
+  (it "sets %super-context and %super-invoked-procs before the call"
+    (define (m . args)
+      (list (%super-context) (%super-invoked-procs)))
+
+    (with-replacements ((%super-resolve-next-method (lambda x m)))
+      (equal? (%continue-super 'some-pob 'some-method (list 1 2))
+              (list (list 'some-pob 'some-method (list 1 2))
+                    (list m)))))
+
+  (it "raises '(context super) if there is no next method"
+    (with-replacements ((%super-resolve-next-method
+                         (lambda x #f)))
+      (raises? (context super)
+        (%continue-super 'some-pob 'some-method (list 1 2)))))
+
+  (it "includes the pob and method name in the error"
+    (with-replacements ((%super-resolve-next-method
+                         (lambda x #f)))
+      (let ((exn (raises? (context super)
+                   (%continue-super 'some-pob 'some-method
+                                    (list 1 2)))))
+        (and (equal? (get-condition-property exn 'super 'pob)
+                     'some-pob)
+             (equal? (get-condition-property exn 'super 'method-name)
+                     'some-method))))))
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand

@@ -64,12 +64,14 @@
    %same-super-context?
    %super-invoked-procs
    %super-resolve-next-method
+   %start-super
+   %continue-super
    )
 
 
 (import scheme chicken)
 (import protolk-internal)
-(use srfi-1)
+(use extras srfi-1)
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -219,6 +221,26 @@
           (else
            (%super-resolve-next-method
             base-pob method-name invoked-procs)))))
+
+
+(define (%start-super pob method-name args)
+  (parameterize ((%super-context (list pob method-name args))
+                 (%super-invoked-procs (list)))
+    (%continue-super pob method-name args)))
+
+(define (%continue-super pob method-name args)
+  (let ((next-method
+         (%super-resolve-next-method
+          pob method-name (%super-invoked-procs))))
+    (unless next-method
+      (raise '(context super)
+             (sprintf "No super method ~a for ~s." method-name pob)
+             'pob pob
+             'method-name method-name))
+    (parameterize ((%super-context (list pob method-name args))
+                   (%super-invoked-procs
+                    (cons next-method (%super-invoked-procs))))
+      (apply next-method pob args))))
 
 
 ) ;; end module protolk-primitives
