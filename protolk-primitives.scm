@@ -66,7 +66,7 @@
    %super-resolve-next-method
    %start-super
    %continue-super
-   )
+   %super)
 
 
 (import scheme chicken)
@@ -241,6 +241,18 @@
                    (%super-invoked-procs
                     (cons next-method (%super-invoked-procs))))
       (apply next-method pob args))))
+
+
+(define (%super . args)
+  (let ((pob (%active-pob))
+        (method-name (%active-method-name)))
+    (if (and pob method-name)
+        (if (%same-super-context? pob method-name)
+            (%continue-super pob method-name args)
+            (%start-super pob method-name args))
+        (raise '(context super)
+               "Cannot invoke super outside of a method context."
+               'args args))))
 
 
 ) ;; end module protolk-primitives

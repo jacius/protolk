@@ -472,6 +472,43 @@
                      'some-method))))))
 
 
+(describe "%super"
+  (define pob (%make-pob #f '() '() #f #f))
+
+  (it "can be called from within a method context"
+    (not (raises? (context super)
+           (parameterize ((%method-context (list pob 'some-method)))
+             (with-replacements ((%start-super (lambda v v)))
+               (%super 1 2))))))
+
+  (it "calls %start-super if called with no super context"
+    (parameterize ((%method-context (list pob 'some-method)))
+      (with-replacements
+          ((%same-super-context? (lambda x #f))
+           (%start-super (lambda x 'foo)))
+        (equal? (%super 1 2) 'foo))))
+
+  (it "calls %start-super if called with a different super context"
+    (parameterize ((%method-context (list pob 'some-method)))
+      (with-replacements
+          ((%same-super-context? (lambda x #f))
+           (%start-super (lambda x 'foo))
+           (%continue-super (lambda x (error "should not happen"))))
+        (equal? (%super 1 2) 'foo))))
+
+  (it "calls %continue-super called with the same super context"
+    (parameterize ((%method-context (list pob 'some-method)))
+      (with-replacements
+          ((%same-super-context? (lambda x #t))
+           (%start-super (lambda x (error "should not happen")))
+           (%continue-super (lambda x 'foo)))
+        (equal? (%super 1 2) 'foo))))
+
+  (it "fails if called from outside a method context"
+    (raises? (context super)
+      (%super 1 2))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
