@@ -817,6 +817,20 @@
 
 
 
+;;;;;;;;;;;
+;; SUPER
+;;
+
+(describe "super"
+  (it "is a macro"
+    (not (equal? 'super (car (expand '(super 1 2 3))))))
+
+  (it "expands to a %super call"
+    (with-replacements ((%super (lambda x x)))
+      (equal? (list 1 2 3) (super 1 2 3)))))
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand

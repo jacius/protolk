@@ -54,7 +54,9 @@
    with-method-context
    define-method
    define-private-method
-   %rewrite-args)
+   %rewrite-args
+
+   super)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -261,6 +263,15 @@
               ',(inject 'args) (%rewrite-args
                                 ~required ,@args)))))))))
 
+
+;;;;;;;;;;;
+;; SUPER
+;;
+
+(define-syntax super
+  (syntax-rules ()
+    ((super . args)
+     (%super . args))))
 
 
 ) ;; end module protolk
