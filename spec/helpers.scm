@@ -10,18 +10,15 @@
 
 ;;; Group related specs together
 (define-syntax describe
-  (er-macro-transformer
-   (lambda (exp rename compare)
-     `(,(rename 'test-group) ,@(cdr exp)))))
+  (syntax-rules ()
+    ((describe summary . body)
+     (test-group summary . body))))
 
 ;;; Tests that the body returns a truthy value when run
 (define-syntax it
-  (er-macro-transformer
-   (lambda (exp rename compare)
-     (let ((summary (cadr exp))
-           (test-expr (cddr exp)))
-       `(,(rename 'test-assert) ,summary
-         ,@test-expr)))))
+  (syntax-rules ()
+    ((it summary . test-expressions)
+     (test-assert summary (begin . test-expressions)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -54,10 +51,8 @@
 ;;;   ; Error: (vector-ref) out of range ...
 ;;;
 (define-syntax raises?
-  (er-macro-transformer
-   (lambda (expression rename compare)
-     (let ((expected-exn (cadr expression))
-           (body (cddr expression)))
-       `(,(rename 'condition-case)
-         (,(rename 'begin) ,@body #f)
-         (var ,expected-exn var))))))
+  (syntax-rules ()
+    ((raises? (expected-exns ...) body ...)
+     (condition-case
+      (begin body ... #f)
+      (var (expected-exns ...) var)))))
