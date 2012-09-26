@@ -341,9 +341,9 @@
 
   (it "is a parameter that stores the super pob, method name, and args"
     (parameterize
-        ((%super-context (list pob 'some-method 1 2)))
+        ((%super-context (list pob 'some-method (list 1 2))))
       (equal? (%super-context)
-              (list pob 'some-method 1 2))))
+              (list pob 'some-method (list 1 2)))))
 
   (it "is #f by default"
     (eq? (%super-context) #f)))
