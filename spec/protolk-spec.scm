@@ -830,6 +830,19 @@
       (equal? (list 1 2 3) (super 1 2 3)))))
 
 
+(describe "super*"
+  (it "is a macro"
+    (not (equal? 'super* (car (expand '(super*))))))
+
+  (it "accepts no args"
+    (raises? ()
+      (expand '(super* 1 2 3))))
+
+  (it "expands to a %super* call"
+    (with-replacements ((%super* (lambda x 'foo)))
+      (equal? 'foo (super*)))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
