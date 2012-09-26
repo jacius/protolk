@@ -10,6 +10,7 @@
 
 (import protolk-internal protolk-primitives protolk)
 
+(load-relative "helpers-spec.scm")
 (load-relative "primitives-spec.scm")
 (load-relative "protolk-spec.scm")
 (load-relative "stdpob-spec.scm")

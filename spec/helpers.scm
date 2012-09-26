@@ -21,6 +21,37 @@
      (test-assert summary (begin . test-expressions)))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MOCKING AND STUBBING
+;;
+
+;;; Set the value(s) of the given variable(s) for the duration of the
+;;; body, then set them back to their original values. The variables
+;;; can be global or local variables. This can be used to temporarily
+;;; redefine global functions, among other sneaky tricks.
+;;;
+;;; Example:
+;;;
+;;;   (define a 3)
+;;;   (define b 8)
+;;;   (define (f) (+ a b))
+;;;   (f) ; => 11
+;;;   (with-replacements ((a 4) (b -11))
+;;;     (f)) ; => -7
+;;;
+(define-syntax with-replacements
+  (syntax-rules ()
+    ((with-replacements ((some-def new-val) ...) . body)
+     (let ((old-defs (list (cons 'some-def some-def) ...)))
+       (dynamic-wind
+         (lambda ()
+           (set! some-def new-val) ...)
+         (lambda () . body)
+         (lambda ()
+           (set! some-def (cdr (assoc 'some-def old-defs)))
+           ...))))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; TEST EXPRESSIONS
 ;;
