@@ -843,6 +843,33 @@
       (equal? 'foo (super*)))))
 
 
+(describe "super?"
+  (it "acceps no args"
+    (raises? (arity)
+      (super? 1)))
+  
+  (it "fails if there is no super context"
+    (raises? (super context)
+      (super?)))
+
+  (it "returns #f if there is no next super method"
+    (parameterize ((%method-context (list 'some-pob 'some-method)))
+      (with-replacements
+          ((%super-resolve-next-method
+            (lambda (pob method-name invoked-methods)
+              #f)))
+        (not (super?)))))
+
+  (it "returns #t if there is a next super method"
+    (parameterize ((%method-context (list 'some-pob 'some-method)))
+      (with-replacements
+          ((%super-resolve-next-method
+            (lambda (pob method-name invoked-methods)
+              (and (eq? pob 'some-pob)
+                   (eq? method-name 'some-method)))))
+        (super?)))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

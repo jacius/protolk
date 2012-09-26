@@ -57,7 +57,8 @@
    %rewrite-args
 
    super
-   super*)
+   super*
+   super?)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -278,6 +279,15 @@
   (syntax-rules ()
     ((super*)
      (%super*))))
+
+(define (super?)
+  (let ((context (%method-context))
+        (invoked (%super-invoked-procs)))
+    (if context
+        (not (not (%super-resolve-next-method
+                   (car context) (cadr context) invoked)))
+        (raise '(context super)
+               "Cannot invoke super? outside of a method context."))))
 
 
 ) ;; end module protolk
