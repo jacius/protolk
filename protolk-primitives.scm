@@ -203,7 +203,7 @@
          (equal? method-name (cadr context)))))
 
 
-(define %super-invoked-procs (make-parameter #f))
+(define %super-invoked-procs (make-parameter (list)))
 
 (define (%super-resolve-next-method pob method-name invoked-procs)
   (let* ((result (%resolve-method pob method-name #f))

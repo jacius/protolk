@@ -380,8 +380,8 @@
       (equal? (%super-invoked-procs)
               (list m1 m2))))
 
-  (it "is #f by default"
-    (eq? (%super-invoked-procs) #f)))
+  (it "is the empty list by default"
+    (equal? (%super-invoked-procs) (list))))
 
 
 (describe "%super-resolve-next-method"
