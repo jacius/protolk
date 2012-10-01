@@ -14,8 +14,8 @@ Flexible Scheme objects with message passing and prototypes
 
 === Description
 
-Protolk provides flexible and lightweight object oriented programming
-in Scheme, combining
+Protolk provides flexible object oriented programming in Scheme,
+combining
 [[http://en.wikipedia.org/wiki/Encapsulation_(object-oriented_programming)|escapsulation]]
 and [[http://en.wikipedia.org/wiki/Message_passing|message passing]]
 a la Smalltalk and Ruby, with

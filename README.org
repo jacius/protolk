@@ -12,9 +12,9 @@ Flexible Scheme objects with message passing and prototypes
 
 * About Protolk
 
-Protolk provides flexible and lightweight object oriented programming
-in Scheme, combining [[http://en.wikipedia.org/wiki/Encapsulation_(object-oriented_programming)][escapsulation]] and [[http://en.wikipedia.org/wiki/Message_passing][message passing]] a la Smalltalk
-and Ruby, with [[http://en.wikipedia.org/wiki/Prototype-based_programming][prototypal inheritance]] a la Self and JavaScript.
+Protolk provides flexible object oriented programming in Scheme,
+combining [[http://en.wikipedia.org/wiki/Encapsulation_(object-oriented_programming)][escapsulation]] and [[http://en.wikipedia.org/wiki/Message_passing][message passing]] a la Smalltalk and Ruby,
+with [[http://en.wikipedia.org/wiki/Prototype-based_programming][prototypal inheritance]] a la Self and JavaScript.
 
 Protolk is not a new language or dialect. It offers a Scheme record
 type and collection of procedures that can be seamlessly integrated
