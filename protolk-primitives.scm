@@ -256,9 +256,9 @@
                'args args))))
 
 (define (%super*)
-  (let ((context (%super-context)))
+  (let ((context (%method-context)))
     (if context
-        (let ((args (caddr context)))
+        (let ((args (cddr context)))
           (apply %super args))
         (raise '(context super)
                "Cannot invoke super* outside of a method context."))))

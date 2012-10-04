@@ -514,12 +514,12 @@
     (raises? (arity)
       (%super* 1)))
 
-  (it "fails if there is no super context"
+  (it "fails if there is no method context"
     (raises? (super context)
       (%super*)))
-    
-  (it "calls %super with the args from the super context"
-    (parameterize ((%super-context (list 'pob 'method (list 1 2))))
+
+  (it "calls %super with the args from the method context"
+    (parameterize ((%method-context (list 'pob 'method 1 2)))
       (with-replacements ((%super (lambda x x)))
         (equal? (list 1 2) (%super*))))))
 
