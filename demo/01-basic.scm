@@ -135,7 +135,7 @@
       (printf "The ~a only eats very small things, not the ~a.~n"
               (send self 'description)
               (send other 'description))
-      (super other)))
+      (super*)))
 
 
 (define great-white-shark
