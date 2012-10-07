@@ -35,14 +35,14 @@
 
   (it "returns a derived pob with the specified contents"
     (let ((p (stdpob-derive base-pob
-                         props: '((a . 1))
-                         methods: `((m . ,fn))
+                         props: '((a 1))
+                         methods: `((m ,fn))
                          prop-resolver: resprop
                          method-resolver: resmeth)))
       (and (pob? p)
            (equal? (%pob-base p)           base-pob)
-           (equal? (%pob-props p)          '((a . 1)))
-           (equal? (%pob-methods p)        `((m . ,fn)))
+           (equal? (%pob-props p)          '((a 1)))
+           (equal? (%pob-methods p)        `((m ,fn)))
            (equal? (%pob-prop-resolver p)   resprop)
            (equal? (%pob-method-resolver p) resmeth))))
 
@@ -50,7 +50,7 @@
     (let* ((b (make-pob prop-resolver: resprop
                         method-resolver: resmeth))
            (p (stdpob-derive b
-                          methods: `((m . ,fn))
+                          methods: `((m ,fn))
                           prop-resolver: resprop
                           method-resolver: resmeth)))
       (equal? (%pob-props p) '())))
@@ -59,7 +59,7 @@
     (let* ((b (make-pob prop-resolver: resprop
                         method-resolver: resmeth))
            (p (stdpob-derive b
-                          props: '((a . 1))
+                          props: '((a 1))
                           prop-resolver: resprop
                           method-resolver: resmeth)))
       (equal? (%pob-methods p) '())))
@@ -68,8 +68,8 @@
     (let* ((b (make-pob prop-resolver: resprop
                         method-resolver: resmeth))
            (p (stdpob-derive b
-                          props: '((a . 1))
-                          methods: `((m . ,fn))
+                          props: '((a 1))
+                          methods: `((m ,fn))
                           method-resolver: resmeth)))
       (equal? (%pob-prop-resolver p) resprop)))
 
@@ -77,14 +77,14 @@
     (let* ((b (make-pob prop-resolver: resprop
                         method-resolver: resmeth))
            (p (stdpob-derive b
-                          props: '((a . 1))
-                          methods: `((m . ,fn))
+                          props: '((a 1))
+                          methods: `((m ,fn))
                           prop-resolver: resprop)))
       (equal? (%pob-method-resolver p) resmeth))))
 
 
 (describe "stdpob-ancestors"
-  (define pob1 (make-pob methods: `((ancestors . ,stdpob-ancestors))))
+  (define pob1 (make-pob methods: `((ancestors ,stdpob-ancestors))))
   (define pob2 (stdpob-derive pob1))
   (define pob3 (stdpob-derive pob2))
   (define pob4 (stdpob-derive pob3))
@@ -95,7 +95,7 @@
 
   (it "sends 'ancestors to the base to continue the lookup chain"
     (let* ((pob-a (make-pob))
-           (pob-b (stdpob-derive pob-a methods: `((ancestors . ,stdpob-ancestors)))))
+           (pob-b (stdpob-derive pob-a methods: `((ancestors ,stdpob-ancestors)))))
       (%set-method! pob-a '_receive
         (lambda (self message . args)
           (if (and (equal? self pob-a) (equal? message 'ancestors))
@@ -105,7 +105,7 @@
         (stdpob-ancestors pob-b))))
 
   (it "ends the lookup chain when it encounters a #f base"
-    (let* ((pob-a (make-pob methods: `((ancestors . ,stdpob-ancestors))))
+    (let* ((pob-a (make-pob methods: `((ancestors ,stdpob-ancestors))))
            (pob-b (stdpob-derive pob-a)))
       (equal? (stdpob-ancestors pob-b) (list pob-a))))
 
@@ -123,7 +123,7 @@
 
 
 (describe "stdpob-has-ancestor?"
-  (define pob1 (make-pob methods: `((has-ancestor? . ,stdpob-has-ancestor?))))
+  (define pob1 (make-pob methods: `((has-ancestor? ,stdpob-has-ancestor?))))
   (define pob2 (stdpob-derive pob1))
   (define pob3 (stdpob-derive pob2))
   (define pob2b (stdpob-derive pob1))
@@ -147,7 +147,7 @@
     (let* ((pob-a (make-pob))
            (pob-b (stdpob-derive pob-a))
            (pob-c (stdpob-derive pob-b
-                   methods: `((has-ancestor? . ,stdpob-has-ancestor?)))))
+                   methods: `((has-ancestor? ,stdpob-has-ancestor?)))))
       (%set-method! pob-b '_receive
         (lambda (self message . args)
           (if (and (equal? self pob-b) (equal? message 'has-ancestor?))
@@ -177,12 +177,12 @@
   (define (fn self) #t)
 
   (define pob1
-    (make-pob methods: `((a . ,fn) (x . ,(void))
-                         (responds-to? . ,stdpob-responds-to?))))
+    (make-pob methods: `((a ,fn) (x ,(void))
+                         (responds-to? ,stdpob-responds-to?))))
   (define pob2
-    (stdpob-derive pob1 methods: `((b . ,fn) (y . ,(void)))))
+    (stdpob-derive pob1 methods: `((b ,fn) (y ,(void)))))
   (define pob3
-    (stdpob-derive pob2 methods: `((c . ,fn) (z . ,(void)))))
+    (stdpob-derive pob2 methods: `((c ,fn) (z ,(void)))))
 
   (it "returns #t if the pob has its own matching method"
     (stdpob-responds-to? pob3 'c))
@@ -208,7 +208,7 @@
   (it "sends 'responds-to? to the base to continue the lookup"
     (let* ((pob-a (make-pob))
            (pob-b (stdpob-derive pob-a
-                   methods: `((responds-to? . ,stdpob-responds-to?)))))
+                   methods: `((responds-to? ,stdpob-responds-to?)))))
       (%set-method! pob-a '_receive
         (lambda (self message . args)
           (if (and (equal? self pob-a) (equal? message 'responds-to?))

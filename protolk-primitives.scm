@@ -134,14 +134,14 @@
 (define (%prop pob prop-name #!optional (default (void)))
   (let ((pair (assoc prop-name (%pob-props pob))))
     (if pair
-        (cdr pair)
+        (cadr pair)
         default)))
 
 (define (%resolve-prop pob prop-name #!optional (default (void)))
   ((%pob-prop-resolver pob) pob prop-name default))
 
 (define (%set-prop! pob prop-name value)
-  (%pob-set-props! pob (cons (cons prop-name value)
+  (%pob-set-props! pob (cons (list prop-name value)
                              (%pob-props pob))))
 
 (define (%unset-prop! pob prop-name)
@@ -159,14 +159,14 @@
 (define (%method pob method-name #!optional (default (void)))
   (let ((pair (assoc method-name (%pob-methods pob))))
     (if pair
-        (cdr pair)
+        (cadr pair)
         default)))
 
 (define (%resolve-method pob method-name #!optional (default (void)))
   ((%pob-method-resolver pob) pob method-name default))
 
 (define (%set-method! pob method-name value)
-  (%pob-set-methods! pob (cons (cons method-name value)
+  (%pob-set-methods! pob (cons (list method-name value)
                                (%pob-methods pob))))
 
 (define (%unset-method! pob method-name)

@@ -47,10 +47,10 @@
 
 (define fish
   (send stdpob 'derive
-        props: '((name . "fish")
-                 (size . 5)) ; centimeters
-        methods: `((name . ,(prop-reader 'name))
-                   (size . ,(prop-reader 'size)))))
+        props: '((name "fish")
+                 (size 5)) ; centimeters
+        methods: `((name ,(prop-reader 'name))
+                   (size ,(prop-reader 'size)))))
 
 (define-method (fish _display out)
   (fprintf out "#<~a>" (send self 'description)))
@@ -79,10 +79,10 @@
 ;;; Not all plankton are fish, but many fish eat plankton.
 (define plankton
   (send stdpob 'derive
-        props: '((name . "plankton")
-                 (size . 0.0))
-        methods: `((name . ,(prop-reader 'name))
-                   (size . ,(prop-reader 'size)))))
+        props: '((name "plankton")
+                 (size 0.0))
+        methods: `((name ,(prop-reader 'name))
+                   (size ,(prop-reader 'size)))))
 
 (define-method (plankton _display out)
   (fprintf out "#<~a>" (send self 'description)))
@@ -105,8 +105,8 @@
 ;;; Paedocypris progenetica is the smallest known species of fish.
 (define paedocypris
   (send fish 'derive
-        props: '((name . "paedocypris")
-                 (size . 0.79))))
+        props: '((name "paedocypris")
+                 (size 0.79))))
 
 (define-method (paedocypris swim)
   (printf "The ~a darts to and fro.~n"
@@ -115,19 +115,19 @@
 
 (define halibut
   (send fish 'derive
-        props: '((name . "halibut")
-                 (size . 20))))
+        props: '((name "halibut")
+                 (size 20))))
 
 (define bluefin-tuna
   (send fish 'derive
-        props: '((name . "bluefin tuna")
-                 (size . 200))))
+        props: '((name "bluefin tuna")
+                 (size 200))))
 
 
 (define whale-shark
   (send fish 'derive
-        props: '((name . "whale shark")
-                 (size . 1200))))
+        props: '((name "whale shark")
+                 (size 1200))))
 
 (define-method (whale-shark eat other)
   (if (< 1 (send other 'size))
@@ -140,8 +140,8 @@
 
 (define great-white-shark
   (send fish 'derive
-        props: '((name . "great white shark")
-                 (size . 460))))
+        props: '((name "great white shark")
+                 (size 460))))
 
 (define-method (great-white-shark swim)
   (printf "The ~a skulks around ominously.~n"

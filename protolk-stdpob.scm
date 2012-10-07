@@ -96,13 +96,13 @@
 
 (define stdpob
   (make-pob
-   methods: `((_display        . ,std-_display)
-              (_method-missing . ,std-_method-missing)
-              (_receive        . ,std-_receive)
-              (derive          . ,stdpob-derive)
-              (ancestors       . ,stdpob-ancestors)
-              (has-ancestor?   . ,stdpob-has-ancestor?)
-              (responds-to?    . ,stdpob-responds-to?))))
+   methods: `((_display        ,std-_display)
+              (_method-missing ,std-_method-missing)
+              (_receive        ,std-_receive)
+              (derive          ,stdpob-derive)
+              (ancestors       ,stdpob-ancestors)
+              (has-ancestor?   ,stdpob-has-ancestor?)
+              (responds-to?    ,stdpob-responds-to?))))
 
 
 ) ;; end module protolk-stdpob

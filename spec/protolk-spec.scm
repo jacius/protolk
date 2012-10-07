@@ -17,7 +17,7 @@
   (define (display-foo self port) (display "foo" port))
   
   (define pob1 (make-pob))
-  (define pob2 (make-pob base: pob1 methods: `((_display . ,display-foo))))
+  (define pob2 (make-pob base: pob1 methods: `((_display ,display-foo))))
   (define pob3 (make-pob base: pob2))
 
   (it "uses std-_display if it has no _display method"
@@ -49,21 +49,21 @@
   (it "accepts base, props, methods, prop-resolver, and method-resolver keyword args"
     (not (raises? ()
            (make-pob base: #f
-                     props: '((a . 1))
-                     methods: `((m . ,fn))
+                     props: '((a 1))
+                     methods: `((m ,fn))
                      prop-resolver: resprop
                      method-resolver: resmeth))))
 
   (it "returns a pob with the specified contents"
     (let ((p (make-pob base: #f
-                       props: '((a . 1))
-                       methods: `((m . ,fn))
+                       props: '((a 1))
+                       methods: `((m ,fn))
                        prop-resolver: resprop
                        method-resolver: resmeth)))
       (and (pob? p)
            (equal? (%pob-base p)           #f)
-           (equal? (%pob-props p)          '((a . 1)))
-           (equal? (%pob-methods p)        `((m . ,fn)))
+           (equal? (%pob-props p)          '((a 1)))
+           (equal? (%pob-methods p)        `((m ,fn)))
            (equal? (%pob-prop-resolver p)   resprop)
            (equal? (%pob-method-resolver p) resmeth))))
 
@@ -73,44 +73,44 @@
 
   (it "initializes base to #f if omitted"
     (equal? #f
-            (%pob-base (make-pob props: '((a . 1))
-                                 methods: `((m . ,fn))
+            (%pob-base (make-pob props: '((a 1))
+                                 methods: `((m ,fn))
                                  prop-resolver: resprop
                                  method-resolver: resmeth))))
 
   (it "initializes props to the empty list if omitted"
     (equal? '()
             (%pob-props (make-pob base: #f
-                                  methods: `((m . ,fn))
+                                  methods: `((m ,fn))
                                   prop-resolver: resprop
                                   method-resolver: resmeth))))
 
   (it "initializes methods to the empty list if omitted"
     (equal? '()
             (%pob-methods (make-pob base: #f
-                                    props: '((a . 1))
+                                    props: '((a 1))
                                     prop-resolver: resprop
                                     method-resolver: resmeth))))
 
   (it "initializes prop-resolver to std-prop-resolver if omitted"
     (equal? std-prop-resolver
             (%pob-prop-resolver (make-pob base: #f
-                                         props: '((a . 1))
-                                         methods: `((m . ,fn))
+                                         props: '((a 1))
+                                         methods: `((m ,fn))
                                          method-resolver: resmeth))))
 
   (it "initializes method-resolver to std-method-resolver if omitted"
     (equal? std-method-resolver
             (%pob-method-resolver (make-pob base: #f
-                                           props: '((a . 1))
-                                           methods: `((m . ,fn))
+                                           props: '((a 1))
+                                           methods: `((m ,fn))
                                            prop-resolver: resprop)))))
 
 
 (describe "send"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_method-missing . ,noop))))
+    (make-pob methods: `((_method-missing ,noop))))
   
   ;; it "uses the pob's method-resolver to find its _receive method"
   (let* ((pob (make-pob base: base-pob))
@@ -153,7 +153,7 @@
   
   (describe "the procedure"
     (define some-prop-reader (prop-reader 'some-prop))
-    (define pob1 (make-pob props: '((some-prop . some-value))))
+    (define pob1 (make-pob props: '((some-prop some-value))))
 
     (it "returns the given pob's value for the matching prop"
       (equal? (some-prop-reader pob1)
@@ -217,9 +217,9 @@
 ;;
 
 (describe "std-prop-resolver"
-  (define pob1 (make-pob props: '((a . 1) (b . 2) (c . 3) (d . 4))))
-  (define pob2 (make-pob base: pob1 props: `((a . 11) (c . ,(void)))))
-  (define pob3 (make-pob base: pob2 props: '((b . 22))))
+  (define pob1 (make-pob props: '((a 1) (b 2) (c 3) (d 4))))
+  (define pob2 (make-pob base: pob1 props: `((a 11) (c ,(void)))))
+  (define pob3 (make-pob base: pob2 props: '((b 22))))
 
   (it "returns a list with self and the prop value, if self defines the prop"
     (equal? (std-prop-resolver pob3 'b) (cons pob3 22)))
@@ -273,11 +273,11 @@
   (define (fn6 self) 6)
 
   (define pob1
-    (make-pob methods: `((m . ,fn1) (n . ,fn2) (o . ,fn3) (p . ,fn4))))
+    (make-pob methods: `((m ,fn1) (n ,fn2) (o ,fn3) (p ,fn4))))
   (define pob2
-    (make-pob base: pob1 methods: `((m . ,fn5) (o . ,(void)))))
+    (make-pob base: pob1 methods: `((m ,fn5) (o ,(void)))))
   (define pob3
-    (make-pob base: pob2 methods: `((n . ,fn6))))
+    (make-pob base: pob2 methods: `((n ,fn6))))
 
   (it "returns a pair with self and the definition if self defines it"
     (equal? (std-method-resolver pob3 'n) (cons pob3 fn6)))
@@ -325,7 +325,7 @@
 (describe "std-_receive"
   (define (noop . args) #t)
   (define base-pob
-    (make-pob methods: `((_method-missing . ,std-_method-missing))))
+    (make-pob methods: `((_method-missing ,std-_method-missing))))
 
   (it "uses the pob's method-resolver to find a matching method"
     (let* ((stub-resolve (lambda args (raise 'success "Success!")))
@@ -448,7 +448,7 @@
 
 (describe "own-prop"
   (it "returns the prop value from the active self"
-    (let ((pob (make-pob props: '((a . 1)))))
+    (let ((pob (make-pob props: '((a 1)))))
       (parameterize ((%method-context (list pob 'some-method)))
         (equal? (own-prop 'a) 1))))
 
@@ -457,7 +457,7 @@
       (own-prop 'a)))
 
   (it "is settable with set!"
-    (let ((pob (make-pob props: '((a . 1)))))
+    (let ((pob (make-pob props: '((a 1)))))
       (parameterize ((%method-context (list pob 'some-method)))
         (set! (own-prop 'a) 2)
         (equal? (own-prop 'a) 2)))))
@@ -465,13 +465,13 @@
 
 (describe "set-own-prop!"
   (it "modifies the prop value in the active self"
-    (let ((pob (make-pob props: '((a . 1)))))
+    (let ((pob (make-pob props: '((a 1)))))
       (parameterize ((%method-context (list pob 'some-method)))
         (set-own-prop! 'a 2)
         (equal? (own-prop 'a) 2))))
 
   (it "returns #<unspecified> on success"
-    (let ((pob (make-pob props: '((a . 1)))))
+    (let ((pob (make-pob props: '((a 1)))))
       (parameterize ((%method-context (list pob 'some-method)))
         (equal? (set-own-prop! 'a 2) (void)))))
 
@@ -482,7 +482,7 @@
 
 (describe "assert-active-pob"
   (it "returns #t if the pob is the active pob"
-    (let ((pob (make-pob props: '((a . 1)))))
+    (let ((pob (make-pob props: '((a 1)))))
       (parameterize ((%method-context (list pob 'some-method)))
         (equal? (assert-active-pob pob) #t))))
 
@@ -550,8 +550,8 @@
 
   (describe "the defined method"
     (it "applies to the given pob even when the method is inherited"
-      (let* ((pob (make-pob props: '((foo . 1))))
-             (pob2 (make-pob base: pob props: '((foo . 2)))))
+      (let* ((pob (make-pob props: '((foo 1))))
+             (pob2 (make-pob base: pob props: '((foo 2)))))
         (define-method (pob get-foo)
           (%prop self 'foo))
         (equal? 2 (send pob2 'get-foo)))))
@@ -660,8 +660,8 @@
           (send pob 'some-method))))
 
     (it "applies to the given pob even when the method is inherited"
-      (let* ((pob (make-pob props: '((foo . 1))))
-             (pob2 (make-pob base: pob props: '((foo . 2)))))
+      (let* ((pob (make-pob props: '((foo 1))))
+             (pob2 (make-pob base: pob props: '((foo 2)))))
         (define-private-method (pob get-foo)
           (%prop self 'foo))
         (parameterize
