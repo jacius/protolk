@@ -228,11 +228,11 @@
 (define-syntax define-method
   (ir-macro-transformer
    (lambda (exp inject compare)
-     (let* ((signature (cadr exp))
-            (body (cddr exp))
-            (pob (car signature))
-            (method-name (cadr signature))
-            (args (cddr signature)))
+     (let* ((pob (cadr exp))
+            (signature (caddr exp))
+            (method-name (car signature))
+            (args (cdr signature))
+            (body (cdddr exp)))
        `(%set-method! ,pob ',method-name
           (lambda (,(inject 'self) ,@args)
             (with-method-context
@@ -244,11 +244,11 @@
 (define-syntax define-private-method
   (ir-macro-transformer
    (lambda (exp inject compare)
-     (let* ((signature (cadr exp))
-            (body (cddr exp))
-            (pob (car signature))
-            (method-name (cadr signature))
-            (args (cddr signature)))
+     (let* ((pob (cadr exp))
+            (signature (caddr exp))
+            (method-name (car signature))
+            (args (cdr signature))
+            (body (cdddr exp)))
        `(%set-method! ,pob ',method-name
           (lambda (,(inject 'self) ,@args)
             (if (eq? (%active-pob) ,(inject 'self))

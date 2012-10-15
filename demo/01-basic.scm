@@ -28,7 +28,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Helper Functions
+;; Helper procedures
 ;;
 
 (define (size-to-string cm-size)
@@ -52,19 +52,19 @@
         methods: `((name ,(prop-reader 'name))
                    (size ,(prop-reader 'size)))))
 
-(define-method (fish _display out)
+(define-method fish (_display out)
   (fprintf out "#<~a>" (send self 'description)))
 
-(define-method (fish description)
+(define-method fish (description)
   (sprintf "~a ~a"
            (size-to-string (own-prop 'size))
            (own-prop 'name)))
 
-(define-method (fish swim)
+(define-method fish (swim)
   (printf "The ~a swims around.~n"
           (send self 'description)))
 
-(define-method (fish eat other)
+(define-method fish (eat other)
   ;; The fish can only swallow things half its size or smaller.
   (if (> (/ (send self 'size) 2)
          (send other 'size))
@@ -84,13 +84,13 @@
         methods: `((name ,(prop-reader 'name))
                    (size ,(prop-reader 'size)))))
 
-(define-method (plankton _display out)
+(define-method plankton (_display out)
   (fprintf out "#<~a>" (send self 'description)))
 
-(define-method (plankton description)
+(define-method plankton (description)
   "plankton")
 
-(define-method (plankton swim)
+(define-method plankton (swim)
   (printf "The ~a floats along with the currents.~n"
           (send self 'description)))
 
@@ -108,7 +108,7 @@
         props: '((name "paedocypris")
                  (size 0.79))))
 
-(define-method (paedocypris swim)
+(define-method paedocypris (swim)
   (printf "The ~a darts to and fro.~n"
           (send self 'description)))
 
@@ -129,7 +129,7 @@
         props: '((name "whale shark")
                  (size 1200))))
 
-(define-method (whale-shark eat other)
+(define-method whale-shark (eat other)
   (if (< 1 (send other 'size))
       ;; Whale sharks are filter feeders.
       (printf "The ~a only eats very small things, not the ~a.~n"
@@ -143,11 +143,11 @@
         props: '((name "great white shark")
                  (size 460))))
 
-(define-method (great-white-shark swim)
+(define-method great-white-shark (swim)
   (printf "The ~a skulks around ominously.~n"
           (send self 'description)))
 
-(define-method (great-white-shark eat other)
+(define-method great-white-shark (eat other)
   (let ((self-size (send self 'size))
         (other-size (send other 'size)))
     (cond
