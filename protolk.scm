@@ -156,7 +156,7 @@
    (lambda (prop-name)
      (let ((active-pob (%active-pob)))
        (if (pob? active-pob)
-           (%prop active-pob prop-name)
+           (cdr (%resolve-prop active-pob prop-name))
            (raise 'context "No active pob in the current context."
                   'prop-name prop-name))))
    set-own-prop!))
