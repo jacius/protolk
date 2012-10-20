@@ -1,7 +1,7 @@
 
 (register-feature! 'protolk-all-tests)
 
-(load-relative "helpers")
+(load-relative "spec-helpers")
 
 (load-relative "../protolk-internal.scm")
 (load-relative "../protolk-primitives.scm")
@@ -10,9 +10,13 @@
 
 (import protolk-internal protolk-primitives protolk)
 
-(load-relative "helpers-spec.scm")
+(load-relative "spec-helpers-spec.scm")
 (load-relative "primitives-spec.scm")
-(load-relative "protolk-spec.scm")
+(load-relative "core-spec.scm")
+(load-relative "std-methods-spec.scm")
+(load-relative "accessor-spec.scm")
+(load-relative "encapsulation-spec.scm")
+(load-relative "method-spec.scm")
 (load-relative "stdpob-spec.scm")
 
 (test-exit)

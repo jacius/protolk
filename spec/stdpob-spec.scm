@@ -1,6 +1,5 @@
 
-
-(load-relative "helpers")
+(load-relative "spec-helpers")
 (load-relative "../protolk-stdpob")
 (import protolk-stdpob
         protolk

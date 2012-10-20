@@ -1,7 +1,7 @@
 
 ;;; Speccing the spec helpers... SPECEPTION.
 
-(load-relative "helpers")
+(load-relative "spec-helpers")
 
 
 (define some-global-var 1)

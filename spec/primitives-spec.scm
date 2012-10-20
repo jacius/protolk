@@ -1,5 +1,5 @@
 
-(load-relative "helpers")
+(load-relative "spec-helpers")
 (load-relative "../protolk-primitives")
 (import protolk-primitives
         protolk-internal)
