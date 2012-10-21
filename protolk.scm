@@ -52,6 +52,8 @@
    own-prop  set-own-prop!
    assert-active-pob
    with-method-context
+   make-method
+   make-private-method
    define-method
    define-private-method
    %rewrite-args
@@ -225,45 +227,55 @@
             (%rewrite-args ~key . more-args)))))
 
 
-(define-syntax define-method
+(define-syntax make-method
   (ir-macro-transformer
    (lambda (exp inject compare)
-     (let* ((pob (cadr exp))
-            (signature (caddr exp))
+     (let* ((signature (cadr exp))
             (method-name (car signature))
             (args (cdr signature))
-            (body (cdddr exp)))
-       `(%set-method! ,pob ',method-name
-          (lambda (,(inject 'self) ,@args)
-            (with-method-context
-             (cons* ,(inject 'self) ',method-name
-                    (%rewrite-args ~required ,@args))
-             ,@body)))))))
+            (body (cddr exp)))
+       `(lambda (,(inject 'self) ,@args)
+          (with-method-context
+           (cons* ,(inject 'self) ',method-name
+                  (%rewrite-args ~required ,@args))
+           ,@body))))))
 
+
+(define-syntax make-private-method
+  (ir-macro-transformer
+   (lambda (exp inject compare)
+     (let* ((signature (cadr exp))
+            (method-name (car signature))
+            (args (cdr signature))
+            (body (cddr exp)))
+       `(lambda (,(inject 'self) ,@args)
+          (if (eq? (%active-pob) ,(inject 'self))
+              (with-method-context
+               (cons* ,(inject 'self) ',method-name
+                      (%rewrite-args ~required ,@args))
+               ,@body)
+              (raise ',(inject 'private-method)
+                     (sprintf "private method '~s called for ~s"
+                              ',method-name ,(inject 'self))
+                     ',(inject 'pob) ,(inject 'self)
+                     ',(inject 'method-name) ',method-name
+                     ',(inject 'args) (%rewrite-args
+                                       ~required ,@args))))))))
+
+
+(define-syntax define-method
+  (syntax-rules ()
+    ((define-method pob (name . args) . body)
+     (%set-method! pob 'name
+      (make-method (name . args)
+       . body)))))
 
 (define-syntax define-private-method
-  (ir-macro-transformer
-   (lambda (exp inject compare)
-     (let* ((pob (cadr exp))
-            (signature (caddr exp))
-            (method-name (car signature))
-            (args (cdr signature))
-            (body (cdddr exp)))
-       `(%set-method! ,pob ',method-name
-          (lambda (,(inject 'self) ,@args)
-            (if (eq? (%active-pob) ,(inject 'self))
-             (with-method-context
-              (cons* ,(inject 'self) ',method-name
-                     (%rewrite-args ~required ,@args))
-              ,@body)
-             (raise ',(inject 'private-method)
-              (sprintf
-               "private method '~s called for ~s"
-               ',method-name ,(inject 'self))
-              ',(inject 'pob) ,(inject 'self)
-              ',(inject 'method-name) ',method-name
-              ',(inject 'args) (%rewrite-args
-                                ~required ,@args)))))))))
+  (syntax-rules ()
+    ((define-private-method pob (name . args) . body)
+     (%set-method! pob 'name
+      (make-private-method (name . args)
+       . body)))))
 
 
 ;;;;;;;;;;;
