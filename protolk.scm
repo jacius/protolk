@@ -60,7 +60,8 @@
 
    super
    super*
-   super?)
+   super?
+   apply-super)
 
 (import scheme chicken)
 (import protolk-internal protolk-primitives)
@@ -286,6 +287,11 @@
   (syntax-rules ()
     ((super . args)
      (%super . args))))
+
+(define-syntax apply-super
+  (syntax-rules ()
+    ((apply-super . args)
+     (apply %super . args))))
 
 (define-syntax super*
   (syntax-rules ()

@@ -343,6 +343,15 @@
       (equal? (list 1 2 3) (super 1 2 3)))))
 
 
+(describe "apply-super"
+  (it "is a macro"
+    (not (equal? 'apply-super (car (expand '(apply-super 1 2 3))))))
+
+  (it "applies the given args to %super"
+    (with-replacements ((%super (lambda (a b c) (list c b a))))
+      (equal? (list 3 2 1) (apply-super 1 (list 2 3))))))
+
+
 (describe "super*"
   (it "is a macro"
     (not (equal? 'super* (car (expand '(super*))))))

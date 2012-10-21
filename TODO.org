@@ -89,6 +89,7 @@ flexibility for its own sake.
 - [X] =super*= macro.
   Like super, but passes the same args the current method received.
 - [X] =super?= procedure
+- [X] =apply-super= macro
 
 Demos:
 - [ ] Basics
