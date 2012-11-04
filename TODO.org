@@ -92,11 +92,11 @@ flexibility for its own sake.
 - [X] =apply-super= macro
 
 Demos:
-- [ ] Basics
+- [X] Basics
   - Deriving from stdpob
   - Overriding stdpob props and methods
   - Adding custom props and methods
-- [ ] Emulating classical inheritance
+- [X] Emulating classical inheritance
 
 * Milestone 5: Syntax Sugar
 
