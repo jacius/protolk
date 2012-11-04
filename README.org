@@ -3,8 +3,8 @@
 
 Flexible Scheme objects with message passing and prototypes
 
-- Version :: 0.3
-- Date :: September 8, 2012
+- Version :: 0.4
+- Date :: November 3, 2012
 - Author :: John Croisant <john+protolk@croisant.net>
 - Project :: [[http://github.com/jacius/protolk/]]
 - License :: [[http://opensource.org/licenses/BSD-2-Clause][BSD 2-Clause]]
@@ -45,7 +45,7 @@ Protolk is designed with four core principles in mind:
 
 * Caveats
 
-As of September 2012, Protolk is still just an experiment. I make no
+As of November 2012, Protolk is still just an experiment. I make no
 guarantees about its performance, efficiency, stability, security,
 correctness, usefulness, or cleverness. Think twice (or thrice) before
 using Protolk in production code.

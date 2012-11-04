@@ -1,6 +1,6 @@
 ;;;; -*- Scheme -*-
 
-(define VERSION "0.3")
+(define VERSION "0.4")
 
 ;;; protolk-internal
 (compile -s -O2 -d1 -J protolk-internal.scm)
