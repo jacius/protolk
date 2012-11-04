@@ -366,7 +366,14 @@
 
 
 (describe "super?"
-  (it "acceps no args"
+  (define m (make-method (m) (super?)))
+  (define m2 (make-method (m) (super?)))
+  
+  (define pob1 (make-pob methods: `((m ,m))))
+  (define pob2 (make-pob base: pob1
+                         methods: `((m ,m2))))
+  
+  (it "accepts no args"
     (raises? (arity)
       (super? 1)))
 
@@ -375,21 +382,10 @@
       (super?)))
 
   (it "returns #f if there is no next super method"
-    (parameterize ((%method-context (list 'some-pob 'some-method)))
-      (with-replacements
-          ((%super-resolve-next-method
-            (lambda (pob method-name invoked-methods)
-              #f)))
-        (not (super?)))))
+    (not (send pob1 'm)))
 
   (it "returns #t if there is a next super method"
-    (parameterize ((%method-context (list 'some-pob 'some-method)))
-      (with-replacements
-          ((%super-resolve-next-method
-            (lambda (pob method-name invoked-methods)
-              (and (eq? pob 'some-pob)
-                   (eq? method-name 'some-method)))))
-        (super?)))))
+    (send pob2 'm)))
 
 
 

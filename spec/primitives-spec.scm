@@ -336,6 +336,13 @@
 ;; SUPER
 ;;
 
+;; Simple non-inheriting method resolver.
+(define (simple-mresolver pob method-name #!optional default)
+  (if (%has-method? pob method-name)
+      (cons pob (%method pob method-name))
+      (cons #f default)))
+
+
 (describe "%super-context"
   (define pob (%make-pob #f '() '() #f #f))
 
@@ -426,16 +433,21 @@
 
 
 (describe "%start-super"
+  (define pob (%make-pob #f '() '() #f simple-mresolver))
+
   (it "takes a pob, method name, and list of args"
     (with-replacements ((%continue-super (lambda x 'noop)))
-      (not (raises? () (%start-super 'pob 'method (list 1 2))))))
-  
-  (it "should set up a new super context then call %continue-super"
+      (not (raises? () (%start-super pob 'method (list 1 2))))))
+
+  (it "sets up a new super context then calls %continue-super"
     (with-replacements ((%continue-super
                          (lambda x (list (%super-context)
-                                         (%super-invoked-procs)))))
-      (equal? (list (list 'pob 'method (list 1 2)) (list))
-              (%start-super 'pob 'method (list 1 2))))))
+                                         (%super-invoked-procs))))
+                        (%super-resolve-next-method
+                         (lambda (pob method-name invoked-procs)
+                           '(the resolved method))))
+      (equal? (%start-super pob 'method (list 1 2))
+              `((,pob method (1 2)) ((the resolved method)))))))
 
 
 (describe "%continue-super"
@@ -496,7 +508,7 @@
            (%continue-super (lambda x (error "should not happen"))))
         (equal? (%super 1 2) 'foo))))
 
-  (it "calls %continue-super called with the same super context"
+  (it "calls %continue-super if called with the same super context"
     (parameterize ((%method-context (list pob 'some-method)))
       (with-replacements
           ((%same-super-context? (lambda x #t))

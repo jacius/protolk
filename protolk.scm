@@ -302,8 +302,10 @@
   (let ((context (%method-context))
         (invoked (%super-invoked-procs)))
     (if context
-        (not (not (%super-resolve-next-method
-                   (car context) (cadr context) invoked)))
+        (let ((this-method (%super-resolve-next-method
+                            (car context) (cadr context) invoked)))
+          (not (not (%super-resolve-next-method
+                     (car context) (cadr context) (cons this-method invoked)))))
         (raise '(context super)
                "Cannot invoke super? outside of a method context."))))
 

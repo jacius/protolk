@@ -226,7 +226,9 @@
 
 (define (%start-super pob method-name args)
   (parameterize ((%super-context (list pob method-name args))
-                 (%super-invoked-procs (list)))
+                 (%super-invoked-procs
+                  (list (%super-resolve-next-method
+                         pob method-name (%super-invoked-procs)))))
     (%continue-super pob method-name args)))
 
 (define (%continue-super pob method-name args)
