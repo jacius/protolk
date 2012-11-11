@@ -98,12 +98,10 @@ Demos:
   - Adding custom props and methods
 - [X] Emulating classical inheritance
 
-* Milestone 5: Syntax Sugar
+* Milestone 5: Syntax Sugar (Reader Extensions)
 
 - [ ] =own-prop= syntax: =@foo=
 - [ ] =send= syntax: =[pob msg args...]=
-- [ ] =enable-protolk-syntax= procedure
-- [ ] =with-protolk-syntax= macro
 
 - [ ] Update demos
 
