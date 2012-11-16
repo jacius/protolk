@@ -10,30 +10,25 @@
 ;;;   - Creating "instances" of the class pobs
 ;;;   - Initializing instances
 ;;;   - Creating a class hierarchy
-;;;
-;;; This demo uses protolk reader extensions. If you compile this
-;;; demo, you should specify (at least) the following flags:
-;;;
-;;;   -X protolk-syntax-send-brackets -X protolk-syntax-own-prop-at
-;;;
-;;; See 02-class-nosyntax.scm for this demo without reader extensions.
 
 
 (cond-expand
  (compiling
-  (require-library protolk protolk-stdpob))
+  (require-library protolk-primitives protolk protolk-stdpob))
  (else
+  (load-relative "../protolk-primitives.scm")
   (load-relative "../protolk.scm")
   (load-relative "../protolk-stdpob.scm")
-  (load-relative "../protolk-syntax-send-brackets.scm")
-  (load-relative "../protolk-syntax-own-prop-at.scm")))
+  (load-relative "../protolk-syntax.scm")))
+
+(import protolk-primitives protolk protolk-stdpob)
+(import-for-syntax protolk protolk-syntax)
 
 (use data-structures extras)
 
-(import protolk protolk-primitives protolk-stdpob)
-(import-for-syntax protolk
-                   protolk-syntax-send-brackets
-                   protolk-syntax-own-prop-at)
+(begin-for-syntax
+ (enable-syntax-send)
+ (enable-syntax-own-prop))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

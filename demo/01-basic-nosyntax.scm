@@ -12,13 +12,6 @@
 ;;;   - Defining methods on a pob
 ;;;   - Invoking super methods from within a pob's method
 ;;;   - Sending messages to pobs to invoke methods
-;;;
-;;; This demo uses protolk reader extensions. If you compile this
-;;; demo, you should specify (at least) the following flags:
-;;;
-;;;   -X protolk-syntax-send-brackets -X protolk-syntax-own-prop-at
-;;;
-;;; See 01-basic-nosyntax.scm for this demo without reader extensions.
 
 
 (cond-expand
@@ -27,15 +20,17 @@
  (else
   (load-relative "../protolk.scm")
   (load-relative "../protolk-stdpob.scm")
-  (load-relative "../protolk-syntax-send-brackets.scm")
-  (load-relative "../protolk-syntax-own-prop-at.scm")))
+  (load-relative "../protolk-syntax.scm")))
+
+(import protolk protolk-stdpob)
+(import-for-syntax protolk protolk-syntax)
 
 (use extras)
 
-(import protolk protolk-stdpob)
-(import-for-syntax protolk
-                   protolk-syntax-send-brackets
-                   protolk-syntax-own-prop-at)
+(begin-for-syntax
+ (enable-syntax-send)
+ (enable-syntax-own-prop))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper procedures

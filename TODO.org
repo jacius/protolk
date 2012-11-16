@@ -103,7 +103,7 @@ Demos:
 - [X] =send= syntax: =[pob msg args...]=
 - [X] =own-prop= syntax: =@foo=
 
-- [ ] Update demos
+- [X] Update demos
 
 * Milestone 6: Aliases and Multiple Inheritance
 
