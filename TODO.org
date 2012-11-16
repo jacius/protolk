@@ -101,7 +101,7 @@ Demos:
 * Milestone 5: Syntax Sugar (Reader Extensions)
 
 - [X] =send= syntax: =[pob msg args...]=
-- [ ] =own-prop= syntax: =@foo=
+- [X] =own-prop= syntax: =@foo=
 
 - [ ] Update demos
 
