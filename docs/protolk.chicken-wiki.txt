@@ -24,7 +24,8 @@ a la Self and JavaScript.
 
 Protolk is not a new language or dialect. It offers a Scheme record
 type and collection of procedures that can be seamlessly integrated
-with other Scheme code.
+with other Scheme code. Some optional reader extensions are also
+available, to add some syntax sugar for convenience.
 
 Protolk is designed with four core principles in mind:
 

@@ -17,8 +17,9 @@ combining [[http://en.wikipedia.org/wiki/Encapsulation_(object-oriented_programm
 with [[http://en.wikipedia.org/wiki/Prototype-based_programming][prototypal inheritance]] a la Self and JavaScript.
 
 Protolk is not a new language or dialect. It offers a Scheme record
-type and collection of procedures that can be seamlessly integrated
-with other Scheme code.
+type, and collection of procedures that can be seamlessly integrated
+with other Scheme code. Some optional reader extensions are also
+available, to add some syntax sugar for convenience.
 
 Protolk is designed with four core principles in mind:
 
@@ -50,11 +51,13 @@ guarantees about its performance, efficiency, stability, security,
 correctness, usefulness, or cleverness. Think twice (or thrice) before
 using Protolk in production code.
 
-Be aware that Protolk provides only *synchronous* (blocking) message
+Be aware that Protolk is based on *synchronous* (blocking) message
 passing, implemented as procedure calls. No special consideration has
 been given to issues of concurrency, threading, or asynchronicity.
-So, Protolk is probably not especially useful for distributed or
-parallel computing.
+So, Protolk probably does not offer any special benefit for
+distributed or parallel computing. (But, Protolk is flexible enough
+that you can easily create Protolk objects that implement message
+queues or other form of asynchronous message passing.)
 
 Protolk is currently targeted at [[http://call-cc.org/][Chicken Scheme]]. If you are interested
 in helping to port Protolk to your favorite Scheme or Lisp, create a
