@@ -44,3 +44,18 @@
   '("protolk-stdpob.so"
     "protolk-stdpob.import.so")
   `((version ,VERSION)))
+
+
+;;; protolk-syntax
+(compile -s -O2 -d1 -J protolk-syntax-own-prop-at.scm)
+(compile -s protolk-syntax-own-prop-at.import.scm -O2 -d0)
+(compile -s -O2 -d1 -J protolk-syntax-send-brackets.scm)
+(compile -s protolk-syntax-send-brackets.import.scm -O2 -d0)
+
+(install-extension
+  'protolk-syntax
+  '("protolk-syntax-own-prop-at.so"
+    "protolk-syntax-own-prop-at.import.so"
+    "protolk-syntax-send-brackets.so"
+    "protolk-syntax-send-brackets.import.so")
+  `((version ,VERSION)))
