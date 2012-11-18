@@ -105,7 +105,52 @@ Demos:
 
 - [X] Update demos
 
-* Milestone 6: Aliases and Multiple Inheritance
+* Milestone 6: Core Revisited
+
+Revamping the core model based on lessons learned and new
+ideas. Possible directions include:
+
+- Shift responsibility for method/super context setup from the method
+  body to the object's =_receive= method. This would probably simplify
+  the definition of methods, and might simplify the implementation of
+  method/super contexts.
+
+- Shift responsibility for privacy enforcement from the method body to
+  the object's =_receive= method. This would allow the same lambda to
+  be used as either a private or public method, and allow objects to
+  define their own rules for privacy.
+
+- For stdpob, maybe use method names to determine privacy. Methods
+  starting with a some character (maybe "_") are private, others are
+  public. (Or, just store a list of names of private methods. Boring!)
+
+* Milestone 7: Generalization
+
+Define pob wrappers around existing types. These would provide a
+pob-ish interface to the wrapped values.
+E.g. [(pob-wrap-string "12345") length] is 5.
+
+- [ ] wrapper (ancestor of all wrapper pobs; derived from stdpob)
+  - equality operators
+  - type predicates
+  - etc.
+- [ ] hash-table
+- [ ] vector
+- [ ] list / pair
+- [ ] number
+- [ ] string
+- [ ] char
+- [ ] regex
+- [ ] port
+- others?
+
+- [ ] Function to wrap the given value in an appropriate pob
+  (determined using an alist of predicates). Extensible so users can
+  add new wrappers.
+- [ ] Automatically wrap non-pob values when they are passed to
+  =send=, then send the message to the pob.
+
+* Milestone 8: Aliases and Multiple Inheritance
 
 - [ ] Update =std-method-resolver= to support method aliases. If the
   value of a method is a symbol (instead of a procedure), begin
@@ -117,14 +162,17 @@ Demos:
 - [ ] Multiple inheritance (multiple bases). Use a precedence list to
   determine inheritance and "super" calls.
 
-* Milestone 7: Optimization
+* Milestone 9: Optimization
 
-- [ ] Make primitive prop and method accessors work with both alists
-  and hash-tables.
-- [ ] Automatically convert pob prop and method alists into
-  hash-tables when they reach a certain (configurable) size, for
-  efficiency when a pob has a large number of props or methods.
+- [ ] Make primitive prop and method lookups work with hash-tables (or
+  some other efficient data structure) as well as alists, for
+  efficiency when a pob has a large number of props or methods. (Test
+  that this would actually be more efficient.)
+- [ ] Ability to automatically convert pob prop and method alists into
+  hash tables (or whatever) when they reach a certain size.
 
+- [ ] Cache lookups of inherited methods. Invalidate cache when
+  ancestor changes.
 
 
 #+STARTUP: showall
