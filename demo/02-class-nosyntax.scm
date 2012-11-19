@@ -18,17 +18,12 @@
  (else
   (load-relative "../protolk-primitives.scm")
   (load-relative "../protolk.scm")
-  (load-relative "../protolk-stdpob.scm")
-  (load-relative "../protolk-syntax.scm")))
+  (load-relative "../protolk-stdpob.scm")))
 
 (import protolk-primitives protolk protolk-stdpob)
-(import-for-syntax protolk protolk-syntax)
+(import-for-syntax protolk)
 
 (use data-structures extras)
-
-(begin-for-syntax
- (enable-syntax-send)
- (enable-syntax-own-prop))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -48,30 +43,30 @@
 ;;
 
 (define (display-class class out)
-  (fprintf out "#<class ~a>" [class class-name]))
+  (fprintf out "#<class ~a>" (send class 'class-name)))
 
 (define (display-instance instance out)
   (fprintf out "#<~a~a>"
-           [instance class-name]
-           (if [instance responds-to? 'name]
-               (sprintf " ~s" [instance name])
+           (send instance 'class-name)
+           (if (send instance 'responds-to? 'name)
+               (sprintf " ~s" (send instance 'name))
                "")))
 
 (define <class>
-  [stdpob derive
+  (send stdpob 'derive
           props: '((class-name "class"))
           methods: `((class-name ,(prop-reader 'class-name))
-                     (_display ,display-class))])
+                     (_display ,display-class))))
 
 (define-method <class> (new #!rest args)
-  (let ((instance [self derive
-                        methods: `((_display ,display-instance))]))
-    (if [instance responds-to? 'initialize]
+  (let ((instance (send self 'derive
+                        methods: `((_display ,display-instance)))))
+    (if (send instance 'responds-to? 'initialize)
         (apply send instance 'initialize args))
     instance))
 
 (define-method <class> (instance-of? klass)
-  [self has-ancestor? klass])
+  (send self 'has-ancestor? klass))
 
 
 (define-syntax define-class
@@ -96,34 +91,36 @@
     (apply-super all-keys))
   (%set-method! self '_display display-instance)
   (when name
-    (set! @name name))
+    (set! (own-prop 'name) name))
   (when appearance
-    (set! @appearance appearance)))
+    (set! (own-prop 'appearance) appearance)))
 
 (define-method <animal> (description)
   (string-intersperse
    (filter string?
            ;; e.g. "Mittens the fuzzy kitten"
-           (list @name "the" @appearance @class-name))
+           (list (own-prop 'name) "the"
+                 (own-prop 'appearance)
+                 (own-prop 'class-name)))
    " "))
 
 (define-method <animal> (move #!key to)
   (if to
       (printf "~a moves to ~a.~n"
-              (string-upcase-first [self description])
+              (string-upcase-first (send self 'description))
               to)
       (printf "~a moves around.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 (define-method <animal> (make-sound #!key at)
   (if at
       (printf "~a makes an animal sound at ~a.~n"
-              (string-upcase-first [self description])
-              (if [at instance-of? <animal>]
-                  [at description]
+              (string-upcase-first (send self 'description))
+              (if (send at 'instance-of? <animal>)
+                  (send at 'description)
                   at))
       (printf "~a makes an animal sound.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -139,17 +136,17 @@
       (when (super?)
         (super*))
       (printf "~a wanders around, looking for someplace to take a nap.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 (define-method <cat> (make-sound #!key at)
   (if at
       (printf "~a meows at ~a.~n"
-              (string-upcase-first [self description])
-              (if [at instance-of? <animal>]
-                  [at description]
+              (string-upcase-first (send self 'description))
+              (if (send at 'instance-of? <animal>)
+                  (send at 'description)
                   at))
       (printf "~a meows for attention.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 
 
@@ -162,18 +159,18 @@
       (when (super?)
         (super*))
       (printf "~a walks around, patrolling its territory.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 (define-method <dog> (make-sound #!key at)
   (if at
       (printf "~a barks at ~a.~n"
-              (string-upcase-first [self description])
-              (if [at instance-of? <animal>]
-                  [at description]
+              (string-upcase-first (send self 'description))
+              (if (send at 'instance-of? <animal>)
+                  (send at 'description)
                   at)
               at)
       (printf "~a howls into the night.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 
 
@@ -184,20 +181,20 @@
 (define-method <bird> (move #!key to)
   (if to
       (printf "~a flies to ~a.~n"
-              (string-upcase-first [self description])
+              (string-upcase-first (send self 'description))
               to)
       (printf "~a soars through the air without a care in the world.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 (define-method <bird> (make-sound #!key at)
   (if at
       (printf "~a chirps at ~a.~n"
-              (string-upcase-first [self description])
-              (if [at instance-of? <animal>]
-                  [at description]
+              (string-upcase-first (send self 'description))
+              (if (send at 'instance-of? <animal>)
+                  (send at 'description)
                   at))
       (printf "~a chirps and sings loudly.~n"
-              (string-upcase-first [self description]))))
+              (string-upcase-first (send self 'description)))))
 
 
 
@@ -206,29 +203,29 @@
 ;;
 
 (define mittens
-  [<cat> new name: "Mittens"])
+  (send <cat> 'new name: "Mittens"))
 
 (define rover
-  [<dog> new name: "Rover"])
+  (send <dog> 'new name: "Rover"))
 
 (define tweety
-  [<bird> new name: "Tweety" appearance: "yellow"])
+  (send <bird> 'new name: "Tweety" appearance: "yellow"))
 
 (define twitty
-  [<bird> new name: "Twitty" appearance: "blue"])
+  (send <bird> 'new name: "Twitty" appearance: "blue"))
 
 
-[tweety move]
-[mittens move]
-[mittens move to: "a sunny spot"]
-[tweety move to: "a tree branch above the sunny spot"]
-[tweety make-sound]
-[twitty move to: "sit next to Tweety"]
-[twitty make-sound at: tweety]
-[mittens make-sound at: twitty]
-[rover move]
-[rover make-sound at: mittens]
-[mittens move to: "the top of the tree"]
-[twitty move to: "another tree"]
-[tweety move to: "follow Twitty"]
-[mittens make-sound]
+(send tweety 'move)
+(send mittens 'move)
+(send mittens 'move to: "a sunny spot")
+(send tweety 'move to: "a tree branch above the sunny spot")
+(send tweety 'make-sound)
+(send twitty 'move to: "sit next to Tweety")
+(send twitty 'make-sound at: tweety)
+(send mittens 'make-sound at: twitty)
+(send rover 'move)
+(send rover 'make-sound at: mittens)
+(send mittens 'move to: "the top of the tree")
+(send twitty 'move to: "another tree")
+(send tweety 'move to: "follow Twitty")
+(send mittens 'make-sound)
