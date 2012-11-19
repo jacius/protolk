@@ -44,6 +44,38 @@ Protolk is designed with four core principles in mind:
   but there are ways to implement private methods.
 
 
+* Installation and Usage
+
+You currently need [[http://call-cc.org/][Chicken Scheme]] to use Protolk. After you have
+installed Chicken, download the Protolk source code or clone the git
+repository. Then run the =chicken-install= command from within the
+Protolk source directory. In the future, you will be able to just
+run =chicken-install protolk=, but that is not set up yet.
+
+To use Protolk in your code:
+
+#+BEGIN_SRC scheme
+(require-extension protolk
+                   protolk-stdpob
+                   protolk-syntax-send-brackets
+                   protolk-syntax-at-own-prop)
+#+END_SRC
+
+When you compile the file, if you are using Protolk's syntax sugar,
+you will need to tell the compiler to load the syntax modules as
+compiler extensions:
+
+#+BEGIN_EXAMPLE
+csc -X protolk-syntax-send-brackets -X protolk-syntax-at-own-prop  your-code.scm
+#+END_EXAMPLE
+
+If you don't want to use syntax sugar, you don't need those flags, and
+you can omit the syntax modules from the =require-extension=
+expression shown above.
+
+For working code samples, see the files in the =demo= directory.
+
+
 * Caveats
 
 As of November 2012, Protolk is still just an experiment. I make no
