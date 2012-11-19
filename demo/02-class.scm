@@ -28,12 +28,13 @@
   (load-relative "../protolk-syntax-send-brackets.scm")
   (load-relative "../protolk-syntax-own-prop-at.scm")))
 
-(use data-structures extras)
+(import protolk
+        protolk-primitives
+        protolk-stdpob
+        protolk-syntax-send-brackets
+        protolk-syntax-own-prop-at)
 
-(import protolk protolk-primitives protolk-stdpob)
-(import-for-syntax protolk
-                   protolk-syntax-send-brackets
-                   protolk-syntax-own-prop-at)
+(require-extension data-structures extras)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

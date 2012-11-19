@@ -21,9 +21,8 @@
   (load-relative "../protolk-stdpob.scm")))
 
 (import protolk-primitives protolk protolk-stdpob)
-(import-for-syntax protolk)
 
-(use data-structures extras)
+(require-extension data-structures extras)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

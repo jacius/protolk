@@ -30,12 +30,13 @@
   (load-relative "../protolk-syntax-send-brackets.scm")
   (load-relative "../protolk-syntax-own-prop-at.scm")))
 
-(use extras)
+(import protolk
+        protolk-stdpob
+        protolk-syntax-send-brackets
+        protolk-syntax-own-prop-at)
 
-(import protolk protolk-stdpob)
-(import-for-syntax protolk
-                   protolk-syntax-send-brackets
-                   protolk-syntax-own-prop-at)
+(require-extension extras)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper procedures

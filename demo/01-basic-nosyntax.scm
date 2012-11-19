@@ -22,9 +22,8 @@
   (load-relative "../protolk-stdpob.scm")))
 
 (import protolk protolk-stdpob)
-(import-for-syntax protolk)
 
-(use extras)
+(require-extension extras)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
