@@ -47,10 +47,10 @@ Protolk is designed with four core principles in mind:
 * Installation and Usage
 
 You currently need [[http://call-cc.org/][Chicken Scheme]] to use Protolk. After you have
-installed Chicken, download the Protolk source code or clone the git
-repository. Then run the =chicken-install= command from within the
-Protolk source directory. In the future, you will be able to just
-run =chicken-install protolk=, but that is not set up yet.
+installed Chicken, you can install the latest release of Protolk by
+running =chicken-install protolk=. Or, if you want the absolute latest
+revision of Protolk, you can clone the git repository then run the
+=chicken-install= command from within the repository clone directory.
 
 To use Protolk in your code:
 
