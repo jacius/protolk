@@ -58,7 +58,7 @@ To use Protolk in your code:
 (require-extension protolk
                    protolk-stdpob
                    protolk-syntax-send-brackets
-                   protolk-syntax-at-own-prop)
+                   protolk-syntax-own-prop-at)
 #+END_SRC
 
 When you compile the file, if you are using Protolk's syntax sugar,
@@ -66,7 +66,7 @@ you will need to tell the compiler to load the syntax modules as
 compiler extensions:
 
 #+BEGIN_EXAMPLE
-csc -X protolk-syntax-send-brackets -X protolk-syntax-at-own-prop  your-code.scm
+csc -X protolk-syntax-send-brackets -X protolk-syntax-own-prop-at  your-code.scm
 #+END_EXAMPLE
 
 If you don't want to use syntax sugar, you don't need those flags, and
