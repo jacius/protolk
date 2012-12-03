@@ -64,8 +64,10 @@
    apply-super)
 
 (import scheme chicken)
-(import protolk-internal protolk-primitives)
 (use extras srfi-1)
+
+(import protolk-internal protolk-primitives)
+(reexport (only protolk-primitives pob?))
 
 
 ;;;;;;;;;;;;;

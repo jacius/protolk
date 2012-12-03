@@ -126,7 +126,7 @@ ideas. Possible directions include:
 
 Miscellaneous other stuff:
 
-- [ ] Re-export the =pob?= method from the protolk module, not just
+- [X] Re-export the =pob?= procedure from the protolk module, not just
   the protolk-primitives module.
 
 - [ ] Make std-_display print out the pob's props. Use a depth limit
