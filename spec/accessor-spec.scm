@@ -34,7 +34,7 @@
               'some-value))
 
     (it "fails if given a non-pob"
-      (raises? (type)
+      (raises? ()
         (some-prop-reader 'foo)))
     
     (it "fails if given no args"
@@ -73,7 +73,7 @@
                 (void))))
     
     (it "fails if given a non-pob"
-      (raises? (type)
+      (raises? ()
         (some-prop-writer 'foo 'bar)))
     
     (it "fails if given no args"

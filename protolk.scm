@@ -102,14 +102,6 @@
   ((cdr (%resolve-method pob '_receive std-_receive))
    pob message args))
 
-(define (prop-reader prop-name)
-  (lambda (self)
-    (cdr (%resolve-prop self prop-name))))
-
-(define (prop-writer prop-name)
-  (lambda (self value)
-    (%set-prop! self prop-name value)))
-
 
 (define (std-prop-resolver self prop-name
                            #!optional (default (void)))
@@ -315,6 +307,22 @@
                      (car context) (cadr context) (cons this-method invoked)))))
         (raise '(context super)
                "Cannot invoke super? outside of a method context."))))
+
+
+;;;;;;;;;;;;;;;
+;; ACCESSORS
+
+;;; These are defined down here because they need with-method-context.
+
+(define (prop-reader prop-name)
+  (lambda (self)
+    (with-method-context (list self prop-name)
+      (own-prop prop-name))))
+
+(define (prop-writer prop-name)
+  (lambda (self value)
+    (with-method-context (list self prop-name value)
+      (set-own-prop! prop-name value))))
 
 
 ) ;; end module protolk
