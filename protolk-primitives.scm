@@ -57,7 +57,7 @@
    %set-method!  %unset-method!
 
    %method-context
-   %active-pob
+   %receiver
    %active-method-name
 
    %super-context
@@ -183,7 +183,7 @@
 ;;; method. Used as a stack via parameterize.
 (define %method-context (make-parameter #f))
 
-(define (%active-pob)
+(define (%receiver)
   (let ((mc (%method-context)))
     (if mc (car mc) #f)))
 
@@ -247,7 +247,7 @@
 
 
 (define (%super . args)
-  (let ((pob (%active-pob))
+  (let ((pob (%receiver))
         (method-name (%active-method-name)))
     (if (and pob method-name)
         (if (%same-super-context? pob method-name)

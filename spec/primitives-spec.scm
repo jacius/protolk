@@ -295,23 +295,23 @@
                 (list pob 'some-method arg1 arg2 arg3))))))
 
 
-(describe "%active-pob"
+(describe "%receiver"
   (define pob (%make-pob #f '() '() #f #f))
 
-  (it "returns the active pob in the current context"
+  (it "returns the active receiver in the current context"
     (parameterize ((%method-context
                     (list pob 'some-method)))
-      (equal? (%active-pob) pob)))
+      (equal? (%receiver) pob)))
 
-  (it "returns #f if there is no active pob"
-    (equal? (%active-pob) #f))
+  (it "returns #f if there is no active receive"
+    (equal? (%receiver) #f))
 
   (it "is read-only"
     (and
      (raises? ()
-       (%active-pob pob))
+       (%receiver pob))
      (raises? ()
-       (set! (%active-pob) pob)))))
+       (set! (%receiver) pob)))))
 
 
 (describe "%active-method-name"

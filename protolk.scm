@@ -50,7 +50,7 @@
    std-_display
 
    own-prop  set-own-prop!
-   assert-active-pob
+   assert-is-receiver
    with-method-context
    make-method
    make-private-method
@@ -149,38 +149,38 @@
 ;;
 
 (define (set-own-prop! prop-name value)
-  (let ((active-pob (%active-pob)))
-    (if (pob? active-pob)
-        (%set-prop! active-pob prop-name value)
-        (raise 'context "No active pob in the current context."
+  (let ((receiver (%receiver)))
+    (if (pob? receiver)
+        (%set-prop! receiver prop-name value)
+        (raise 'context "No receiver in the current context."
                'prop-name prop-name
                'value value))))
 
 (define own-prop
   (getter-with-setter
    (lambda (prop-name)
-     (let ((active-pob (%active-pob)))
-       (if (pob? active-pob)
-           (cdr (%resolve-prop active-pob prop-name))
-           (raise 'context "No active pob in the current context."
+     (let ((receiver (%receiver)))
+       (if (pob? receiver)
+           (cdr (%resolve-prop receiver prop-name))
+           (raise 'context "No receiver in the current context."
                   'prop-name prop-name))))
    set-own-prop!))
 
 
-(define (assert-active-pob pob #!optional message)
+(define (assert-is-receiver pob #!optional message)
   (cond
-   ((not (pob? (%active-pob)))
+   ((not (pob? (%receiver)))
     (raise 'context
            (or message
-               "There is no active pob in the current context.")))
-   ((not (eq? pob (%active-pob)))
+               "There is no receiver in the current context.")))
+   ((not (eq? pob (%receiver)))
     (raise 'context
            (or message
                (sprintf
-                "~s is not the active pob in the current context."
+                "~s is not the receiver in the current context."
                 pob))
            'pob pob
-           'active-pob (%active-pob)))
+           'receiver (%receiver)))
    (else
     #t)))
 
@@ -252,7 +252,7 @@
             (args (cdr signature))
             (body (cddr exp)))
        `(lambda (,(inject 'self) ,@args)
-          (if (eq? (%active-pob) ,(inject 'self))
+          (if (eq? (%receiver) ,(inject 'self))
               (with-method-context
                (cons* ,(inject 'self) ',method-name
                       (%rewrite-args ~required ,@args))

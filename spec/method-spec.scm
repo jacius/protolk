@@ -125,13 +125,13 @@
 
 
   (describe "the resulting method"
-    (it "succeeds if the receiver is the active pob"
+    (it "succeeds if the pob is the active receiver"
       (let ((m (make-private-method (some-method) 'noop)))
         (not (raises? ()
                (parameterize ((%method-context (list 'self 'a-method)))
                  (m 'self))))))
 
-    (it "raises an error if the receiver is not the active pob"
+    (it "raises an error if the pob is not the active receiver"
       (let ((m (make-private-method (some-method) 'noop)))
         (raises? ()
           (m 'self)))))

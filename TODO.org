@@ -132,8 +132,8 @@ Miscellaneous other stuff:
 - [ ] Make std-_display print out the pob's props. Use a depth limit
   like Ruby's default inspect.
 
-- [ ] Rename =assert-active-pob= to =assert-is-receiver=
-- [ ] Change references to "active pob" to "receiver".
+- [X] Rename =assert-active-pob= to =assert-is-receiver=
+- [X] Change references to "active pob" to "receiver".
 - [ ] =is-receiver?=
   Returns #t if given pob is the current receiver.
 
