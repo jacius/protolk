@@ -47,6 +47,25 @@
       (set-own-prop! 'a 2))))
 
 
+(describe "is-receiver?"
+  (it "returns #t if the given pob is the active receiver"
+    (let ((pob (make-pob props: '((a 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (is-receiver? pob) #t))))
+
+  (it "returns #f if the given pob is not the active receiver"
+    (let ((pob (make-pob)))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (equal? (is-receiver? (make-pob)) #f))))
+
+  (it "returns #f if given #f when there is no active receiver"
+    (not (is-receiver? #f)))
+
+  (it "fails if given no args"
+    (raises? (arity)
+      (is-receiver?))))
+
+
 (describe "assert-is-receiver"
   (it "returns #t if the pob is the active receiver"
     (let ((pob (make-pob props: '((a 1)))))

@@ -50,6 +50,7 @@
    std-_display
 
    own-prop  set-own-prop!
+   is-receiver?
    assert-is-receiver
    with-method-context
    make-method
@@ -165,6 +166,10 @@
            (raise 'context "No receiver in the current context."
                   'prop-name prop-name))))
    set-own-prop!))
+
+
+(define (is-receiver? pob)
+  (and (pob? pob) (eq? pob (%receiver))))
 
 
 (define (assert-is-receiver pob #!optional message)

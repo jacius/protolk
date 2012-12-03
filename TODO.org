@@ -134,7 +134,7 @@ Miscellaneous other stuff:
 
 - [X] Rename =assert-active-pob= to =assert-is-receiver=
 - [X] Change references to "active pob" to "receiver".
-- [ ] =is-receiver?=
+- [X] =is-receiver?=
   Returns #t if given pob is the current receiver.
 
 - [ ] Redefine prop-reader and prop-writer in terms of own-prop.
