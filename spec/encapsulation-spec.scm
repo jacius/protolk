@@ -47,6 +47,24 @@
       (set-own-prop! 'a 2))))
 
 
+(describe "unset-own-prop!"
+  (it "removes the named prop from the active receiver"
+    (let ((pob (make-pob props: '((a 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (unset-own-prop! 'a)
+        (not (%has-prop? pob 'a)))))
+  
+  (it "does nothing if the pob does not have a prop with that name"
+    (let ((pob (make-pob props: '((a 1)))))
+      (parameterize ((%method-context (list pob 'some-method)))
+        (unset-own-prop! 'b)
+        (not (%has-prop? pob 'b)))))
+
+  (it "raises a 'context error if there is no active receiver"
+    (raises? (context)
+      (unset-own-prop! 'a))))
+
+
 (describe "is-receiver?"
   (it "returns #t if the given pob is the active receiver"
     (let ((pob (make-pob props: '((a 1)))))

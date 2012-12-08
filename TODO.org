@@ -148,7 +148,7 @@ Miscellaneous other stuff:
 - [X] =set-method!=
   Replace a method in the pob. Like define-method, but you can use
   an already existing procedure.
-- [ ] =unset-own-prop!=
+- [X] =unset-own-prop!=
   Remove the prop from the pob, so it inherits from its base again.
 
 - [ ] =set-base!=

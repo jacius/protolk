@@ -49,7 +49,7 @@
    std-_method-missing
    std-_display
 
-   own-prop  set-own-prop!
+   own-prop  set-own-prop!  unset-own-prop!
    is-receiver?
    assert-is-receiver
    with-method-context
@@ -159,6 +159,13 @@
            (raise 'context "No receiver in the current context."
                   'prop-name prop-name))))
    set-own-prop!))
+
+(define (unset-own-prop! prop-name)
+  (let ((receiver (%receiver)))
+    (if (pob? receiver)
+        (%unset-prop! receiver prop-name)
+        (raise 'context "No receiver in the current context."
+               'prop-name prop-name))))
 
 
 (define (is-receiver? pob)
