@@ -45,6 +45,8 @@
    %pob-props    %pob-set-props!
    %pob-methods  %pob-set-methods!
 
+   %has-ancestor?
+
    %pob-prop-resolver    %pob-set-prop-resolver!
    %pob-method-resolver  %pob-set-method-resolver!
 
@@ -172,6 +174,18 @@
 (define (%unset-method! pob method-name)
   (%pob-set-methods! pob (remove (car=? method-name)
                                  (%pob-methods pob))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ANCESTRY
+;;
+
+(define (%has-ancestor? pob other)
+  (let ((base (%pob-base pob)))
+    (cond ((not (pob? base)) #f)
+          ((eq? base other)  #t)
+          (else              (%has-ancestor? base other)))))
 
 
 

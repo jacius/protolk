@@ -96,6 +96,44 @@
                      %pob-set-method-resolver!))
 
 
+(describe "%has-ancestor?"
+  (define pob1 (make-pob))
+  (define pob2 (make-pob base: pob1))
+  (define pob3 (make-pob base: pob2))
+  (define pob2b (make-pob base: pob1))
+
+  (it "returns #t if the second pob is an ancestor of the first pob"
+    (%has-ancestor? pob3 pob1))
+
+  (it "returns #f if the second pob is not an ancestor of the first pob"
+    (not (%has-ancestor? pob3 pob2b)))
+
+  (it "returns #f if both arguments are the same pob"
+    (not (%has-ancestor? pob2 pob2)))
+
+  (it "returns #f if the second argument is #f"
+    (not (%has-ancestor? pob1 #f)))
+
+  (it "returns #f if the second argument is not a pob"
+    (not (%has-ancestor? pob3 'foo)))
+
+  (it "fails when given no args"
+    (raises? (arity)
+      (%has-ancestor?)))
+
+  (it "fails when given only one pob"
+    (raises? (arity)
+      (%has-ancestor? pob3)))
+
+  (it "fails when given too many args"
+    (raises? (arity)
+      (%has-ancestor? pob3 pob2 pob1)))
+
+  (it "fails when the first argument is not a pob"
+    (raises? (type)
+      (%has-ancestor? 'foo pob1))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PRIMITIVE PROP ACCESSORS
 ;;
