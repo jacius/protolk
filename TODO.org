@@ -153,8 +153,7 @@ Miscellaneous other stuff:
 
 - [X] =set-base!=
   Set the pob's base to a new pob (or #f).
-- [ ] Add checks for cyclical ancestry when creating a new pob or
-  changing a pob's base.
+- [X] Add checks for cyclic ancestry when changing a pob's base.
 
 * Milestone 7: Generalization
 

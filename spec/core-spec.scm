@@ -101,7 +101,16 @@
     (let* ((pob1 (make-pob))
            (pob2 (make-pob base: pob1)))
       (set-base! pob2 #f)
-      (eq? (%pob-base pob2) #f))))
+      (eq? (%pob-base pob2) #f)))
+
+  (it "fails and does not modify the pob if it would cause cyclic ancestry"
+    (let* ((pob1 (make-pob))
+           (pob2 (make-pob))
+           (pob3 (make-pob base: pob1)))
+      (and
+       (raises? (cyclic-ancestry)
+         (set-base! pob1 pob3))
+       (eq? (%pob-base pob1) #f)))))
 
 
 ;;;;;;;;;;;;;;;

@@ -100,7 +100,13 @@
   (%make-pob base props methods prop-resolver method-resolver))
 
 (define (set-base! pob new-base)
-  (%pob-set-base! pob new-base))
+  (if (and new-base (%has-ancestor? new-base pob))
+      (raise 'cyclic-ancestry
+             (sprintf "setting base of ~s to ~s would cause cyclic ancestry"
+                      pob new-base)
+             'pob pob
+             'new-base new-base)
+      (%pob-set-base! pob new-base)))
 
 
 (define (send pob message . args)
