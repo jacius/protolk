@@ -79,6 +79,31 @@
                                            prop-resolver: resprop)))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SET-BASE!
+;;
+
+(describe "set-base!"
+  (it "sets the base of the given pob"
+    (let* ((pob1 (make-pob))
+           (pob2 (make-pob)))
+      (set-base! pob1 pob2)
+      (eq? (%pob-base pob1) pob2)))
+  
+  (it "replaces the old base if the pob had a base already"
+    (let* ((pob1 (make-pob))
+           (pob2 (make-pob))
+           (pob3 (make-pob base: pob1)))
+      (set-base! pob3 pob2)
+      (eq? (%pob-base pob3) pob2)))
+  
+  (it "can set the base to #f"
+    (let* ((pob1 (make-pob))
+           (pob2 (make-pob base: pob1)))
+      (set-base! pob2 #f)
+      (eq? (%pob-base pob2) #f))))
+
+
 ;;;;;;;;;;;;;;;
 ;; RESOLVERS
 ;;

@@ -40,6 +40,7 @@
 
 (module protolk
   (make-pob
+   set-base!
    send
    prop-reader
    prop-writer
@@ -97,6 +98,9 @@
                   (prop-resolver   std-prop-resolver)
                   (method-resolver std-method-resolver))
   (%make-pob base props methods prop-resolver method-resolver))
+
+(define (set-base! pob new-base)
+  (%pob-set-base! pob new-base))
 
 
 (define (send pob message . args)
