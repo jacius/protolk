@@ -6,7 +6,7 @@
         protolk-internal)
 (import-for-syntax protolk)
 
-(use extras)
+(use extras lolevel)
 
 
 ;;;;;;;;;;;;;
@@ -23,7 +23,8 @@
   (it "uses std-_display if it has no _display method"
     (equal? (with-output-to-string
               (lambda () (display pob1)))
-            "#<pob>"))
+            (sprintf "#<pob 0x~X>"
+                     (pointer->address (object->pointer pob1)))))
   
   (it "uses the pob's _display method if it has one"
     (equal? (with-output-to-string
@@ -97,6 +98,7 @@
 
 (describe "std-_method-missing"
   (define pob1 (make-pob))
+  (define pob1-address (pointer->address (object->pointer pob1)))
 
   (it "fails when given only one arg"
     (raises? (arity)
@@ -121,7 +123,8 @@
 
    (it "contains an informative error message"
      (string=? (get-condition-property exn 'no-method 'message)
-               "undefined method 'badmethod for #<pob>"))
+               (sprintf "undefined method 'badmethod for ~S"
+                        pob1)))
 
    (it "contains a 'pob property with the pob who received the message"
      (equal? (get-condition-property exn 'no-method 'pob)
@@ -138,17 +141,18 @@
 
 (describe "std-_display"
   (define pob (make-pob))
-  
-  (it "writes \"#<pob>\" to the given port"
-    (equal? (call-with-output-string
-             (lambda (port)
-               (std-_display pob port)))
-            "#<pob>"))
+  (define pob-address (pointer->address (object->pointer pob)))
+
+  (it "writes \"#<pob 0x_____>\" to the given port"
+    (string=? (call-with-output-string
+               (lambda (port)
+                 (std-_display pob port)))
+              (sprintf "#<pob 0x~X>" pob-address)))
 
   (it "uses (current-output-port) if the port is omitted"
-    (equal? (with-output-to-string
-              (lambda () (std-_display pob)))
-            "#<pob>"))
+    (string=? (with-output-to-string
+                (lambda () (std-_display pob)))
+              (sprintf "#<pob 0x~X>" pob-address)))
 
   (it "fails if given a non-pob"
     (raises? (type)

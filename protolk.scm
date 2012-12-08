@@ -67,7 +67,7 @@
    apply-super)
 
 (import scheme chicken)
-(use extras srfi-1)
+(use extras srfi-1 lolevel)
 
 (import protolk-internal protolk-primitives)
 (reexport (only protolk-primitives pob?))
@@ -84,7 +84,7 @@
 
 (define (std-_display self #!optional (port (current-output-port)))
   (unless (pob? self) (raise 'type (sprintf "Not a pob: ~s" self)))
-  (display "#<pob>" port))
+  (fprintf port "#<pob 0x~X>" (pointer->address (object->pointer self))))
 
 
 ;;;;;;;;;;;;;;
