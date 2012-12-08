@@ -145,7 +145,7 @@ Miscellaneous other stuff:
 - [ ] =define-prop-accessors=
   Define prop readers and writers on a pob for the given prop names.
 
-- [ ] =set-method!=
+- [X] =set-method!=
   Replace a method in the pob. Like define-method, but you can use
   an already existing procedure.
 - [ ] =unset-own-prop!=

@@ -55,6 +55,7 @@
    with-method-context
    make-method
    make-private-method
+   set-method!
    define-method
    define-private-method
    %rewrite-args
@@ -263,17 +264,21 @@
                                        ~required ,@args))))))))
 
 
+(define (set-method! pob method-name procedure)
+  (%set-method! pob method-name procedure))
+
+
 (define-syntax define-method
   (syntax-rules ()
     ((define-method pob (name . args) . body)
-     (%set-method! pob 'name
+     (set-method! pob 'name
       (make-method (name . args)
        . body)))))
 
 (define-syntax define-private-method
   (syntax-rules ()
     ((define-private-method pob (name . args) . body)
-     (%set-method! pob 'name
+     (set-method! pob 'name
       (make-private-method (name . args)
        . body)))))
 

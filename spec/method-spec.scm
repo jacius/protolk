@@ -263,6 +263,19 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SET-METHOD!
+;;
+
+(describe "set-method!"
+  (it "sets the method in the pob with the given name and procedure"
+    (let ((pob (make-pob))
+          (procedure (lambda x x)))
+      (set-method! pob 'foo procedure)
+      (eq? (%method pob 'foo) procedure))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DEFINE-METHOD
 ;;
 
