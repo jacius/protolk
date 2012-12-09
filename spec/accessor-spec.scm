@@ -168,6 +168,52 @@
       (define-prop-writers))))
 
 
+(describe "define-prop-accessors"
+  (it "adds prop reader and writer methods to the pob for all the given prop names"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-accessors pob '(a b c))
+      (send pob a: 4)
+      (send pob b: 5)
+      (send pob c: 6)
+      (and
+       (= 6 (length (map car (%pob-methods pob))))
+       (= 4 (send pob 'a))
+       (= 5 (send pob 'b))
+       (= 6 (send pob 'c)))))
+
+  (it "allows specifying custom method names for each prop"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-accessors pob '((a apple)
+                                   (b banana set-banana!)
+                                   c))
+      (send pob apple: 4)
+      (send pob 'set-banana! 5)
+      (send pob c: 6)
+      (and
+       (= 6 (length (map car (%pob-methods pob))))
+       (= 4 (send pob 'apple))
+       (= 5 (send pob 'banana))
+       (= 6 (send pob 'c)))))
+  
+  (it "does nothing if given an empty list of prop names"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-accessors pob '())
+      (null? (%pob-methods pob))))
+
+  (it "fails if given no list of prop names"
+    (let ((pob (make-pob)))
+      (raises? (arity)
+        (define-prop-accessors pob))))
+  
+  (it "fails if given a non-pob"
+    (raises? (type)
+      (define-prop-accessors 'not-a-pob '(a b c))))
+
+  (it "fails if given no args"
+    (raises? (arity)
+      (define-prop-accessors))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand

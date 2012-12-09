@@ -41,6 +41,8 @@
 ;;; Returns #t if x is #<unspecified>
 (define (void? x) (equal? x (void)))
 
+(define (symbol->keyword sym) (string->keyword (symbol->string sym)))
+
 
 ;;; Returns a lambda that takes a pair and returns true if the car of
 ;;; that pair matches x. The keyword argument pred is the predicate to

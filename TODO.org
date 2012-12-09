@@ -142,7 +142,7 @@ Miscellaneous other stuff:
   Define prop readers on a pob for the given prop names.
 - [X] =define-prop-writers=
   Define prop writers on a pob for the given prop names.
-- [ ] =define-prop-accessors=
+- [X] =define-prop-accessors=
   Define prop readers and writers on a pob for the given prop names.
 
 - [X] =set-method!=
