@@ -124,6 +124,49 @@
       (define-prop-readers))))
 
 
+(describe "define-prop-writers"
+  (it "adds prop writer methods to the pob for all the given prop names"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-writers pob '(a b c))
+      (send pob a: 4)
+      (send pob b: 5)
+      (send pob c: 6)
+      (and
+       (= 3 (length (map car (%pob-methods pob))))
+       (= 4 (%prop pob 'a))
+       (= 5 (%prop pob 'b))
+       (= 6 (%prop pob 'c)))))
+
+  (it "allows specifying custom method names for each prop"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-writers pob '((a apple:) (b set-banana!) c))
+      (send pob apple: 4)
+      (send pob 'set-banana! 5)
+      (send pob c: 6)
+      (and
+       (= 3 (length (map car (%pob-methods pob))))
+       (= 4 (%prop pob 'a))
+       (= 5 (%prop pob 'b))
+       (= 6 (%prop pob 'c)))))
+  
+  (it "does nothing if given an empty list of prop names"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-writers pob '())
+      (null? (%pob-methods pob))))
+
+  (it "fails if given no list of prop names"
+    (let ((pob (make-pob)))
+      (raises? (arity)
+        (define-prop-writers pob))))
+  
+  (it "fails if given a non-pob"
+    (raises? (type)
+      (define-prop-writers 'not-a-pob '(a b c))))
+
+  (it "fails if given no args"
+    (raises? (arity)
+      (define-prop-writers))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

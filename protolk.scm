@@ -66,7 +66,8 @@
 
    prop-reader
    prop-writer
-   define-prop-readers)
+   define-prop-readers
+   define-prop-writers)
 
 (import scheme chicken)
 (use extras srfi-1 lolevel)
@@ -356,6 +357,22 @@
          (set-method! pob (cadr prop)
                       (prop-reader (car prop)))
          (set-method! pob prop (prop-reader prop))))
+   prop-names))
+
+
+(define (define-prop-writers pob prop-names)
+  (define (symbol->keyword sym) (string->keyword (symbol->string sym)))
+  (for-each
+   (lambda (prop)
+     (let* ((prop-name (if (list? prop)
+                           (car prop)
+                           prop))
+            (method-name (if (list? prop)
+                             (cadr prop)
+                             (if (symbol? prop-name)
+                                 (symbol->keyword prop-name)
+                                 prop-name))))
+       (set-method! pob method-name (prop-writer prop-name))))
    prop-names))
 
 
