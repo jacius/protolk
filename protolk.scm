@@ -42,8 +42,6 @@
   (make-pob
    set-base!
    send
-   prop-reader
-   prop-writer
    std-prop-resolver
    std-method-resolver
    std-_receive
@@ -64,7 +62,11 @@
    super
    super*
    super?
-   apply-super)
+   apply-super
+
+   prop-reader
+   prop-writer
+   define-prop-readers)
 
 (import scheme chicken)
 (use extras srfi-1 lolevel)
@@ -345,6 +347,13 @@
   (lambda (self value)
     (with-method-context (list self prop-name value)
       (set-own-prop! prop-name value))))
+
+
+(define (define-prop-readers pob prop-names)
+  (for-each
+   (lambda (prop)
+     (set-method! pob prop (prop-reader prop)))
+   prop-names))
 
 
 ) ;; end module protolk

@@ -86,6 +86,43 @@
           (some-prop-writer pob 'some-value 'foo))))))
 
 
+(describe "define-prop-readers"
+  (it "adds prop reader methods to the pob for all the given prop names"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-readers pob '(a b c))
+      (and
+       (= 3 (length (map car (%pob-methods pob))))
+       (= 1 (send pob 'a))
+       (= 2 (send pob 'b))
+       (= 3 (send pob 'c)))))
+
+  ;; (it "allows specifying a different method name for each prop"
+  ;;   (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+  ;;     (define-prop-readers pob '((a apple) (b banana) c))
+  ;;     (and
+  ;;      (= 1 (send pob 'apple))
+  ;;      (= 2 (send pob 'banana))
+  ;;      (= 3 (send pob 'c)))))
+  
+  (it "does nothing if given an empty list of prop names"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-readers pob '())
+      (null? (%pob-methods pob))))
+
+  (it "fails if given no list of prop names"
+    (let ((pob (make-pob)))
+      (raises? (arity)
+        (define-prop-readers pob))))
+  
+  (it "fails if given a non-pob"
+    (raises? (type)
+      (define-prop-readers 'not-a-pob '(a b c))))
+
+  (it "fails if given no args"
+    (raises? (arity)
+      (define-prop-readers))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

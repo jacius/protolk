@@ -138,7 +138,7 @@ Miscellaneous other stuff:
   Returns #t if given pob is the current receiver.
 
 - [X] Redefine prop-reader and prop-writer in terms of own-prop.
-- [ ] =define-prop-readers=
+- [X] =define-prop-readers=
   Define prop readers on a pob for the given prop names.
 - [ ] =define-prop-writers=
   Define prop writers on a pob for the given prop names.
