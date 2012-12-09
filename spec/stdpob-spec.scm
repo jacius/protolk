@@ -154,7 +154,7 @@
               (apply std-_receive self message args))))
       (raises? (success)
         (stdpob-has-ancestor? pob-c pob-a))))
-  
+
   (it "fails when given no args"
     (raises? (arity)
       (stdpob-has-ancestor?)))
@@ -192,7 +192,7 @@
 
   (it "returns #f if neither the pob nor ancestors have a matching method"
     (not (stdpob-responds-to? pob3 'foo)))
-  
+
   (it "returns #f if the pob defines the matching method as #<unspecified>"
     (not (stdpob-responds-to? pob3 'z)))
   (it "returns #f if the pob inherits #<unspecified> from its base"
@@ -215,10 +215,10 @@
               (apply std-_receive self message args))))
       (raises? (success)
         (stdpob-responds-to? pob-b 'foo))))
-  
+
   (it "fails if given no args"
     (raises? (arity) (stdpob-responds-to?)))
-  
+
   (it "fails if the message is omitted"
     (raises? (arity) (stdpob-responds-to? pob3))))
 
@@ -239,7 +239,7 @@
 
   (it "has method-resolver set to std-method-resolver"
     (equal? (%pob-method-resolver stdpob) std-method-resolver))
-  
+
   (it "has a '_display method set to std-_display?"
     (equal? (%method stdpob '_display) std-_display))
 

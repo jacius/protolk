@@ -53,7 +53,7 @@
       (parameterize ((%method-context (list pob 'some-method)))
         (unset-own-prop! 'a)
         (not (%has-prop? pob 'a)))))
-  
+
   (it "does nothing if the pob does not have a prop with that name"
     (let ((pob (make-pob props: '((a 1)))))
       (parameterize ((%method-context (list pob 'some-method)))
@@ -119,7 +119,7 @@
           (eq?
            (get-condition-property exn 'context 'message)
            message)))))
-  
+
   (it "fails if given no args"
     (raises? (arity)
       (assert-is-receiver))))

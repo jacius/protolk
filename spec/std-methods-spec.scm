@@ -15,7 +15,7 @@
 
 (describe "pob record type printer"
   (define (display-foo self port) (display "foo" port))
-  
+
   (define pob1 (make-pob))
   (define pob2 (make-pob base: pob1 methods: `((_display ,display-foo))))
   (define pob3 (make-pob base: pob2))
@@ -25,7 +25,7 @@
               (lambda () (display pob1)))
             (sprintf "#<pob 0x~X>"
                      (pointer->address (object->pointer pob1)))))
-  
+
   (it "uses the pob's _display method if it has one"
     (equal? (with-output-to-string
               (lambda () (display pob2)))
@@ -129,7 +129,7 @@
    (it "contains a 'pob property with the pob who received the message"
      (equal? (get-condition-property exn 'no-method 'pob)
              pob1))
-   
+
    (it "contains a 'method-name property with the method name"
      (equal? (get-condition-property exn 'no-method 'method-name)
              'badmethod))

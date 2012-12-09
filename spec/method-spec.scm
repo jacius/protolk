@@ -332,7 +332,7 @@
                                (+ arg1 arg2 arg3))
         (raises? (private-method)
           (send pob 'some-method 1 2 3))))
-    
+
     (it "applies to the receiving pob even when the method is inherited"
       (let* ((pob (make-pob))
              (pob2 (make-pob base: pob)))
@@ -381,11 +381,11 @@
 (describe "super?"
   (define m (make-method (m) (super?)))
   (define m2 (make-method (m) (super?)))
-  
+
   (define pob1 (make-pob methods: `((m ,m))))
   (define pob2 (make-pob base: pob1
                          methods: `((m ,m2))))
-  
+
   (it "accepts no args"
     (raises? (arity)
       (super? 1)))

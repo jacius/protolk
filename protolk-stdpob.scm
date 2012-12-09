@@ -68,7 +68,7 @@
    base:            self
    props:           props
    methods:         methods
-   prop-resolver:   prop-resolver   
+   prop-resolver:   prop-resolver
    method-resolver: method-resolver))
 
 (define (stdpob-ancestors self)

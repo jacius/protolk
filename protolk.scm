@@ -369,7 +369,8 @@
                            prop))
             (method-name (if (list? prop)
                              (cadr prop)
-                             (string->symbol (sprintf "set-~A!" prop-name)))))
+                             (string->symbol
+                              (sprintf "set-~A!" prop-name)))))
        (set-method! pob method-name (prop-writer prop-name))))
    prop-names))
 
@@ -385,7 +386,8 @@
                              prop-name))
             (writer-name (if (and (list? prop) (> (length prop) 2))
                              (caddr prop)
-                             (string->symbol (sprintf "set-~A!" reader-name)))))
+                             (string->symbol
+                              (sprintf "set-~A!" reader-name)))))
        (set-method! pob reader-name (prop-reader prop-name))
        (set-method! pob writer-name (prop-writer prop-name))))
    prop-names))

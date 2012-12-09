@@ -24,7 +24,7 @@
   (it "fails if given too many args"
     (raises? (arity)
       (prop-reader 'some-prop 'foo)))
-  
+
   (describe "the procedure"
     (define some-prop-reader (prop-reader 'some-prop))
     (define pob1 (make-pob props: '((some-prop some-value))))
@@ -36,7 +36,7 @@
     (it "fails if given a non-pob"
       (raises? ()
         (some-prop-reader 'foo)))
-    
+
     (it "fails if given no args"
       (raises? (arity)
         (some-prop-reader)))
@@ -57,7 +57,7 @@
   (it "fails if given too many args"
     (raises? (arity)
       (prop-writer 'some-prop 'foo)))
-  
+
   (describe "the procedure"
     (define some-prop-writer (prop-writer 'some-prop))
 
@@ -71,11 +71,11 @@
       (let ((pob (make-pob)))
         (equal? (some-prop-writer pob 'some-value)
                 (void))))
-    
+
     (it "fails if given a non-pob"
       (raises? ()
         (some-prop-writer 'foo 'bar)))
-    
+
     (it "fails if given no args"
       (raises? (arity)
         (some-prop-writer)))
@@ -104,7 +104,7 @@
        (= 1 (send pob 'apple))
        (= 2 (send pob 'banana))
        (= 3 (send pob 'c)))))
-  
+
   (it "does nothing if given an empty list of prop names"
     (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
       (define-prop-readers pob '())
@@ -114,7 +114,7 @@
     (let ((pob (make-pob)))
       (raises? (arity)
         (define-prop-readers pob))))
-  
+
   (it "fails if given a non-pob"
     (raises? (type)
       (define-prop-readers 'not-a-pob '(a b c))))
@@ -148,7 +148,7 @@
        (= 4 (%prop pob 'a))
        (= 5 (%prop pob 'b))
        (= 6 (%prop pob 'c)))))
-  
+
   (it "does nothing if given an empty list of prop names"
     (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
       (define-prop-writers pob '())
@@ -158,7 +158,7 @@
     (let ((pob (make-pob)))
       (raises? (arity)
         (define-prop-writers pob))))
-  
+
   (it "fails if given a non-pob"
     (raises? (type)
       (define-prop-writers 'not-a-pob '(a b c))))
@@ -194,7 +194,7 @@
        (= 4 (send pob 'apple))
        (= 5 (send pob 'banana))
        (= 6 (send pob 'c)))))
-  
+
   (it "does nothing if given an empty list of prop names"
     (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
       (define-prop-accessors pob '())
@@ -204,7 +204,7 @@
     (let ((pob (make-pob)))
       (raises? (arity)
         (define-prop-accessors pob))))
-  
+
   (it "fails if given a non-pob"
     (raises? (type)
       (define-prop-accessors 'not-a-pob '(a b c))))

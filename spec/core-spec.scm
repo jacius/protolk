@@ -89,14 +89,14 @@
            (pob2 (make-pob)))
       (set-base! pob1 pob2)
       (eq? (%pob-base pob1) pob2)))
-  
+
   (it "replaces the old base if the pob had a base already"
     (let* ((pob1 (make-pob))
            (pob2 (make-pob))
            (pob3 (make-pob base: pob1)))
       (set-base! pob3 pob2)
       (eq? (%pob-base pob3) pob2)))
-  
+
   (it "can set the base to #f"
     (let* ((pob1 (make-pob))
            (pob2 (make-pob base: pob1)))
@@ -130,7 +130,7 @@
 
   (it "searches ancestors recursively to find the prop value"
     (equal? (std-prop-resolver pob3 'd) (cons pob1 4)))
- 
+
   (it "returns #f and the default value if the prop is not found"
     (equal? (std-prop-resolver pob3 'z 'default) (cons #f 'default)))
 
@@ -155,7 +155,7 @@
   (it "does not fail if given the pob, prop name, and default value"
     (not (raises? ()
            (std-prop-resolver pob3 'a 'default))))
-  
+
   ;;; This spec is broken in Chicken 4.8.0.
   ;; (it "fails if given too many args"
   ;;   (raises? ()
@@ -189,13 +189,13 @@
 
   (it "searches ancestors recursively to find the definition"
     (equal? (std-method-resolver pob3 'p) (cons pob1 fn4)))
- 
+
   (it "returns #f and the default value if the method is not found"
     (equal? (std-method-resolver pob3 'z 'default) (cons #f 'default)))
 
   (it "uses #<unspecified> as the default value by default"
     (equal? (std-method-resolver pob3 'z) (cons #f (void))))
-  
+
   (it "stops searching if it ever finds the method defined as #<unspecified>"
     (equal? (std-method-resolver pob3 'o) (cons pob2 (void))))
 
@@ -214,7 +214,7 @@
   (it "does not fail if given the pob, method name, and default value"
     (not (raises? ()
            (std-method-resolver pob3 'm 'default))))
-  
+
   ;;; This spec is broken in Chicken 4.8.0.
   ;; (it "fails if given too many args"
   ;;   (raises? ()
@@ -233,7 +233,7 @@
   (define (noop . args) #t)
   (define base-pob
     (make-pob methods: `((_method-missing ,noop))))
-  
+
   ;; it "uses the pob's method-resolver to find its _receive method"
   (let* ((pob (make-pob base: base-pob))
          (stub-resolve

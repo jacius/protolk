@@ -16,7 +16,7 @@
             (getter   (list-ref exp 3))
             (setter   (list-ref exp 4)))
        `(begin
-          
+
           (describe ,(sprintf "~a" getter)
             (it ,(sprintf "returns the pob's ~a slot value" slotname)
               (equal? (,getter ,make-pob-exp)
@@ -397,7 +397,7 @@
 (describe "%same-super-context?"
   (define pob (%make-pob #f '((a 1)) '() #f #f))
   (define pob2 (%make-pob #f '((a 2)) '() #f #f))
-  
+
   (it "is true if the pob and method name match the super context"
     (parameterize ((%super-context (list pob 'some-method 1 2)))
       (%same-super-context? pob 'some-method)))
