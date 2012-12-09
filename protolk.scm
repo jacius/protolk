@@ -352,7 +352,10 @@
 (define (define-prop-readers pob prop-names)
   (for-each
    (lambda (prop)
-     (set-method! pob prop (prop-reader prop)))
+     (if (list? prop)
+         (set-method! pob (cadr prop)
+                      (prop-reader (car prop)))
+         (set-method! pob prop (prop-reader prop))))
    prop-names))
 
 

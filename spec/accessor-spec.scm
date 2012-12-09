@@ -96,13 +96,14 @@
        (= 2 (send pob 'b))
        (= 3 (send pob 'c)))))
 
-  ;; (it "allows specifying a different method name for each prop"
-  ;;   (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
-  ;;     (define-prop-readers pob '((a apple) (b banana) c))
-  ;;     (and
-  ;;      (= 1 (send pob 'apple))
-  ;;      (= 2 (send pob 'banana))
-  ;;      (= 3 (send pob 'c)))))
+  (it "allows specifying custom method names for each prop"
+    (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
+      (define-prop-readers pob '((a apple) (b banana) c))
+      (and
+       (= 3 (length (map car (%pob-methods pob))))
+       (= 1 (send pob 'apple))
+       (= 2 (send pob 'banana))
+       (= 3 (send pob 'c)))))
   
   (it "does nothing if given an empty list of prop names"
     (let ((pob (make-pob props: '((a 1) (b 2) (c 3)))))
