@@ -140,27 +140,27 @@
 
 
 (describe "std-_display"
-  (define pob (make-pob))
-  (define pob-address (pointer->address (object->pointer pob)))
+  (let* ((pob (make-pob))
+         (pob-address (pointer->address (object->pointer pob))))
 
-  (it "writes \"#<pob 0x_____>\" to the given port"
-    (string=? (call-with-output-string
-               (lambda (port)
-                 (std-_display pob port)))
-              (sprintf "#<pob 0x~X>" pob-address)))
+    (it "writes \"#<pob 0x_____>\" to the given port"
+      (string=? (call-with-output-string
+                 (lambda (port)
+                   (std-_display pob port)))
+                (sprintf "#<pob 0x~X>" pob-address)))
 
-  (it "uses (current-output-port) if the port is omitted"
-    (string=? (with-output-to-string
-                (lambda () (std-_display pob)))
-              (sprintf "#<pob 0x~X>" pob-address)))
+    (it "uses (current-output-port) if the port is omitted"
+      (string=? (with-output-to-string
+                  (lambda () (std-_display pob)))
+                (sprintf "#<pob 0x~X>" pob-address)))
 
-  (it "fails if given a non-pob"
-    (raises? (type)
-      (std-_display 'foo (current-output-port))))
+    (it "fails if given a non-pob"
+      (raises? (type)
+        (std-_display 'foo (current-output-port))))
 
-  (it "fails if the port is not a port"
-    (raises? (type)
-      (std-_display pob 'foo))))
+    (it "fails if the port is not a port"
+      (raises? (type)
+        (std-_display pob 'foo)))))
 
 
 
