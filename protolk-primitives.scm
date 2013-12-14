@@ -171,8 +171,11 @@
   ((%pob-method-resolver pob) pob method-name default))
 
 (define (%set-method! pob method-name value)
-  (%pob-set-methods! pob (cons (list method-name value)
-                               (%pob-methods pob))))
+  (if (%has-method? pob method-name)
+      (set-cdr! (assoc method-name (%pob-methods pob))
+                (list value))
+      (%pob-set-methods! pob (cons (list method-name value)
+                                   (%pob-methods pob)))))
 
 (define (%unset-method! pob method-name)
   (%pob-set-methods! pob (remove (car=? method-name)
