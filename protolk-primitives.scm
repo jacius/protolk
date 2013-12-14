@@ -143,9 +143,11 @@
   ((%pob-prop-resolver pob) pob prop-name default))
 
 (define (%set-prop! pob prop-name value)
-  (when (%has-prop? pob prop-name) (%unset-prop! pob prop-name))
-  (%pob-set-props! pob (cons (list prop-name value)
-                             (%pob-props pob))))
+  (if (%has-prop? pob prop-name)
+      (set-cdr! (assoc prop-name (%pob-props pob))
+                (list value))
+      (%pob-set-props! pob (cons (list prop-name value)
+                                 (%pob-props pob)))))
 
 (define (%unset-prop! pob prop-name)
   (%pob-set-props! pob (remove (car=? prop-name)
