@@ -143,9 +143,11 @@
   ((%pob-prop-resolver pob) pob prop-name default))
 
 (define (%set-prop! pob prop-name value)
-  (when (%has-prop? pob prop-name) (%unset-prop! pob prop-name))
-  (%pob-set-props! pob (cons (list prop-name value)
-                             (%pob-props pob))))
+  (if (%has-prop? pob prop-name)
+      (set-cdr! (assoc prop-name (%pob-props pob))
+                (list value))
+      (%pob-set-props! pob (cons (list prop-name value)
+                                 (%pob-props pob)))))
 
 (define (%unset-prop! pob prop-name)
   (%pob-set-props! pob (remove (car=? prop-name)
@@ -169,8 +171,11 @@
   ((%pob-method-resolver pob) pob method-name default))
 
 (define (%set-method! pob method-name value)
-  (%pob-set-methods! pob (cons (list method-name value)
-                               (%pob-methods pob))))
+  (if (%has-method? pob method-name)
+      (set-cdr! (assoc method-name (%pob-methods pob))
+                (list value))
+      (%pob-set-methods! pob (cons (list method-name value)
+                                   (%pob-methods pob)))))
 
 (define (%unset-method! pob method-name)
   (%pob-set-methods! pob (remove (car=? method-name)
