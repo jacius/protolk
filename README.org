@@ -1,12 +1,14 @@
 
 * Protolk
 
+*ATTENTION: [[http://gitlab.com/jcroisant/protolk/][PROJECT HAS MOVED]].*
+
 Flexible Scheme objects with message passing and prototypes
 
 - *Version:* 0.5
 - *Date:* November 18, 2012
-- *Author:* John Croisant <john+protolk@croisant.net>
-- *Project:* [[http://github.com/jacius/protolk/]]
+- *Author:* John Croisant <john+protolk at croisant dot net>
+- *Project:* [[http://gitlab.com/jcroisant/protolk/]]
 - *License:* [[http://opensource.org/licenses/BSD-2-Clause][BSD 2-Clause]]
 
 
@@ -93,7 +95,7 @@ queues or other form of asynchronous message passing.)
 
 Protolk is currently targeted at [[http://call-cc.org/][Chicken Scheme]]. If you are interested
 in helping to port Protolk to your favorite Scheme or Lisp, create a
-new issue on the [[https://github.com/jacius/protolk/issues][Protolk issue tracker]] or email me.
+new issue on the [[https://gitlab.com/jcroisant/protolk/issues][Protolk issue tracker]] or email me.
 
 
 * License
